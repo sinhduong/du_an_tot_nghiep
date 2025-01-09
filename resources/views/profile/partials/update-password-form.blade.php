@@ -1,48 +1,60 @@
-<section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Update Password') }}
-        </h2>
+<div class="lh-contact-touch aos-init aos-animate mb-2" data-aos="fade-up" data-aos-duration="2000">
+    <div class="row">
+        <div class="col-lg-12 rs-pb-24">
+            <div class="lh-contact-touch-inner">
+                <div class="lh-contact-touch-contain">
+                    <h4 class="lh-contact-touch-contain-heading text-center">Đổi mật khẩu</h4>
 
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __('Ensure your account is using a long, random password to stay secure.') }}
-        </p>
-    </header>
+                </div>
+                <div class="lh-contact-touch-inner-form">
+                    <form action="{{ route('password.update') }}" method="POST">
+                        @csrf
+                        @method('put')
+                        <div class="lh-contact-touch-inner-form-warp">
+                           <input id="update_password_current_password"  for="update_password_current_password" type="password" name="current_password"  placeholder="Mật khẩu cũ" class="lh-form-control" autocomplete="current-password">
 
-    <form method="post" action="{{ route('password.update') }}" class="mt-6 space-y-6">
-        @csrf
-        @method('put')
+                            <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
+                        </div>
+                        <div class="lh-contact-touch-inner-form-warp">
+                            <input id="update_password_password"
+                                   type="password"
+                                   name="password"
+                                   placeholder="Mật khẩu mới"
+                                   class="lh-form-control"
+                                   autocomplete="new-password"
+                                   value="{{ old('password') }}">
+                            <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
+                        </div>
+                        <div class="lh-contact-touch-inner-form-warp">
+                            <input id="update_password_password_confirmation"
+                                   type="password"
+                                   name="password_confirmation"
+                                   placeholder="Nhập lại mật khẩu mới"
+                                   class="lh-form-control"
+                                   autocomplete="new-password"
+                                   value="{{ old('password_confirmation') }}">
+                            <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
+                        </div>
 
-        <div>
-            <x-input-label for="update_password_current_password" :value="__('Current Password')" />
-            <x-text-input id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full" autocomplete="current-password" />
-            <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
+
+                        <div class="flex items-center gap-4">
+                            <button class="lh-buttons result-placeholder" type="submit">
+                                Cập nhật
+                            </button>
+
+                            @if (session('status') === 'password-updated')
+                                <p
+                                    x-data="{ show: true }"
+                                    x-show="show"
+                                    x-transition
+                                    x-init="setTimeout(() => show = false, 2000)"
+                                    class="text-sm text-gray-600"
+                                >{{ __('Saved.') }}</p>
+                            @endif
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-
-        <div>
-            <x-input-label for="update_password_password" :value="__('New Password')" />
-            <x-text-input id="update_password_password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
-        </div>
-
-        <div>
-            <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" />
-            <x-text-input id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
-
-            @if (session('status') === 'password-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >{{ __('Saved.') }}</p>
-            @endif
-        </div>
-    </form>
-</section>
+    </div>
+</div>
