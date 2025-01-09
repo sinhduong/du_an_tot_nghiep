@@ -39,7 +39,7 @@ Route::prefix('admin')
     // ->middleware(['auth','verified'])
     ->as('admin.')
     ->group(function () {
-        Route::get('/dashboard', function () {
+        Route::get('/', function () {
             return view('admins/dashboard');
         })->name('dashboard');
 
@@ -48,9 +48,10 @@ Route::prefix('admin')
             ->group(function () {
                 Route::get('/', [HotelController::class, 'index'])->name('index');
                 Route::get('/create', [HotelController::class, 'create'])->name('create');
-                Route::get('/{id}/detail', [HotelController::class, 'detail'])->name('detail');
-                Route::get('/{id}/update', [HotelController::class, 'update'])->name('update');
-                Route::get('/{id}/destroy', [HotelController::class, 'destroy'])->name('destroy');
+                Route::post('/store', [HotelController::class, 'store'])->name('store');
+                Route::get('{id}/edit', [HotelController::class, 'edit'])->name('edit');
+                Route::put('{id}/update', [HotelController::class, 'update'])->name('update');
+                Route::delete('{id}/destroy', [HotelController::class, 'destroy'])->name('destroy');
             });
     });
 

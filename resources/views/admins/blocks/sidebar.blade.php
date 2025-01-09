@@ -44,8 +44,6 @@
                                 class="ri-file-list-3-fill"></i>list</a></li>
                         <li><a href="{{ route('admin.hotels.create') }}" class="lh-page-link drop"><i
                                 class="ri-git-repository-commits-line"></i>Thêm</a></li>
-                        <li><a href="" class="lh-page-link drop"><i
-                                class="ri-file-edit-line"></i>Sửa</a></li>
                     </ul>
                 </li>
                 <li class="lh-sb-item-separator"></li>

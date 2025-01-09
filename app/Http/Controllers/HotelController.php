@@ -52,24 +52,35 @@ class HotelController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Hotel $hotel)
+    public function edit(string $id)
     {
-        //
+        $title='Sửa hotel';
+        $hotel=Hotel::findOrFail($id);
+        return  view('admins.hotels.edit',compact('title','hotel'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateHotelRequest $request, Hotel $hotel)
+    public function update(UpdateHotelRequest $request, string $id)
     {
-        //
+       $hotel= Hotel::findOrFail($id);
+        if ($request->isMethod('PUT')) {
+            // Tạo hotel với dữ liệu từ request
+            $hotel->update($request->only(['name', 'address', 'city', 'description', 'price_form', 'price_to']));
+
+            // Chuyển hướng sau khi thêm thành công
+            return redirect()->route('admin.hotels.index')->with('success', 'Sửa khách sạn thành công');
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Hotel $hotel)
+    public function destroy(string $id)
     {
-        //
+        $hotel=Hotel::findOrFail($id);
+        $hotel->delete();
+        return  redirect()->route('admin.hotels.index')->with('success','Xóa thành công');
     }
 }
