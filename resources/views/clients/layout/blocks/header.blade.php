@@ -38,7 +38,7 @@
 
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                <li><a class="dropdown-item" href="#"><i class="mdi mdi-account"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="mdi mdi-account"></i>Profile</a></li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
