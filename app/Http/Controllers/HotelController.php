@@ -32,7 +32,13 @@ class HotelController extends Controller
      */
     public function store(StoreHotelRequest $request)
     {
-        //
+        if ($request->isMethod('POST')) {
+            // Tạo hotel với dữ liệu từ request
+            Hotel::create($request->only(['name', 'address', 'city', 'description', 'price_form', 'price_to']));
+
+            // Chuyển hướng sau khi thêm thành công
+            return redirect()->route('admin.hotels.index')->with('success', 'Thêm khách sạn thành công');
+        }
     }
 
     /**

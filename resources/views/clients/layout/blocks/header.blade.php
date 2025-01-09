@@ -31,6 +31,31 @@
                         <a href="javascript:void(0)"><i class="ri-twitter-x-line twitter"></i></a>
                         <a href="javascript:void(0)"><i class="ri-linkedin-box-line linkedin"></i></a>
                         <a href="javascript:void(0)"><i class="ri-instagram-line instagram"></i></a>
+                        @if (Route::has('login'))
+                            @auth
+                            <a href="" class="dropdown-toggle " role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="ri-user-2-fill">Tên tài khoản</i>
+
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <li><a class="dropdown-item" href="#"><i class="mdi mdi-account"></i>Profile</a></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">Đăng xuất</button>
+                                    </form>
+                                </li>
+                            </ul>
+
+                                @else
+                                    <a href="{{ route('login') }}"><i class="ri-user-2-fill"></i>Đăng nhập </a>
+                                    @if (Route::has('register'))
+                                    <a href="{{ route('register') }}"><i class="ri-user-2-fill"></i>Đăng ký </a>
+                                    @endif
+                            @endauth
+                        @endif
+
+
                     </div>
                 </div>
             </div>
