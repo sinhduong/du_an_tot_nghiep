@@ -44,13 +44,18 @@
                                 <div class="lh-date-range dots">
                                     <span></span>
                                 </div>
-                                <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.hotels.hotel.create') }}'">
+                                <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.hotels.create') }}'">
                                     Tạo mới
                                 </button>
 
                         </div>
                     </div>
-
+                    @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    @endif
                     <div class="lh-card-content card-default">
                         <div class="booking-table">
                             <div class="table-responsive">

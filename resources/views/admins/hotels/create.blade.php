@@ -43,65 +43,77 @@
                         </div>
                     </div>
                     <div class="lh-card-content card-booking">
-                        <div class="row mtb-m-12">
-                            <div class="col-md-6 col-sm-12">
-                                <div class="lh-user-detail">
-                                    <ul>
-                                        <li><strong>Name *: </strong>
-                                            <div class="form-group">
-                                                <input type="text" name="name" placeholder="Enter name">
-                                            </div>
-                                        </li>
-                                        <li><strong>Address : </strong>
-                                            <div class="form-group">
-                                                <input type="text" name="address" placeholder="Enter address">
-                                            </div>
-                                        </li>
-                                    </ul>
+                        <form action="{{ route('admin.hotels.store') }}" method="POST">
+                            @csrf
+                            <div class="row mtb-m-12">
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="lh-user-detail">
+                                        <ul>
+                                            <li><strong>Name *: </strong>
+                                                <div class="form-group">
+                                                    <input type="text" name="name" placeholder="Enter name" >
+                                                    @error('name')
+                                                        <p class="text-danger">{{ $message }}</p>
+                                                    @enderror
+                                                </div>
+                                            </li>
+                                            <li><strong>Address : </strong>
+                                                <div class="form-group">
+                                                    <input type="text" name="address" placeholder="Enter address">
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="lh-user-detail">
+                                        <ul>
+                                            <li><strong>City : </strong>
+                                                <div class="form-group">
+                                                    <input name="city" type="text" class="form-control" placeholder="Enter city">
+                                                </div>
+                                            </li>
+                                            <li><strong>Description : </strong>
+                                                <input name="description" type="text" class="form-control" placeholder="Enter description">
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="lh-user-detail">
+                                        <ul>
+                                            <li><strong>Price form *: </strong>
+                                                <input name="price_form" type="text" class="form-control" placeholder="Enter price form">
+                                                @error('price_form')
+                                                <p class="text-danger">{{ $message }}</p>
+                                                @enderror
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="lh-user-detail">
+                                        <ul>
+                                            <li><strong>Price to *: </strong>
+                                                <input name="price_to" type="text" class="form-control" placeholder="Enter price to">
+                                                @error('price_to')
+                                                <p class="text-danger">{{ $message }}</p>
+                                            @enderror
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="lh-user-detail">
+                                        <ul>
+                                            <li>
+                                                <button type="submit" class="lh-btn-primary">Submit</button>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-sm-12">
-                                <div class="lh-user-detail">
-                                    <ul>
-                                        <li><strong>City : </strong>
-                                            <div class="form-group">
-                                                <input name="city" type="text" class="form-control" placeholder="Enter city">
-                                            </div>
-                                        </li>
-                                        <li><strong>Description : </strong>
-                                            <input name="description" type="text" class="form-control" placeholder="Enter description">
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-sm-12">
-                                <div class="lh-user-detail">
-                                    <ul>
-                                        <li><strong>Price form *: </strong>
-                                            <input name="price_form" type="text" class="form-control" placeholder="Enter price form">
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-sm-12">
-                                <div class="lh-user-detail">
-                                    <ul>
-                                        <li><strong>Price to *: </strong>
-                                            <input name="price to" type="text" class="form-control" placeholder="Enter price to">
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-sm-12">
-                                <div class="lh-user-detail">
-                                    <ul>
-                                        <li>
-                                            <button type="submit" class="lh-btn-primary">Submit</button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>

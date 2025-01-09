@@ -9,10 +9,11 @@
             <ul class="lh-sb-list">
                 <li class="lh-sb-item sb-drop-item">
                     <a href="{{ route('admin.dashboard') }}">
-                    <a  href="javascript:void(0)" class="lh-drop-toggle">
+                    {{-- <a  href="javascript:void(0)" class="lh-drop-toggle"> --}}
                         <i class="ri-dashboard-3-line"></i>
                         <span class="condense">Thống kê</span>
-                    </a></a>
+                    </a>
+                {{-- </a> --}}
                 </li>
                 <li class="lh-sb-item-separator"></li>
                 {{-- <li class="lh-sb-title condense">Apps</li>
@@ -39,25 +40,13 @@
                         <i class="ri-home-8-line"></i><span class="condense">Hotel<i
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
-                        <li><a href="{{ route('admin.hotels.hotel.index') }}" class="lh-page-link drop"><i
+                        <li><a href="{{ route('admin.hotels.index') }}" class="lh-page-link drop"><i
                                 class="ri-file-list-3-fill"></i>list</a></li>
-                        <li><a href="{{ route('admin.hotels.hotel.create') }}" class="lh-page-link drop"><i
+                        <li><a href="{{ route('admin.hotels.create') }}" class="lh-page-link drop"><i
                                 class="ri-git-repository-commits-line"></i>Thêm</a></li>
                         <li><a href="" class="lh-page-link drop"><i
                                 class="ri-file-edit-line"></i>Sửa</a></li>
                     </ul>
-                </li>
-                <li class="lh-sb-item">
-                    <a href="bookings.html" class="lh-page-link">
-                        <i class="ri-contacts-book-line"></i><span class="condense"><span
-                                class="hover-title">Bookings</span> </span>
-                    </a>
-                </li>
-                <li class="lh-sb-item">
-                    <a href="invoice.html" class="lh-page-link">
-                        <i class="ri-bill-line"></i><span class="condense"><span
-                                class="hover-title">Invoice</span> </span>
-                    </a>
                 </li>
                 <li class="lh-sb-item-separator"></li>
                 <li class="lh-sb-title condense">Tài khoản</li>
