@@ -34,7 +34,7 @@
                         @if (Route::has('login'))
                             @auth
                             <a href="" class="dropdown-toggle " role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="ri-user-2-fill">Tên tài khoản</i>
+                                <i class="ri-user-2-fill">Tài khoản</i>
 
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
@@ -65,7 +65,7 @@
         <div class="container">
             <div class="row">
                 <nav class="navbar navbar-expand-lg">
-                    <a class="navbar-brand" href="index.html">
+                    <a class="navbar-brand" href="{{ route('home') }}">
                         <img src="{{ asset('assets/client/assets/img/logo/logo.png ') }}" alt="logo" class="lh-logo">
                     </a>
                     <button class="navbar-toggler shadow-none" type="button" data-bs-toggle="collapse"
