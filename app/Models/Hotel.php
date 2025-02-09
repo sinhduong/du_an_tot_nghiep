@@ -13,7 +13,7 @@ class Hotel extends Model
         'address',
         'city',
         'description',
-        'price_form',
-        'price_to',
+        'price_min',
+        'price_max',
     ];
 }

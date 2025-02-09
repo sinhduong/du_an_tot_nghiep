@@ -82,8 +82,8 @@
                                             <td>{{ $item->address }}</td>
                                             <td>{{ $item->city }}</td>
                                             <td>{{ $item->description }}</td>
-                                            <td class="active">$ {{ $item->price_form }}</td>
-                                            <td>${{ $item->price_to }}</td>
+                                            <td class="active">$ {{ $item->price_min }}</td>
+                                            <td>${{ $item->price_max }}</td>
                                             <td>
                                                 <div class="d-flex justify-content-center">
                                                     <button type="button" class="btn btn-outline-success"><i

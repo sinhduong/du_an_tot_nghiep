@@ -84,8 +84,8 @@
                                     <div class="lh-user-detail">
                                         <ul>
                                             <li><strong>Price form *: </strong>
-                                                <input name="price_form" type="text" class="form-control" placeholder="Enter price form" value="{{ $hotel->price_form }}">
-                                                @error('price_form')
+                                                <input name="price_min" type="text" class="form-control" placeholder="Enter price form" value="{{ $hotel->price_min }}">
+                                                @error('price_min')
                                                 <p class="text-danger">{{ $message }}</p>
                                                 @enderror
                                             </li>
@@ -96,8 +96,8 @@
                                     <div class="lh-user-detail">
                                         <ul>
                                             <li><strong>Price to *: </strong>
-                                                <input name="price_to" type="text" class="form-control" placeholder="Enter price to" value="{{ $hotel->price_to }}">
-                                                @error('price_to')
+                                                <input name="price_max" type="text" class="form-control" placeholder="Enter price to" value="{{ $hotel->price_max }}">
+                                                @error('price_max')
                                                 <p class="text-danger">{{ $message }}</p>
                                             @enderror
                                             </li>
