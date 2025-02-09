@@ -82,8 +82,8 @@
                                             <td>{{ $item->address }}</td>
                                             <td>{{ $item->city }}</td>
                                             <td>{{ $item->description }}</td>
-                                            <td class="active">$ {{ $item->price_form }}</td>
-                                            <td>${{ $item->price_to }}</td>
+                                            <td class="active">$ {{ $item->price_min }}</td>
+                                            <td>${{ $item->price_max }}</td>
                                             <td>
                                                 <div class="d-flex justify-content-center">
                                                     <button type="button" class="btn btn-outline-success"><i
@@ -96,8 +96,13 @@
                                                                 class="ri-settings-3-line"></i></span>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="#">Edit</a>
-                                                        <a class="dropdown-item" href="#">Delete</a>
+                                                        <a class="dropdown-item" href="{{ route('admin.hotels.edit', $item->id) }}">Edit</a>
+                                                        <form action="{{ route('admin.hotels.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Bạn có muốn xóa không?');">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="dropdown-item">Delete</button>
+                                                        </form>
+
                                                     </div>
                                                 </div>
                                             </td>

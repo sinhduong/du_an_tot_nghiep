@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('address');
             $table->string('city');
             $table->text('description')->nullable();
-            $table->decimal('price_form',10,2)->nullable();
-            $table->decimal('price_to',10,2)->nullable();
+            $table->decimal('price_min', 20, 2)->nullable();
+            $table->decimal('price_max', 20, 2)->nullable();
             $table->timestamps();
         });
     }
