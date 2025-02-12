@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('promotions', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique(); 
+            $table->string('code')->unique();
             $table->string('description')->nullable();
             $table->enum('type', ['percentage', 'fixed_amount']); // Giới hạn loại khuyến mãi
             $table->decimal('value', 10, 2);
@@ -21,6 +21,7 @@ return new class extends Migration
             $table->date('expiry_date');
             $table->integer('usage_limit')->default(1); // Có thể thêm default
             $table->timestamps();
+            $table->softDeletes();//dekete_at xóa mềm
         });
     }
 

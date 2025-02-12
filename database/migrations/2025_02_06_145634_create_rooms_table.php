@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('type');
             $table->decimal('price', 20, 2)->nullable();
             $table->tinyInteger('capacity');
             $table->string('description')->nullable();
             $table->enum('status', ['available', 'booked', 'maintenance']);
-            $table->foreignId('hotel_id')->constrained('hotels')->onDelete('cascade');
+            $table->bigInteger('room_type_id');
             $table->timestamps();
+            $table->softDeletes();//dekete_at xóa mềm
         });
     }
 

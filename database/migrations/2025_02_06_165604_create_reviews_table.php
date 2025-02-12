@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
             $table->integer('rating');
-            $table->text('comment');   
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('hotel_id')->constrained('hotels')->onDelete('cascade');
+            $table->text('comment');
+            $table->bigInteger('user_id');
+            $table->bigInteger('room_id');
             $table->timestamps();
+            $table->softDeletes();//dekete_at xóa mềm
         });
     }
 

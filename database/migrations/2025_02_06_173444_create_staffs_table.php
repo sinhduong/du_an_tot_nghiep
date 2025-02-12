@@ -17,11 +17,13 @@ return new class extends Migration
             $table->string('avatar');
             $table->date('birthday')->nullable();
             $table->string('phone');
+            $table->string('role');
             $table->string('email')->unique();
             $table->enum('status', ['active', 'inactive', 'on_leave']);
-            $table->decimal('salary', 10, 2); 
-            $table->foreignId('hotel_id')->constrained('hotels')->onDelete('cascade');
+            $table->decimal('salary', 10, 2);
+            $table->bigInteger('room_id');
             $table->timestamps();
+            $table->softDeletes();//dekete_at xóa mềm
         });
     }
 

@@ -14,8 +14,9 @@
             Schema::create('booking_room_services', function (Blueprint $table) {
                 $table->id();
                 $table->string('booking_room');
-                $table->foreignId('service_id')->constrained('services')->onDelete('cascade');
+                $table->bigInteger('service_id');
                 $table->timestamps();
+                $table->softDeletes();//dekete_at xóa mềm
             });
         }
 

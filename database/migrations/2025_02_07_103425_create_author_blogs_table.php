@@ -14,9 +14,10 @@ return new class extends Migration
     {
         Schema::create('author_blogs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('staff_id')->constrained('staffs')->onDelete('cascade');
-            $table->foreignId('blog_id')->constrained('blogs')->onDelete('cascade');
+            $table->bigInteger('staff_id');
+            $table->bigInteger('blog_id');
             $table->timestamps();
+            $table->softDeletes();//delete_at xóa mềm
         });
     }
 

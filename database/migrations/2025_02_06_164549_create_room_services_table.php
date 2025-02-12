@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('room_services', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('room_id')->constrained('rooms')->onDelete('cascade');
-            $table->foreignId('service_id')->constrained('services')->onDelete('cascade');
+            $table->bigInteger('room_id');
+            $table->bigInteger('service_id');
             $table->timestamps();
+            $table->softDeletes();//dekete_at xóa mềm
         });
     }
 

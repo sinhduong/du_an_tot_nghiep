@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('question', 255);
             $table->text('answer');
-            $table->boolean('is_active')->default(true); 
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
+            $table->softDeletes();//dekete_at xóa mềm
         });
     }
 

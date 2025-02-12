@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('blog_catalogs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('blog_id')->constrained('blogs')->onDelete('cascade');
-            $table->foreignId('catalog_id')->constrained('catalogs')->onDelete('cascade');
+            $table->bigInteger('blog_id');
+            $table->bigInteger('catalog_id');
             $table->timestamps();
+            $table->softDeletes();//delete_at xóa mềm
         });
     }
 

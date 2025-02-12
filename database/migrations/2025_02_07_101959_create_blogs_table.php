@@ -19,6 +19,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true); // Trạng thái kích hoạt
             $table->string('thumbnail')->nullable(); // Ảnh thu nhỏ, có thể null
             $table->timestamps();
+            $table->softDeletes();//dekete_at xóa mềm
         });
     }
 

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text('introduction');
             $table->boolean('is_use')->default(true);
             $table->timestamps();
+            $table->softDeletes();//dekete_at xóa mềm
         });
     }
 
