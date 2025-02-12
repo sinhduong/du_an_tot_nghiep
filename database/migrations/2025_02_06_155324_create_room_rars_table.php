@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('room_rars', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('room_id')->constrained('rooms')->onDelete('cascade');
-            $table->foreignId('rules_and_regulation_id')->constrained('rules_and_regulations')->onDelete('cascade');
+            $table->bigInteger('room_id');
+            $table->bigInteger('rules_and_regulation_id');
             $table->timestamps();
+            $table->softDeletes();//dekete_at xóa mềm
         });
     }
 

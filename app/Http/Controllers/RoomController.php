@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\rooms;
+use App\Models\Room;
 use App\Http\Requests\StoreroomRequest;
 use App\Http\Requests\UpdateroomRequest;
 
@@ -13,7 +13,9 @@ class RoomController extends Controller
      */
     public function index()
     {
-        //
+        $title='Danh sách phòng';
+        $rooms=Room::orderBy('id','desc')->get();
+        return  view('admins.rooms.index',compact('rooms','title'));
     }
 
     /**
@@ -35,7 +37,7 @@ class RoomController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(rooms $rooms)
+    public function show(room $rooms)
     {
         //
     }
@@ -43,7 +45,7 @@ class RoomController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(rooms $rooms)
+    public function edit(room $rooms)
     {
         //
     }
@@ -51,7 +53,7 @@ class RoomController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateroomRequest $request, rooms $rooms)
+    public function update(UpdateroomRequest $request, room $rooms)
     {
         //
     }
@@ -59,7 +61,7 @@ class RoomController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(rooms $rooms)
+    public function destroy(room $rooms)
     {
         //
     }

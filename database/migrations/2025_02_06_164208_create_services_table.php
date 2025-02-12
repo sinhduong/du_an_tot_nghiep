@@ -17,6 +17,7 @@ return new class extends Migration
             $table->decimal('price', 20, 2);
             $table->boolean('is_active')->default(true); // true giá trị mặc định
             $table->timestamps();
+            $table->softDeletes();//dekete_at xóa mềm
         });
     }
 

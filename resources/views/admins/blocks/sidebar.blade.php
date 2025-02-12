@@ -16,118 +16,79 @@
                 {{-- </a> --}}
                 </li>
                 <li class="lh-sb-item-separator"></li>
-                {{-- <li class="lh-sb-title condense">Apps</li>
+                <li class="lh-sb-title condense">Apps</li>
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
-                        <i class="ri-shield-user-line"></i><span class="condense">Staff<i
+                        <i class="ri-shield-user-line"></i><span class="condense">Quản lý tài khoản<i
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
-                        <li><a href="team-profile.html" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Team Profile</a></li>
-                        <li><a href="team-add.html" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Team Add</a></li>
-                        <li><a href="team-update.html" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Team Update</a></li>
-                        <li><a href="team-list.html" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Team List</a></li>
-                    </ul>
-                </li> --}}
-                <li class="lh-sb-item-separator"></li>
-                <li class="lh-sb-title condense">Hotel</li>
 
-                <li class="lh-sb-item sb-drop-item">
-                    <a href="javascript:void(0)" class="lh-drop-toggle">
-                        <i class="ri-home-8-line"></i><span class="condense">Hotel<i
-                                class="drop-arrow ri-arrow-down-s-line"></i></span></a>
-                    <ul class="lh-sb-drop condense">
-                        <li><a href="{{ route('admin.hotels.index') }}" class="lh-page-link drop"><i
-                                class="ri-file-list-3-fill"></i>list</a></li>
-                        <li><a href="{{ route('admin.hotels.create') }}" class="lh-page-link drop"><i
-                                class="ri-git-repository-commits-line"></i>Thêm</a></li>
+                        <li><a href="team-add.html" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Tài khoản khách hàng</a></li>
+                        <li><a href="team-update.html" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Tài khoản quản trị</a></li>
+                        <li><a href="team-profile.html" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Tài khoản cá nhân</a></li>
+                        <li><a href="team-list.html" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Danh sách nhân viên</a></li>
                     </ul>
                 </li>
+
                 <li class="lh-sb-item-separator"></li>
-                <li class="lh-sb-title condense">Tài khoản</li>
-                <li class="lh-sb-item sb-drop-item">
-                    <a href="javascript:void(0)" class="lh-drop-toggle">
-                        <i class="ri-user-search-line"></i><span class="condense">Quản trị<i
-                                class="drop-arrow ri-arrow-down-s-line"></i></span></a>
-                    <ul class="lh-sb-drop condense">
-                        <li><a href="signin.html" class="lh-page-link drop"><i
-                                class="mdi mdi-account-circle"></i>Tài khoản quản trị</a></li>
-                        <li><a href="signup.html" class="lh-page-link drop"><i
-                                class="mdi mdi-account-circle-outline"></i>Tài khoản khách hàng</a></li>
-                    </ul>
-                </li>
+                <li class="lh-sb-title condense">Khách sạn | KHU NGHỈ MÁT</li>
                 <li class="lh-sb-item">
-                    <a href="menu.html" class="lh-page-link">
-                        <i class="ri-restaurant-2-line"></i><span class="condense"><span
-                                class="hover-title">Menu</span> </span>
+                    <a href="guest.html" class="lh-page-link">
+                        <i class="ri-group-line"></i><span class="condense"><span class="hover-title">Khách hàng</span> </span>
                     </a>
                 </li>
                 <li class="lh-sb-item">
-                    <a href="menu-add.html" class="lh-page-link">
-                        <i class="ri-restaurant-2-line"></i><span class="condense"><span class="hover-title">Add
-                                Menu</span> </span>
+                    <a href="guest-details.html" class="lh-page-link">
+                        <i class="ri-user-search-line"></i><span class="condense"><span class="hover-title">chi tiết khách hàng</span> </span>
                     </a>
-                </li>
-                <li class="lh-sb-item">
-                    <a href="orders.html" class="lh-page-link">
-                        <i class="ri-bookmark-3-line"></i><span class="condense"><span
-                                class="hover-title">Orders</span> </span>
-                    </a>
-                </li>
-                <li class="lh-sb-item-separator"></li>
-                <li class="lh-sb-title condense">Extra</li>
-                <li class="lh-sb-item sb-drop-item">
-                    <a href="javascript:void(0)" class="lh-drop-toggle">
-                        <i class="ri-pages-line"></i><span class="condense">Authentication<i
-                                class="drop-arrow ri-arrow-down-s-line"></i></span></a>
-                    <ul class="lh-sb-drop condense">
-                        <li><a href="signin.html" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Login</a></li>
-                        <li><a href="signup.html" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Signup</a></li>
-                        <li><a href="forgot.html" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Forgot password</a></li>
-                        <li><a href="reset-password.html" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Reset password</a></li>
-                    </ul>
                 </li>
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
-                        <i class="ri-service-line"></i><span class="condense">Service pages<i
+                        <i class="ri-shield-user-line"></i><span class="condense">Quản lý Loại phòng<i
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
-                        <li><a href="404-error-page.html" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>404 error</a></li>
-                        <li><a href="maintenance.html" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Maintenance</a></li>
+
+                        <li><a href="{{ route('admin.room_types.index') }}" class="lh-page-link drop"><i
+                                    class="ri-home-8-line"></i>Danh sách Loại phòng</a></li>
+                        <li><a href="{{ route('admin.room_types.create') }}" class="lh-page-link drop"><i
+                                    class="ri-home-8-line"></i>Thêm mới loại phòng</a></li>
+                        <li><a href="{{ route('admin.room_types.trashed') }}" class="lh-page-link drop"><i
+                                    class="ri-home-8-line"></i>Danh sách loại phòng đã xóa mềm</a></li>
                     </ul>
                 </li>
-                <li class="lh-sb-item-separator"></li>
-                <li class="lh-sb-title condense">Elements</li>
+
                 <li class="lh-sb-item">
-                    <a href="remix-icons.html" class="lh-page-link">
-                        <i class="ri-remixicon-line"></i><span class="condense"><span class="hover-title">remix
-                                icons</span></span></a>
+                    <a href="{{ route('admin.rooms.index') }}" class="lh-page-link">
+                        <i class="ri-home-8-line"></i><span class="condense"><span class="hover-title">Phòng</span> </span>
+                    </a>
                 </li>
                 <li class="lh-sb-item">
-                    <a href="material-icons.html" class="lh-page-link">
-                        <i class="mdi mdi-material-ui"></i><span class="condense"><span
-                                class="hover-title">Material icons</span></span></a>
+                    <a href="bookings.html" class="lh-page-link">
+                        <i class="ri-contacts-book-line"></i><span class="condense"><span class="hover-title">Đặt phòng</span> </span>
+                    </a>
                 </li>
                 <li class="lh-sb-item">
-                    <a href="alert-popup.html" class="lh-page-link">
-                        <i class="ri-file-warning-line"></i><span class="condense"><span
-                                class="hover-title">Alert Popup</span></span></a>
+                    <a href="bookings.html" class="lh-page-link">
+                        <i class="ri-barcode-line"></i><span class="condense"><span class="hover-title">Khuyến mãi</span> </span>
+                    </a>
                 </li>
+                <li class="lh-sb-item">
+                    <a href="invoice.html" class="lh-page-link">
+                        <i class="ri-bill-line"></i><span class="condense"><span class="hover-title">Hóa đơn</span> </span>
+                    </a>
+                </li>
+
+
                 <li class="lh-sb-item-separator"></li>
                 <li class="lh-sb-title condense">Settings</li>
                 <li class="lh-sb-item">
                     <a href="role.html" class="lh-page-link">
                         <i class="ri-magic-line"></i><span class="condense"><span
-                                class="hover-title">Role</span></span></a>
+                                class="hover-title">Quyền</span></span></a>
                 </li>
             </ul>
         </div>

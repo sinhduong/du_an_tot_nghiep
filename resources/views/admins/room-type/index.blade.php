@@ -5,7 +5,7 @@
         <!-- Page title & breadcrumb -->
         <div class="lh-page-title">
             <div class="lh-breadcrumb">
-                <h5>Hotel</h5>
+                <h5>Phòng</h5>
                 <ul>
                     <li><a href="index.html">Trang chủ</a></li>
                     <li>Dashboard</li>
@@ -44,7 +44,7 @@
                                 <div class="lh-date-range dots">
                                     <span></span>
                                 </div>
-                                <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.hotels.create') }}'">
+                                <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.room_types.create') }}'">
                                     Tạo mới
                                 </button>
 
@@ -59,57 +59,54 @@
                     <div class="lh-card-content card-default">
                         <div class="booking-table">
                             <div class="table-responsive">
-                                <table id="booking_table" class="table">
-                                    <thead>
-
+                                <table id="booking_table" class="table table-striped table-hover">
+                                    <thead class="table-dark">
                                         <tr>
                                             <th>ID</th>
-                                            <th>Name</th>
-                                            <th>Address</th>
-                                            <th>City</th>
-                                            <th>Description</th>
-                                            <th>Price form</th>
-                                            <th>Price to</th>
-                                            <th>Action</th>
+                                            <th>Tên Loại phòng</th>
+                                            <th>Trạng thái</th>
+                                            <th>Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($listHotel as $index=>$item)
+                                        @foreach ($room_types as $index => $item)
                                         <tr>
-                                            <td class="token">{{ $index+1 }}</td>
-                                            <td><span class="name">{{ $item->name }}</span>
-                                            </td>
-                                            <td>{{ $item->address }}</td>
-                                            <td>{{ $item->city }}</td>
-                                            <td>{{ $item->description }}</td>
-                                            <td class="active">$ {{ $item->price_min }}</td>
-                                            <td>${{ $item->price_max }}</td>
+                                            <td class="text-center">{{ $index + 1 }}</td>
+                                            <td>{{ $item->name }}</td>
                                             <td>
-                                                <div class="d-flex justify-content-center">
-                                                    <button type="button" class="btn btn-outline-success"><i
-                                                            class="ri-information-line"></i></button>
-                                                    <button type="button"
-                                                        class="btn btn-outline-success dropdown-toggle dropdown-toggle-split"
-                                                        data-bs-toggle="dropdown" aria-haspopup="true"
-                                                        aria-expanded="false" data-display="static">
-                                                        <span class="sr-only"><i
-                                                                class="ri-settings-3-line"></i></span>
-                                                    </button>
-                                                    <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="{{ route('admin.hotels.edit', $item->id) }}">Edit</a>
-                                                        <form action="{{ route('admin.hotels.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Bạn có muốn xóa không?');">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="dropdown-item">Delete</button>
-                                                        </form>
+                                                <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">
+                                                    {{ $item->is_active ? 'Hoạt động' : 'Không hoạt động' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
 
-                                                    </div>
+                                                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                                        <i class="ri-settings-3-line"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item" href="{{ route('admin.room_types.edit', $item->id) }}">
+                                                                <i class="ri-edit-line"></i> Edit
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <form action="{{ route('admin.room_types.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Bạn có muốn xóa không?');">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="dropdown-item text-danger">
+                                                                    <i class="ri-delete-bin-line"></i> Delete
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                    </ul>
                                                 </div>
                                             </td>
                                         </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
+
                             </div>
                         </div>
                     </div>

@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('booking_promotions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('booking_id')->constrained('bookings')->onDelete('cascade');
-            $table->foreignId('promotion_id')->constrained('promotions')->onDelete('cascade');
-
+            $table->bigInteger('booking_id');
+            $table->bigInteger('promotion_id');
             $table->timestamps();
+            $table->softDeletes();//dekete_at xóa mềm
         });
     }
 

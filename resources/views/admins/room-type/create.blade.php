@@ -5,7 +5,7 @@
         <!-- Page title & breadcrumb -->
         <div class="lh-page-title">
             <div class="lh-breadcrumb">
-                <h5>Hotel</h5>
+                <h5>Loại phòng</h5>
                 <ul>
                     <li><a href="index.html">Trang chủ</a></li>
                     <li>Dashboard</li>
@@ -43,39 +43,48 @@
                         </div>
                     </div>
                     <div class="lh-card-content card-booking">
-                        <form action="{{ route('admin.hotels.update', $hotel->id) }}" method="POST">
+                        <form action="{{ route('admin.room_types.store') }}" method="POST">
+
                             @csrf
-                            @method('PUT')
                             <div class="row mtb-m-12">
-                                <div class="col-md-6 col-sm-12">
+                                <div class="col-md-12 col-sm-12">
                                     <div class="lh-user-detail">
                                         <ul>
-                                            <li><strong>Name *: </strong>
+                                            <li><strong>Tên loại phòng *: </strong>
                                                 <div class="form-group">
-                                                    <input type="text" name="name" placeholder="Enter name" value="{{ $hotel->name  }}">
+                                                    <input type="text" name="name" placeholder="Tên loại phòng" class="form-control" value="{{ old('name') }}">
                                                     @error('name')
                                                         <p class="text-danger">{{ $message }}</p>
                                                     @enderror
                                                 </div>
                                             </li>
-                                            <li><strong>Address : </strong>
+                                            <li><strong>Trạng thái *: </strong>
                                                 <div class="form-group">
-                                                    <input type="text" name="address" placeholder="Enter address" value="{{ $hotel->address }}">
+                                                    <select name="is_active" class="form-control">
+                                                        <option value="1" {{ old('is_active') == 1 ? 'selected' : '' }}>Hoạt động</option>
+                                                        <option value="0" {{ old('is_active') == 0 ? 'selected' : '' }}>Không hoạt động</option>
+                                                    </select>
+                                                    @error('is_active')
+                                                        <p class="text-danger">{{ $message }}</p>
+                                                    @enderror
                                                 </div>
                                             </li>
                                         </ul>
                                     </div>
+
                                 </div>
-                                <div class="col-md-6 col-sm-12">
+
+
+                                {{-- <div class="col-md-6 col-sm-12">
                                     <div class="lh-user-detail">
                                         <ul>
                                             <li><strong>City : </strong>
                                                 <div class="form-group">
-                                                    <input name="city" type="text" class="form-control" placeholder="Enter city" value="{{ $hotel->city }}">
+                                                    <input name="city" type="text" class="form-control" placeholder="Enter city">
                                                 </div>
                                             </li>
                                             <li><strong>Description : </strong>
-                                                <input name="description" type="text" class="form-control" placeholder="Enter description" value="{{ $hotel->description }}">
+                                                <input name="description" type="text" class="form-control" placeholder="Enter description">
                                             </li>
                                         </ul>
                                     </div>
@@ -84,7 +93,7 @@
                                     <div class="lh-user-detail">
                                         <ul>
                                             <li><strong>Price form *: </strong>
-                                                <input name="price_min" type="text" class="form-control" placeholder="Enter price form" value="{{ $hotel->price_min }}">
+                                                <input name="price_min" type="text" class="form-control" placeholder="Enter price form">
                                                 @error('price_min')
                                                 <p class="text-danger">{{ $message }}</p>
                                                 @enderror
@@ -96,15 +105,15 @@
                                     <div class="lh-user-detail">
                                         <ul>
                                             <li><strong>Price to *: </strong>
-                                                <input name="price_max" type="text" class="form-control" placeholder="Enter price to" value="{{ $hotel->price_max }}">
+                                                <input name="price_max" type="text" class="form-control" placeholder="Enter price to">
                                                 @error('price_max')
                                                 <p class="text-danger">{{ $message }}</p>
                                             @enderror
                                             </li>
                                         </ul>
                                     </div>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
+                                </div> --}}
+                                <div class="col-md-12 col-sm-12">
                                     <div class="lh-user-detail">
                                         <ul>
                                             <li>

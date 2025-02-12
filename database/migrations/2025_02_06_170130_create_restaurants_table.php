@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('chef');
             $table->timestamps();
+            $table->softDeletes();//dekete_at xóa mềm
         });
     }
 

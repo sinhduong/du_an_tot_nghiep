@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('content'); // Cho phép nội dung dài
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending'); // Trạng thái liên hệ
             $table->timestamps();
+            $table->softDeletes();//delete_at xóa mềm
         });
     }
 
