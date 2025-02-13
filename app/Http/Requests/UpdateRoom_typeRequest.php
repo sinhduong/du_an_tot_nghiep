@@ -22,14 +22,21 @@ class UpdateRoom_typeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255'
+            'name' => 'required|string|min:3|max:100|regex:/^[\pL\s\d]+$/u|unique:room_types,name',
+            'is_active' => 'required|boolean',
         ];
     }
     public function messages():array
     {
         return [
-            'name.required'=>'Loại phòng không được bỏ trống',
-            'name.max'=>'Loại phòng không được vượt quá 255 ký tự',
+            'name.required' => 'Tên loại phòng không được để trống.',
+            'name.string' => 'Tên loại phòng phải là chuỗi ký tự.',
+            'name.min' => 'Tên loại phòng phải có ít nhất 3 ký tự.',
+            'name.max' => 'Tên loại phòng không được vượt quá 100 ký tự.',
+            'name.regex' => 'Tên loại phòng chỉ được chứa chữ cái, số và khoảng trắng.',
+            'name.unique' => 'Tên loại phòng đã tồn tại.',
+            'is_active.required' => 'Vui lòng chọn trạng thái.',
+            'is_active.boolean' => 'Trạng thái không hợp lệ.',
         ];
     }
 }

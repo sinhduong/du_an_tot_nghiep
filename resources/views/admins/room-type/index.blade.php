@@ -91,7 +91,7 @@
                                                             </a>
                                                         </li>
                                                         <li>
-                                                            <form action="{{ route('admin.room_types.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Bạn có muốn xóa không?');">
+                                                            <form action="{{ route('admin.room_types.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Bạn có muốn xóa mềm không?');">
                                                                 @csrf
                                                                 @method('DELETE')
                                                                 <button type="submit" class="dropdown-item text-danger">
