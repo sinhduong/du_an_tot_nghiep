@@ -82,6 +82,7 @@
                 <td>
                     <form action="{{ route('admin.room_types.restore', $item->id) }}" method="POST" style="display:inline;">
                         @csrf
+                        @method('PATCH')
                         <button type="submit" class="btn btn-success">Khôi phục</button>
                     </form>
                     <form action="{{ route('admin.room_types.forceDelete', $item->id) }}" method="POST" style="display:inline;">

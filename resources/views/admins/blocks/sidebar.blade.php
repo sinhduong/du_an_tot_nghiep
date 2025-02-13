@@ -48,7 +48,7 @@
                 </li>
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
-                        <i class="ri-shield-user-line"></i><span class="condense">Quản lý Loại phòng<i
+                        <i class="ri-home-8-line"></i><span class="condense">Quản lý Loại phòng<i
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
 
@@ -82,13 +82,27 @@
                     </a>
                 </li>
 
+                <li class="lh-sb-item-separator"></li>
+                <li class="lh-sb-title condense">Pages</li>
+                <li class="lh-sb-item sb-drop-item">
+                    <a href="javascript:void(0)" class="lh-drop-toggle">
+                        <i class="ri-pages-fill"></i><span class="condense">Quản lý page<i
+                                class="drop-arrow ri-arrow-down-s-line"></i></span></a>
+                    <ul class="lh-sb-drop condense">
 
+                        <li><a href="team-add.html" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Trang liên hệ</a></li>
+                        <li><a href="team-add.html" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Trang liên hệ</a></li>
+
+                    </ul>
+                </li>
                 <li class="lh-sb-item-separator"></li>
                 <li class="lh-sb-title condense">Settings</li>
                 <li class="lh-sb-item">
                     <a href="role.html" class="lh-page-link">
                         <i class="ri-magic-line"></i><span class="condense"><span
-                                class="hover-title">Quyền</span></span></a>
+                                class="hover-title"></span></span></a>
                 </li>
             </ul>
         </div>
