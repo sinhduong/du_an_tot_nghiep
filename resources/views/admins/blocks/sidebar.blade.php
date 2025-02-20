@@ -43,7 +43,7 @@
                 </li>
                 <li class="lh-sb-item">
                     <a href="guest-details.html" class="lh-page-link">
-                        <i class="ri-user-search-line"></i><span class="condense"><span class="hover-title">chi tiết khách hàng</span> </span>
+                        <i class="ri-user-search-line"></i><span class="condense"><span class="hover-title">Chi tiết khách hàng</span> </span>
                     </a>
                 </li>
                 <li class="lh-sb-item sb-drop-item">
@@ -58,6 +58,35 @@
                                     class="ri-home-8-line"></i>Thêm mới loại phòng</a></li>
                         <li><a href="{{ route('admin.room_types.trashed') }}" class="lh-page-link drop"><i
                                     class="ri-home-8-line"></i>Danh sách loại phòng đã xóa mềm</a></li>
+                    </ul>
+                </li>
+                <li class="lh-sb-item sb-drop-item">
+                    <a href="javascript:void(0)" class="lh-drop-toggle">
+                        <i class="ri-home-8-line"></i><span class="condense">Quản lý Quy Tắc Và </br>
+                             Quy Định<i
+                                class="drop-arrow ri-arrow-down-s-line"></i></span></a>
+                    <ul class="lh-sb-drop condense">
+
+                        <li><a href="{{ route('admin.rule-regulations.index') }}" class="lh-page-link drop"><i
+                                    class="ri-home-8-line"></i>Danh sách Quy Tắc</a></li>
+                        <li><a href="{{ route('admin.rule-regulations.create') }}" class="lh-page-link drop"><i
+                                    class="ri-home-8-line"></i>Thêm mới Quy Tắc</a></li>
+                        <li><a href="{{ route('admin.rule-regulations.trashed') }}" class="lh-page-link drop"><i
+                                    class="ri-home-8-line"></i>Danh sách Quy Tắc </br> đã xóa mềm</a></li>
+                    </ul>
+                </li>
+                <li class="lh-sb-item sb-drop-item">
+                    <a href="javascript:void(0)" class="lh-drop-toggle">
+                        <i class="ri-home-8-line"></i><span class="condense">Quản lý Tiện Ích<i
+                                class="drop-arrow ri-arrow-down-s-line"></i></span></a>
+                    <ul class="lh-sb-drop condense">
+
+                        <li><a href="{{ route('admin.amenities.index') }}" class="lh-page-link drop"><i
+                                    class="ri-home-8-line"></i>Danh sách Tiện Ích</a></li>
+                        <li><a href="{{ route('admin.amenities.create') }}" class="lh-page-link drop"><i
+                                    class="ri-home-8-line"></i>Thêm mới Tiện Ích</a></li>
+                        <li><a href="{{ route('admin.amenities.trashed') }}" class="lh-page-link drop"><i
+                                    class="ri-home-8-line"></i>Danh sách Tiện Ích </br> đã xóa mềm</a></li>
                     </ul>
                 </li>
 
