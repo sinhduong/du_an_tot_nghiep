@@ -17,6 +17,8 @@ return new class extends Migration
             $table->date('check_in');
             $table->date('check_out');
             $table->decimal('total_price', 10, 2);
+            $table->integer('total_guests'); // Tổng số khách đặt phòng
+            $table->integer('children_count')->default(0); // Số trẻ em
             $table->enum('status', [
                 'pending_confirmation', //chờ xác nhận
                 'confirmed', //đã xác nhận

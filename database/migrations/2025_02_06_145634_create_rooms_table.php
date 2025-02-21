@@ -16,9 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('room_number')->unique(); // Số phòng riêng biệt
             $table->decimal('price', 20, 2)->nullable();
-            $table->tinyInteger('capacity'); // Số người tối đa
-            $table->integer('adults')->default(1); // Số người lớn
-            $table->integer('children')->default(0); // Số trẻ em
+            $table->integer('max_capacity'); // Tổng số người tối đa
+            $table->integer('children_free_limit')->default(0); // Số trẻ em miễn phí
             $table->string('description')->nullable();
             $table->enum('status', ['available', 'booked', 'maintenance'])->default('available');
             $table->bigInteger('room_type_id');
