@@ -9,18 +9,19 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('reviews', function (Blueprint $table) {
-            $table->id();
-            $table->integer('rating');
-            $table->text('comment');
-            $table->bigInteger('user_id');
-            $table->bigInteger('room_id');
-            $table->timestamps();
-            $table->softDeletes();//dekete_at xóa mềm
-        });
-    }
+    public function up()
+{
+    Schema::create('reviews', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        $table->foreignId('room_id')->constrained()->onDelete('cascade');
+        $table->integer('rating'); //kiểm tra trong model
+        $table->text('comment')->nullable();
+        $table->text('response')->nullable();
+        $table->timestamps();
+    });
+}
+
 
     /**
      * Reverse the migrations.

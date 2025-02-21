@@ -14,14 +14,20 @@ return new class extends Migration
         Schema::create('staffs', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('avatar');
+            $table->string('avatar')->nullable();
             $table->date('birthday')->nullable();
-            $table->string('phone');
-            $table->string('role');
+            $table->string('phone')->unique();
+            $table->string('address');
             $table->string('email')->unique();
             $table->enum('status', ['active', 'inactive', 'on_leave']);
+            $table->enum('role', ['admin', 'manager', 'employee']);
             $table->decimal('salary', 10, 2);
-            $table->bigInteger('room_id');
+            $table->date('date_hired');
+            $table->string('insurance_number')->unique()->nullable();
+            $table->string('contract_type');
+            $table->date('contract_start');
+            $table->date('contract_end')->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();//dekete_at xóa mềm
         });
