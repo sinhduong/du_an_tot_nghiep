@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoomTypeController;
 use App\Http\Controllers\Client\HomeController;
@@ -68,6 +69,18 @@ Route::prefix('admin')
                 Route::get('{id}/edit', [RoomController::class, 'edit'])->name('edit');
                 Route::put('{id}/update', [RoomController::class, 'update'])->name('update');
                 Route::delete('{id}/destroy', [RoomController::class, 'destroy'])->name('destroy');
+            });
+
+        Route::prefix('bookings')
+            ->as('bookings.')
+            ->group(function () {
+                Route::get('/',                 [BookingController::class, 'index'])->name('index');
+                Route::get('/create',           [BookingController::class, 'create'])->name('create');
+                Route::post('/store',           [BookingController::class, 'store'])->name('store');
+                Route::get('{id}/show',         [BookingController::class, 'show'])->name('show');
+                Route::get('{id}/edit',         [BookingController::class, 'edit'])->name('edit');
+                Route::put('{id}/update',       [BookingController::class, 'update'])->name('update');
+                Route::delete('{id}/destroy',   [BookingController::class, 'destroy'])->name('destroy');
             });
     });
 
