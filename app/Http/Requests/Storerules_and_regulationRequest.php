@@ -11,7 +11,7 @@ class Storerules_and_regulationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
