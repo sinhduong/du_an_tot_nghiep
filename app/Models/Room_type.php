@@ -9,9 +9,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Room_type extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable=[
-        'name',
-        'is_active'
-    ];
-
+    protected $table = 'room_types';
+    protected $fillable = ['name', 'is_active', 'manager_id'];
+    public function manager()
+    {
+        return $this->belongsTo(Staff::class, 'manager_id');
+    }
 }
