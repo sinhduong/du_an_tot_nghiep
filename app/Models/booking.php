@@ -11,9 +11,12 @@ class Booking extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = [
+        'booking_code',
         'check_in',
         'check_out',
         'total_price',
+        'total_guests',
+        'children_count',
         'status',
         'user_id',
         'room_id',

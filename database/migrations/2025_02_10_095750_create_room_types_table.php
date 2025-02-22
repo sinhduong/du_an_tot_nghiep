@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->boolean('is_active')->default(true);
+            $table->foreignId('manager_id')->nullable()->constrained('staffs')->onDelete('set null');
             $table->timestamps();
             $table->softDeletes();//delete_at xóa mềm
         });

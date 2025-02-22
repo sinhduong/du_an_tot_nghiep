@@ -17,7 +17,13 @@ class ReviewFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_id' => \App\Models\User::factory(),
+            'room_id' => \App\Models\Room::factory(),
+            'rating' => $this->faker->numberBetween(1, 5),
+            'comment' => $this->faker->sentence,
+            'response' => null, // Không có phản hồi
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 }
