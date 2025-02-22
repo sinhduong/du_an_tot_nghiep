@@ -15,7 +15,7 @@
                     </a>
                 {{-- </a> --}}
                 </li>
-               
+
 
                 <li class="lh-sb-item-separator"></li>
                 <li class="lh-sb-item sb-drop-item">
@@ -118,10 +118,10 @@
                     <a href="javascript:void(0)" class="lh-drop-toggle">
                         <i class="ri-contacts-book-line"></i><span class="condense">Quản lý đặt phòng <i
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
-                    {{-- <ul class="lh-sb-drop condense">
+                    <ul class="lh-sb-drop condense">
                         <li><a href="{{route('admin.bookings.index')  }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Danh sách đặt phòng</a></li>
-                    </ul> --}}
+                    </ul>
                 </li>
                 <li class="lh-sb-item-separator"></li>
                 <li class="lh-sb-item sb-drop-item">
