@@ -53,11 +53,11 @@
                     <ul class="lh-sb-drop condense">
 
                         <li><a href="{{ route('admin.room_types.index') }}" class="lh-page-link drop"><i
-                                    class="ri-home-8-line"></i>Danh sách Loại phòng</a></li>
+                                    class="ri-git-commit-line"></i>Danh sách Loại phòng</a></li>
                         <li><a href="{{ route('admin.room_types.create') }}" class="lh-page-link drop"><i
-                                    class="ri-home-8-line"></i>Thêm mới loại phòng</a></li>
+                                    class="ri-git-commit-line"></i>Thêm mới loại phòng</a></li>
                         <li><a href="{{ route('admin.room_types.trashed') }}" class="lh-page-link drop"><i
-                                    class="ri-home-8-line"></i>Danh sách loại phòng đã xóa mềm</a></li>
+                                    class="ri-git-commit-line"></i>Danh sách loại phòng đã xóa mềm</a></li>
                     </ul>
                 </li>
                 <li class="lh-sb-item sb-drop-item">
@@ -68,11 +68,11 @@
                     <ul class="lh-sb-drop condense">
 
                         <li><a href="{{ route('admin.rule-regulations.index') }}" class="lh-page-link drop"><i
-                                    class="ri-home-8-line"></i>Danh sách Quy Tắc</a></li>
+                                    class="ri-git-commit-line"></i>Danh sách Quy Tắc</a></li>
                         <li><a href="{{ route('admin.rule-regulations.create') }}" class="lh-page-link drop"><i
-                                    class="ri-home-8-line"></i>Thêm mới Quy Tắc</a></li>
+                                    class="ri-git-commit-line"></i>Thêm mới Quy Tắc</a></li>
                         <li><a href="{{ route('admin.rule-regulations.trashed') }}" class="lh-page-link drop"><i
-                                    class="ri-home-8-line"></i>Danh sách Quy Tắc </br> đã xóa mềm</a></li>
+                                    class="ri-git-commit-line"></i>Danh sách Quy Tắc </br> đã xóa mềm</a></li>
                     </ul>
                 </li>
                 <li class="lh-sb-item sb-drop-item">
@@ -82,11 +82,11 @@
                     <ul class="lh-sb-drop condense">
 
                         <li><a href="{{ route('admin.amenities.index') }}" class="lh-page-link drop"><i
-                                    class="ri-home-8-line"></i>Danh sách Tiện Ích</a></li>
+                                    class="ri-git-commit-line"></i>Danh sách Tiện Ích</a></li>
                         <li><a href="{{ route('admin.amenities.create') }}" class="lh-page-link drop"><i
-                                    class="ri-home-8-line"></i>Thêm mới Tiện Ích</a></li>
+                                    class="ri-git-commit-line"></i>Thêm mới Tiện Ích</a></li>
                         <li><a href="{{ route('admin.amenities.trashed') }}" class="lh-page-link drop"><i
-                                    class="ri-home-8-line"></i>Danh sách Tiện Ích </br> đã xóa mềm</a></li>
+                                    class="ri-git-commit-line"></i>Danh sách Tiện Ích </br> đã xóa mềm</a></li>
                     </ul>
                 </li>
 
