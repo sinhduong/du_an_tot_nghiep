@@ -60,7 +60,7 @@
                                                 <th>Số sao</th>
                                                 <th>Bình luận</th>
                                                 <th>Phản hồi</th>
-                                                <th>Chức năng</th>
+                                                <th>Thao tác</th>
                                             </tr>
                                         </thead>
                                         <tbody>
