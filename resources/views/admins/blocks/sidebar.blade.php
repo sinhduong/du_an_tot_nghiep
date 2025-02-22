@@ -15,22 +15,7 @@
                     </a>
                 {{-- </a> --}}
                 </li>
-                <li class="lh-sb-item-separator"></li>
-                <li class="lh-sb-item sb-drop-item">
-                    <a href="javascript:void(0)" class="lh-drop-toggle">
-                        <i class="ri-shield-user-line"></i><span class="condense">Quản lý tài khoản<i
-                                class="drop-arrow ri-arrow-down-s-line"></i></span></a>
-                    <ul class="lh-sb-drop condense">
-                        <li><a href="team-add.html" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Tài khoản khách hàng</a></li>
-                        <li><a href="team-update.html" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Tài khoản quản trị</a></li>
-                        <li><a href="team-profile.html" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Tài khoản cá nhân</a></li>
-                        <li><a href="team-list.html" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Danh sách nhân viên</a></li>
-                    </ul>
-                </li>
+               
 
                 <li class="lh-sb-item-separator"></li>
                 <li class="lh-sb-item sb-drop-item">

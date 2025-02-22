@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Room_type;
+use App\Models\RoomType;
 use App\Http\Requests\StoreRoom_typeRequest;
 use App\Http\Requests\UpdateRoom_typeRequest;
 
@@ -14,7 +14,7 @@ class RoomTypeController extends Controller
     public function index()
     {
         $title = 'Loại phòng';
-        $room_types = Room_type::orderBy('id', 'desc')->get();
+        $room_types = RoomType::orderBy('id', 'desc')->get();
         return view('admins.room-type.index', compact('title', 'room_types'));
     }
 
@@ -38,7 +38,7 @@ class RoomTypeController extends Controller
         $data = $request->except('_token');
 
         // Thêm loại phòng vào database
-        Room_type::create($data);
+        RoomType::create($data);
     }
 
     // Chuyển hướng về danh sách với thông báo thành công
@@ -49,7 +49,7 @@ class RoomTypeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Room_type $room_type)
+    public function show(RoomType $room_type)
     {
         //
     }
@@ -60,7 +60,7 @@ class RoomTypeController extends Controller
     public function edit(string $id)
     {
         $title='Sửa loại phòng';
-        $room_types=Room_type::findOrfail($id);
+        $room_types=RoomType::findOrfail($id);
         return  view('admins.room-type.edit',compact('room_types','title'));
     }
 
@@ -70,7 +70,7 @@ class RoomTypeController extends Controller
     public function update(UpdateRoom_typeRequest $request, string $id)
     {
         // Tìm loại phòng theo ID, nếu không có sẽ báo lỗi 404
-        $room_type = Room_type::findOrFail($id);
+        $room_type = RoomType::findOrFail($id);
 
         // Lấy dữ liệu từ request, loại bỏ _token và _method
         $data = $request->except('_token', '_method');
@@ -88,7 +88,7 @@ class RoomTypeController extends Controller
      */
     public function destroy($id)
     {
-        $room_type = Room_type::findOrFail($id);
+        $room_type = RoomType::findOrFail($id);
         $room_type->delete(); // Xóa mềm
 
         return redirect()->route('admin.room_types.index')->with('success', 'Loại phòng đã được xóa mềm');
@@ -99,20 +99,20 @@ class RoomTypeController extends Controller
 public function trashed()
 {
     $title = 'Loại phòng đã xóa';
-    $room_types = Room_type::onlyTrashed()->get();
+    $room_types = RoomType::onlyTrashed()->get();
     return view('admins.room-type.trashed', compact('title', 'room_types'));
 }
 
 public function restore($id)
 {
-    $room_type = Room_type::onlyTrashed()->findOrFail($id);
+    $room_type = RoomType::onlyTrashed()->findOrFail($id);
     $room_type->restore(); // Khôi phục
     return redirect()->route('admin.room_types.index')->with('success', 'Khôi phục loại phòng thành công');
 }
 
 public function forceDelete($id)
 {
-    $room_type = Room_type::onlyTrashed()->findOrFail($id);
+    $room_type = RoomType::onlyTrashed()->findOrFail($id);
     $room_type->forceDelete(); // Xóa vĩnh viễn
     return redirect()->route('admin.room_types.trashed')->with('success', 'Xóa vĩnh viễn loại phòng thành công');
 }

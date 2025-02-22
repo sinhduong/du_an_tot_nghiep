@@ -13,14 +13,25 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
+            $table->string('booking_code')->unique()->nullable();
             $table->date('check_in');
             $table->date('check_out');
             $table->decimal('total_price', 10, 2);
-            $table->enum('status', ['pending', 'confirmed', 'cancelled']);
+            $table->integer('total_guests'); // Tổng số khách đặt phòng
+            $table->integer('children_count')->default(0); // Số trẻ em
+            $table->enum('status', [
+                'pending_confirmation', //chờ xác nhận
+                'confirmed', //đã xác nhận
+                'paid', //đã thanh toán
+                'check_in', //đã vào
+                'check_out', //đã ra
+                'cancelled', //dã hủy
+                'refunded' //được hoàn tiền
+            ])->default('pending_confirmation');
             $table->bigInteger('user_id');
             $table->bigInteger('room_id');
             $table->timestamps();
-            $table->softDeletes();//dekete_at xóa mềm
+            $table->softDeletes(); //dekete_at xóa mềm
         });
     }
 

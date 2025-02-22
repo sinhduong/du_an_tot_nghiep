@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStaffRequest;
 use App\Http\Requests\UpdateStaffRequest;
-use App\Models\Room_type;
+use App\Models\Room;
 use App\Models\Staff;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -28,7 +28,7 @@ class StaffController extends Controller
     public function create()
     {
         $title = 'Thêm nhân viên';
-        $rooms = Room_type::all(); // Lấy tất cả phòng
+        $rooms = Room::all(); // Lấy tất cả phòng
         return  view('admins.staffs.create', compact('title', 'rooms'));
     }
 
@@ -73,7 +73,7 @@ class StaffController extends Controller
             'contract_end'          => ['nullable', 'date', 'after_or_equal:contract_start'],
             'notes'                 => ['nullable', 'string', 'max:65535'],
             'room_ids'              => ['required', 'array'],
-            'room_ids.*'            => 'exists:room_types,id'
+            'room_ids.*'            => 'exists:Rooms,id'
 
         ]);
 
@@ -87,7 +87,7 @@ class StaffController extends Controller
 
             // Kiểm tra nếu room_ids tồn tại thì mới cập nhật manager_id
             if (isset($data['room_ids']) && count($data['room_ids']) > 0) {
-                Room_type::whereIn('id', $data['room_ids'])->update(['manager_id' => $staff->id]);
+                Room::whereIn('id', $data['room_ids'])->update(['manager_id' => $staff->id]);
             }
 
             return redirect()
@@ -109,7 +109,7 @@ class StaffController extends Controller
      */
     public function show(Staff $staff)
     {
-        $rooms = Room_type::all();
+        $rooms = Room::all();
         return view('admins.staffs.show', compact('staff', 'rooms'));
     }
 
@@ -119,7 +119,7 @@ class StaffController extends Controller
      */
     public function edit(Staff $staff)
     {
-        $rooms = Room_type::all(); // Lấy tất cả phòng
+        $rooms = Room::all(); // Lấy tất cả phòng
         return  view('admins.staffs.edit', compact('staff', 'rooms'));
     }
 
@@ -164,39 +164,32 @@ class StaffController extends Controller
             'contract_end'          => ['nullable', 'date', 'after_or_equal:contract_start'],
             'notes'                 => ['nullable', 'string', 'max:65535'],
             'room_ids'              => ['required', 'array'],
-            'room_ids.*'            => 'exists:room_types,id'
+            'room_ids.*'            => 'exists:Rooms,id'
 
         ]);
         try {
-
             if ($request->hasFile('avatar')) {
-                $data['avatar'] = Storage::put('staffs', $request->file('avatar'));
+
+                // dd(Storage::put('staffs', $request->file('avatar')));
+                $data['avatar'] = Storage::disk('public')->put('staffs', $request->file('avatar'));
+
+                if (
+                    isset($staff->avatar) && Storage::exists($staff->avatar)
+                ) {
+                    Storage::delete($staff->avatar);
+                }
             }
-
-            $currentAvatar = $staff->avatar;
-
             $staff->update($data);
 
-            if (
-                $request->hasFile('avatar')
-                && !empty($currentAvatar)
-                && Storage::exists($currentAvatar)
-            ) {
-                Storage::delete($currentAvatar);
-            }
 
             // Kiểm tra nếu room_ids tồn tại thì mới cập nhật manager_id
             if (isset($data['room_ids']) && count($data['room_ids']) > 0) {
-                Room_type::whereIn('id', $data['room_ids'])->update(['manager_id' => $staff->id]);
+                Room::whereIn('id', $data['room_ids'])->update(['manager_id' => $staff->id]);
             }
 
             return back()->with('success', 'Nhân viên đã được cập nhật thành công!');
         } catch (\Throwable $th) {
-
-            if (!empty($data['avatar']) && Storage::exists($data['avatar'])) {
-                Storage::delete($data['avatar']);
-            }
-
+            dd($th);
             return back()
                 ->with('success', true)
                 ->with('error', $th->getMessage());
@@ -215,13 +208,11 @@ class StaffController extends Controller
             return redirect()
                 ->route('admin.staffs.index')
                 ->with('success', 'Bạn đã xóa thành công!');
-
         } catch (\Throwable $th) {
 
             return back()
                 ->with('success', true)
                 ->with('error', $th->getMessage());
-
         }
     }
 }
