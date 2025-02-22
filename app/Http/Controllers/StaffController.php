@@ -189,9 +189,11 @@ class StaffController extends Controller
 
             return back()->with('success', 'Nhân viên đã được cập nhật thành công!');
         } catch (\Throwable $th) {
-            dd($th);
+            if (!empty($data['avatar']) && Storage::exists($data['avatar'])) {
+                Storage::delete($data['avatar']);
+            }
             return back()
-                ->with('success', true)
+                ->with('success', false)
                 ->with('error', $th->getMessage());
         }
     }
