@@ -29,6 +29,6 @@ class Staff extends Model
     ];
     public function rooms()
     {
-        return $this->hasMany(RoomType::class, 'manager_id');
+        return $this->hasMany(Room::class, 'manager_id');
     }
 }

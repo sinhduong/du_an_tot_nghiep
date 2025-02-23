@@ -21,13 +21,17 @@ class Booking extends Model
         'user_id',
         'room_id',
     ];
-    public function user(){
-        return $this->belongsTo(User::class,'user_id');
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
-    public function room(){
-        return $this->belongsTo(Room::class,'room_id');
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'booking_id');
     }
-   public function payments(){
-    return $this->hasMany(Payment::class,'booking_id');
-   }
+
+    public function rooms()
+    {
+        return $this->belongsToMany(Room::class, 'booking_rooms', 'booking_id', 'room_id');
+    }
 }
