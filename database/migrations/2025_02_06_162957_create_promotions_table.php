@@ -13,13 +13,16 @@ return new class extends Migration
     {
         Schema::create('promotions', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->string('code')->unique();
-            $table->string('description')->nullable();
-            $table->enum('type', ['percentage', 'fixed_amount']); // Giới hạn loại khuyến mãi
-            $table->decimal('value', 10, 2);
-            $table->date('issue_date');
-            $table->date('expiry_date');
-            $table->integer('usage_limit')->default(1); // Có thể thêm default
+            $table->decimal('value');
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
+            $table->integer('min_booking_amount');
+            $table->integer('max_discount_value');
+            $table->integer('quantity');
+            $table->string('type');
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
             $table->softDeletes();//dekete_at xóa mềm
         });
