@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AmenityController;
+use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\RulesAndRegulationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoomController;
@@ -154,6 +155,9 @@ Route::prefix('admin')
                 Route::put('{id}/update',       [BookingController::class, 'update'])->name('update');
                 Route::delete('{id}/destroy',   [BookingController::class, 'destroy'])->name('destroy');
             });
+
+
+        Route::resource('promotions', PromotionController::class);
     });
 
 
