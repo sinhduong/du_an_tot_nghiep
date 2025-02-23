@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\rules_and_regulation;
+use App\Models\RulesAndRegulation;
 use App\Http\Requests\Storerules_and_regulationRequest;
 use App\Http\Requests\Updaterules_and_regulationRequest;
 
@@ -14,7 +14,7 @@ class RulesAndRegulationController extends Controller
     public function index()
     {
         $title = 'Các Quy Định ';
-        $room_rule = rules_and_regulation::orderBy('id', 'desc')->get();
+        $room_rule = RulesAndRegulation::orderBy('id', 'desc')->get();
         return view('admins.rule-regulation.index', compact('title', 'room_rule'));
     }
 
@@ -38,7 +38,7 @@ class RulesAndRegulationController extends Controller
             $data = $request->except('_token');
 
             // Thêm loại phòng vào database
-            rules_and_regulation::create($data);
+            RulesAndRegulation::create($data);
         }
 
         // Chuyển hướng về danh sách với thông báo thành công
@@ -60,7 +60,7 @@ class RulesAndRegulationController extends Controller
     public function edit(string $id)
     {
         $title = 'Sửa loại phòng';
-        $room_types = rules_and_regulation::findOrfail($id);
+        $room_types = RulesAndRegulation::findOrfail($id);
         return  view('admins.rule-regulation.edit', compact('room_types', 'title'));
     }
 
@@ -70,7 +70,7 @@ class RulesAndRegulationController extends Controller
     public function update(Updaterules_and_regulationRequest $request, string $id)
     {
         // Tìm loại phòng theo ID, nếu không có sẽ báo lỗi 404
-        $room_type = rules_and_regulation::findOrFail($id);
+        $room_type = RulesAndRegulation::findOrFail($id);
 
         // Lấy dữ liệu từ request, loại bỏ _token và _method
         $data = $request->except('_token', '_method');
@@ -88,7 +88,7 @@ class RulesAndRegulationController extends Controller
     //      */
     public function destroy($id)
     {
-        $room_type = rules_and_regulation::findOrFail($id);
+        $room_type = RulesAndRegulation::findOrFail($id);
         $room_type->delete(); // Xóa mềm
 
         return redirect()->route('admin.rule-regulations.index')->with('success', 'Loại phòng đã được xóa mềm');
@@ -99,20 +99,20 @@ class RulesAndRegulationController extends Controller
     public function trashed()
     {
         $title = 'Loại phòng đã xóa';
-        $room_types = rules_and_regulation::onlyTrashed()->get();
+        $room_types = RulesAndRegulation::onlyTrashed()->get();
         return view('admins.rule-regulation.trashed', compact('title', 'room_types'));
     }
 
     public function restore($id)
     {
-        $room_type = rules_and_regulation::onlyTrashed()->findOrFail($id);
+        $room_type = RulesAndRegulation::onlyTrashed()->findOrFail($id);
         $room_type->restore(); // Khôi phục
         return redirect()->route('admin.rule-regulations.index')->with('success', 'Khôi phục loại phòng thành công');
     }
 
     public function forceDelete($id)
     {
-        $room_type = rules_and_regulation::onlyTrashed()->findOrFail($id);
+        $room_type = RulesAndRegulation::onlyTrashed()->findOrFail($id);
         $room_type->forceDelete(); // Xóa vĩnh viễn
         return redirect()->route('admin.rule-regulations.trashed')->with('success', 'Xóa vĩnh viễn loại phòng thành công');
     }

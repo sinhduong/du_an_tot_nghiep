@@ -15,7 +15,7 @@ class BookingController extends Controller
     public function index()
     {
         $title = 'Đơn đặt phòng mới nhất';
-        $bookings = Booking::with('user', 'room')->latest()->paginate(10);
+        $bookings = Booking::with('user', 'rooms')->latest()->paginate(10);
         return view('admins.bookings.index', compact('bookings', 'title'));
     }
 
@@ -39,9 +39,9 @@ class BookingController extends Controller
      */
     public function show(string $id)
     {
-        $booking=Booking::with('user','room.roomType','payments')->findOrFail($id);
-        $title='Chi tiết đơn đặt phòng';
-        return view('admins.bookings.show',compact('title','booking'));
+        $booking = Booking::with('user', 'rooms', 'payments')->findOrFail($id);
+        $title = 'Chi tiết đơn đặt phòng';
+        return view('admins.bookings.show', compact('title', 'booking'));
     }
 
     /**
