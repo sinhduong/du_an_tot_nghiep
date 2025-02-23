@@ -129,9 +129,9 @@
                         <i class="ri-contacts-book-line"></i><span class="condense">Quản lý khuyến mãi  <i
                             class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
-                        <li><a href="" class="lh-page-link drop"><i
-                            class="ri-git-commit-line"></i>Danh sách đặt phòng</a></li>
-                        <li><a href="" class="lh-page-link drop"><i
+                        <li><a href="{{ route('admin.promotions.index') }}" class="lh-page-link drop"><i
+                            class="ri-git-commit-line"></i>Danh sách khuyến</a></li>
+                        <li><a href="{{ route('admin.promotions.create') }}" class="lh-page-link drop"><i
                             class="ri-git-commit-line"></i>Thêm mã khuyến mãi </a></li>
                     </ul>
                 </li>
