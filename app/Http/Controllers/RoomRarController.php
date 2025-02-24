@@ -13,7 +13,7 @@ class RoomRarController extends Controller
      */
     public function index()
     {
-        //
+        //x
     }
 
     /**
