@@ -22,7 +22,7 @@ class UpdateRoom_typeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|min:3|max:100|regex:/^[\pL\s\d]+$/u|unique:room_types,name',
+           'name' => 'required|string|min:3|max:100|regex:/^[\pL\s\d]+$/u|unique:room_types,name,' . $this->route('id'),
             'is_active' => 'required|boolean',
         ];
     }

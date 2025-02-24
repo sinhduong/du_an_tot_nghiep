@@ -60,17 +60,17 @@
                         <div class="booking-table">
                             <div class="table-responsive">
                                 <table id="booking_table" class="table">
-                                    <thead>
-
+                                    <thead class=" table-dark">
                                         <tr>
                                             <th>ID</th>
-                                            <th>Name</th>
-                                            <th>Address</th>
-                                            <th>City</th>
-                                            <th>Description</th>
-                                            <th>Price form</th>
-                                            <th>Price to</th>
-                                            <th>Action</th>
+                                            <th>Tên phòng</th>
+                                            <th>Số phòng</th>
+                                            <th>Giá</th>
+                                            <th>Số người tối đa</th>
+                                            <th>Tối đa trẻ em</th>
+                                            <th>mô tả</th>
+                                            <th>Trạng thái</th>
+                                            <th>Thao tác</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -79,11 +79,12 @@
                                             <td class="token">{{ $index+1 }}</td>
                                             <td><span class="name">{{ $item->name }}</span>
                                             </td>
-                                            <td>{{ $item->type }}</td>
-                                            <td>{{ $item->capacity }}</td>
+                                            <td>{{ $item->room_number }}</td>
+                                            <td class="active">{{ \App\Helpers\FormatHelper::formatPrice($item->price) }}</td>
+                                            <td>{{ $item->max_capacity }}</td>
+                                            <td>{{ $item->children_free_limit }}</td>
                                             <td>{{ $item->description }}</td>
                                             <td>{{ $item->status }}</td>
-                                            <td class="active">$ {{ $item->price }}</td>
                                             <td>
                                                 <div class="d-flex justify-content-center">
                                                     <button type="button" class="btn btn-outline-success"><i

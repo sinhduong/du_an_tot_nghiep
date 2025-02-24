@@ -114,7 +114,7 @@
                                     <div class="lh-user-detail">
                                         <ul>
                                             <li>
-                                                <button type="submit" class="lh-btn-primary">Submit</button>
+                                                <button type="submit" class="lh-btn-primary">Cập nhật</button>
                                             </li>
                                         </ul>
                                     </div>
