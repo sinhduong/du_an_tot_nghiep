@@ -47,6 +47,9 @@
                                 <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create') }}'">
                                     Tạo mới
                                 </button>
+                                <button class="btn btn-success ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create_room') }}'">
+                                   Thêm Quy Tắc Vào Phòng
+                                </button>
 
                         </div>
                     </div>

@@ -13,4 +13,8 @@ class Amenity extends Model
         'name',
         
     ];
+    public function rooms()
+    {
+        return $this->belongsToMany(Room::class, 'room_amenities', 'amenity_id', 'room_id');
+    }
 }

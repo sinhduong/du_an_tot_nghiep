@@ -13,4 +13,9 @@ class Rules_and_regulation extends Model
         'name',
         
     ];
+   
+    public function rooms()
+    {
+        return $this->belongsToMany(Room::class, 'room_rars', 'rules_and_regulation_id', 'room_id');
+    }
 }

@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->bigInteger('manager_id')->nullable();
+            $table->string('room_number')->unique(); // Số phòng riêng biệt
             $table->decimal('price', 20, 2)->nullable();
-            $table->tinyInteger('capacity');
+            $table->integer('max_capacity'); // Tổng số người tối đa
+            $table->integer('children_free_limit')->default(0); // Số trẻ em miễn phí
             $table->string('description')->nullable();
-            $table->enum('status', ['available', 'booked', 'maintenance']);
+            $table->enum('status', ['available', 'booked', 'maintenance'])->default('available');
             $table->bigInteger('room_type_id');
             $table->timestamps();
             $table->softDeletes();//dekete_at xóa mềm
@@ -31,4 +34,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('rooms');
     }
+
 };

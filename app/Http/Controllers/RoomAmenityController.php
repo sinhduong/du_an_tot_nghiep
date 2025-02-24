@@ -2,18 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Amenity;
 use App\Models\Room_amenity;
 use App\Http\Requests\StoreRoom_amenityRequest;
 use App\Http\Requests\UpdateRoom_amenityRequest;
+use App\Models\Room;
 
 class RoomAmenityController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function room_index()
     {
         //
+        $title = 'Danh Sách PHòng  ';
+        // $room = Room::pluck('name','id')->all();
+        $room = Room::orderBy('id', 'desc')->get();
+        $room_rule = Amenity::orderBy('id', 'desc')->get();
+        return view('admins.amenities.amenities-room.index', compact('title', 'room_rule','room'));
     }
 
     /**

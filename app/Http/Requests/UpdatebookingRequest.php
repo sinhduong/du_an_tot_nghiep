@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdatebookingRequest extends FormRequest
+class UpdateBookingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,7 @@ class UpdatebookingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'status' => 'required|in:pending_confirmation,confirmed,paid,check_in,check_out,cancelled,refunded',
         ];
     }
 }
