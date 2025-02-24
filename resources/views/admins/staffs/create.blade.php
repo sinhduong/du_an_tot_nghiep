@@ -57,8 +57,7 @@
                                                     value="{{ old('email') }}" placeholder="Email nhân viên">
                                             </div>
                                             <div class="form-group">
-                                                <textarea type="text" class="form-control" placeholder="Địa chỉ nhân viên" name="address"
-                                                     rows="6">{{ old('address') }}</textarea>
+                                                <textarea type="text" class="form-control" placeholder="Địa chỉ nhân viên" name="address" rows="6">{{ old('address') }}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -184,17 +183,16 @@
                                             <ul>
                                                 <li><strong>Chọn Phòng Quản Lý : </strong>
                                                     <!-- Thêm dropdown chọn phòng -->
-                                                    <select name="room_ids[]" class="form-control select2" multiple
-                                                        required>
+                                                    <select name="room_ids[]" class="form-control select2" multiple="multiple">
                                                         @foreach ($rooms as $room)
-                                                            <option value="{{ $room->id }}"
-                                                                {{ $room->manager_id ? 'disabled' : '' }}>
+                                                            <option value="{{ $room->id }}" {{ $room->manager_id ? 'disabled' : '' }}>
                                                                 {{ $room->name }} @if ($room->manager_id)
                                                                     (Đã có người quản lý)
                                                                 @endif
                                                             </option>
                                                         @endforeach
                                                     </select>
+
                                                 </li>
                                                 <li>
                                                     <button type="submit" class="lh-btn-primary">Thêm Nhân Viên</button>
@@ -210,4 +208,7 @@
             </form>
         </div>
     </div>
+
+
+
 @endsection
