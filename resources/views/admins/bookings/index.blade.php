@@ -25,9 +25,9 @@
                             <i class="ri-sound-module-line"></i>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item" href="#">Booking</a></li>
-                            <li><a class="dropdown-item" href="#">Revenue</a></li>
-                            <li><a class="dropdown-item" href="#">Expence</a></li>
+                            <li><a class="dropdown-booking" href="#">Booking</a></li>
+                            <li><a class="dropdown-booking" href="#">Revenue</a></li>
+                            <li><a class="dropdown-booking" href="#">Expence</a></li>
                         </ul>
                     </div>
                 </div>
@@ -79,27 +79,31 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($bookings as $index => $item)
+                                        @foreach ($bookings as $index => $booking)
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
-                                            <td>{{ $item->booking_code }}</td>
-                                            <td>{{ $item->user->name }}</td>
-                                            <td>{{ $item->room->name }}</td>
-                                            <td> {{ \App\Helpers\FormatHelper::formatDate($item->check_in) }}</td>
-                                            <td>{{ \App\Helpers\FormatHelper::formatDate($item->check_out) }}</td>
-                                            <td>{{ \App\Helpers\FormatHelper::formatPrice($item->total_price) }}</td>
+                                            <td>{{ $booking->booking_code }}</td>
+                                            <td>{{ $booking->user->name }}</td>
                                             <td>
-                                                <form action="{{route('admin.bookings.update',$item->id )}}" method="POST" style="display:inline;">
+                                                @foreach ($booking->rooms as $keyI => $room)
+                                                    <span>{{ $room->name }}{{ $keyI < count($booking->rooms) - 1 ? ', ' : '' }}</span>
+                                                @endforeach
+                                            </td>
+                                            <td> {{ \App\Helpers\FormatHelper::formatDate($booking->check_in) }}</td>
+                                            <td>{{ \App\Helpers\FormatHelper::formatDate($booking->check_out) }}</td>
+                                            <td>{{ \App\Helpers\FormatHelper::formatPrice($booking->total_price) }}</td>
+                                            <td>
+                                                <form action="{{route('admin.bookings.update',$booking->id )}}" method="POST" style="display:inline;">
                                                     @csrf
                                                     @method('PUT')
                                                     <select name="status" onchange="this.form.submit()" class="form-select">
-                                                        <option value="pending_confirmation" {{ $item->status == 'pending_confirmation' ? 'selected' : '' }}>Chưa xác nhận</option>
-                                                        <option value="confirmed" {{ $item->status == 'confirmed' ? 'selected' : '' }}>Đã xác nhận</option>
-                                                        <option value="paid" {{ $item->status == 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
-                                                        <option value="check_in" {{ $item->status == 'check_in' ? 'selected' : '' }}>Đã check in</option>
-                                                        <option value="check_out" {{ $item->status == 'check_out' ? 'selected' : '' }}>Đã checkout</option>
-                                                        <option value="cancelled" {{ $item->status == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
-                                                        <option value="refunded" {{ $item->status == 'refunded' ? 'selected' : '' }}>Đã hoàn tiền</option>
+                                                        <option value="pending_confirmation" {{ $booking->status == 'pending_confirmation' ? 'selected' : '' }}>Chưa xác nhận</option>
+                                                        <option value="confirmed" {{ $booking->status == 'confirmed' ? 'selected' : '' }}>Đã xác nhận</option>
+                                                        <option value="paid" {{ $booking->status == 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
+                                                        <option value="check_in" {{ $booking->status == 'check_in' ? 'selected' : '' }}>Đã check in</option>
+                                                        <option value="check_out" {{ $booking->status == 'check_out' ? 'selected' : '' }}>Đã checkout</option>
+                                                        <option value="cancelled" {{ $booking->status == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
+                                                        <option value="refunded" {{ $booking->status == 'refunded' ? 'selected' : '' }}>Đã hoàn tiền</option>
                                                     </select>
 
                                                 </form>
@@ -107,13 +111,13 @@
 
 
                                             <td class="text-center">
-                                                <a href="{{ route('admin.bookings.show', $item->id) }}" class="btn btn-sm btn-primary">
+                                                <a href="{{ route('admin.bookings.show', $booking->id) }}" class="btn btn-sm btn-primary">
                                                     <i class="mdi mdi-eye fs-5"></i>
                                                 </a>
-                                                <form action="{{ route('admin.bookings.destroy', $item->id) }}" method="POST" style="display:inline;">
+                                                <form action="{{ route('admin.bookings.destroy', $booking->id) }}" method="POST" style="display:inline;">
                                                     @csrf @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Xóa đơn đặt phòng?')">
-                                                        <i class="ri-delete-bin-5-fill fs-5"></i> 
+                                                        <i class="ri-delete-bin-5-fill fs-5"></i>
                                                     </button>
                                                 </form>
                                             </td>

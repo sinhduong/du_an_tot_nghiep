@@ -15,7 +15,7 @@ class BookingController extends Controller
     public function index()
     {
         $title = 'Đơn đặt phòng mới nhất';
-        $bookings = Booking::with('user', 'room')->latest()->paginate(10);
+        $bookings = Booking::with('user', 'rooms')->latest()->paginate(10);
         return view('admins.bookings.index', compact('bookings', 'title'));
     }
 
@@ -39,9 +39,9 @@ class BookingController extends Controller
      */
     public function show(string $id)
     {
-        $booking=Booking::with('user','room.roomType','payments')->findOrFail($id);
-        $title='Chi tiết đơn đặt phòng';
-        return view('admins.bookings.show',compact('title','booking'));
+        $booking = Booking::with('user', 'rooms', 'payments')->findOrFail($id);
+        $title = 'Chi tiết đơn đặt phòng';
+        return view('admins.bookings.show', compact('title', 'booking'));
     }
 
     /**
@@ -62,15 +62,15 @@ class BookingController extends Controller
         $newStatus = $request->status;
 
         // Kiểm tra điều kiện hợp lệ để cập nhật trạng thái
-        if ($currentStatus === 'pending_confirmation') {
-            // Nếu trạng thái hiện tại là "Chưa xác nhận", cho phép đổi sang bất kỳ trạng thái nào
+        if ($currentStatus === 'pending_confirmation' && $newStatus==='confirmed') {
+            // Nếu trạng thái hiện tại là "Chưa xác nhận", cho phép đổi sang đã sác nhận
             $booking->update(['status' => $newStatus]);
             return redirect()->route('admin.bookings.index')->with('success', 'Cập nhật trạng thái đặt phòng thành công.');
         } elseif ($currentStatus === 'confirmed' && in_array($newStatus, ['paid', 'cancelled'])) {
             // Nếu trạng thái hiện tại là "Đã xác nhận", chỉ cho phép đổi sang "Đã thanh toán" hoặc "Đã hủy"
             $booking->update(['status' => $newStatus]);
             return redirect()->route('admin.bookings.index')->with('success', 'Cập nhật trạng thái đặt phòng thành công.');
-        } elseif ($currentStatus === 'paid' && in_array($newStatus, ['check_in', 'cancelled', 'refunded'])) {
+        } elseif ($currentStatus === 'paid' && in_array($newStatus, ['check_in', 'refunded'])) {
             // Nếu trạng thái hiện tại là "Đã thanh toán", chỉ cho phép đổi sang "Đã check in", "Đã hủy", hoặc "Đã hoàn tiền"
             $booking->update(['status' => $newStatus]);
             return redirect()->route('admin.bookings.index')->with('success', 'Cập nhật trạng thái đặt phòng thành công.');

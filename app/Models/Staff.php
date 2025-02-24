@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class Staff extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
     protected $table = 'staffs';
 
     protected $fillable = [
@@ -29,6 +29,6 @@ class Staff extends Model
     ];
     public function rooms()
     {
-        return $this->hasMany(RoomType::class, 'manager_id');
+        return $this->hasMany(Room::class, 'manager_id');
     }
 }

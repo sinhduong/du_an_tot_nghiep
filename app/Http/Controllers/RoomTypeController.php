@@ -13,7 +13,7 @@ class RoomTypeController extends Controller
      */
     public function index()
     {
-        $title = 'Loại phòng';
+        $title = 'Danh sách loại phòng';
         $room_types = RoomType::orderBy('id', 'desc')->get();
         return view('admins.room-type.index', compact('title', 'room_types'));
     }

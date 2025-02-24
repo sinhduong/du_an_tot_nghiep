@@ -18,6 +18,6 @@ class Room_rar extends Model
     }
     public function rule()
     {
-        return $this->belongsTo(Rules_and_regulation::class, 'rules_and_regulation_id');
+        return $this->belongsTo(RulesAndRegulation::class, 'rules_and_regulation_id');
     }
 }

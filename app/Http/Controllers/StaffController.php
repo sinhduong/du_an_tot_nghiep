@@ -6,6 +6,7 @@ use App\Http\Requests\StoreStaffRequest;
 use App\Http\Requests\UpdateStaffRequest;
 use App\Models\Room;
 use App\Models\Staff;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -204,17 +205,50 @@ class StaffController extends Controller
     public function destroy(Staff $staff)
     {
         try {
-
             $staff->delete();
 
             return redirect()
                 ->route('admin.staffs.index')
-                ->with('success', 'Bạn đã xóa thành công!');
-        } catch (\Throwable $th) {
+                ->with('success', 'Bạn đã chuyển nhân viên vào thùng rác!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Lỗi khi xóa: ' . $e->getMessage());
+        }
+    }
 
-            return back()
-                ->with('success', true)
-                ->with('error', $th->getMessage());
+    //  Hiển thị danh sách nhân viên đã bị xóa mềm (trong thùng rác)
+    public function trashed()
+    {
+        $staffs = Staff::onlyTrashed()->get();
+        return view('admins.staffs.trashed', compact('staffs'));
+    }
+
+    //  Khôi phục nhân viên đã xóa mềm
+    public function restore($id)
+    {
+        try {
+            $staff = Staff::onlyTrashed()->findOrFail($id);
+            $staff->restore();
+
+            return redirect()
+                ->route('admin.staffs.index')
+                ->with('success', 'Nhân viên đã được khôi phục!');
+        } catch (ModelNotFoundException $e) {
+            return back()->with('error', 'Nhân viên không tồn tại trong thùng rác!');
+        }
+    }
+
+    //  Xóa vĩnh viễn nhân viên khỏi hệ thống
+    public function forceDelete($id)
+    {
+        try {
+            $staff = Staff::onlyTrashed()->findOrFail($id);
+            $staff->forceDelete();
+
+            return redirect()
+                ->route('admin.staffs.trashed')
+                ->with('success', 'Nhân viên đã bị xóa vĩnh viễn!');
+        } catch (ModelNotFoundException $e) {
+            return back()->with('error', 'Nhân viên không tồn tại trong thùng rác!');
         }
     }
 }

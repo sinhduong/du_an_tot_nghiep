@@ -11,12 +11,15 @@ class Room extends Model
     use HasFactory,SoftDeletes;
     protected $fillable = [
             'name',
-            'room_number',
+            'manager_id',
             'price',
-            'capacity',
+            'room_number',
+            'max_capacity',
+            'bed_type',
+            'children_free_limit',
             'description',
             'status',
-            'quantity',
+            'room_type_id',
         ];
         public function bookings(){
             return $this->hasMany(Booking::class,'room_id'); // 1 phòng có nhiều đơn đặt phòng
@@ -25,6 +28,7 @@ class Room extends Model
         {
             return $this->belongsTo(RoomType::class, 'room_type_id');
         }
+
         public function rules(){
             return $this->belongsToMany(Rules_and_regulation::class,
             'room_rars', 'room_id', 'rules_and_regulation_id')
@@ -47,5 +51,15 @@ class Room extends Model
         public function rameniti(){
             return $this->hasMany(Room_amenity::class, 'room_id');
         }
+
+        public function manager(){
+            return $this->belongsTo(Staff::class,'manager_id');
+        }
+      
+        public function rulesAndRegulations()
+        {
+            return $this->belongsToMany(RulesAndRegulation::class, 'room_rars', 'room_id', 'rules_and_regulation_id');
+        }
+
 
 }

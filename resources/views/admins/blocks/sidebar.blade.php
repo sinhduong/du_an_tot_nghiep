@@ -31,8 +31,15 @@
                                 khoản quản trị</a></li>
                         <li><a href="team-profile.html" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Tài
                                 khoản Khác</a></li>
+<<<<<<< HEAD
                         <li><a href="team-list.html" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Danh
                                 sách nhân viên</a></li>
+=======
+                        <li><a href="{{ route('admin.staffs.index') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Danh sách nhân viên</a></li>
+                        <li><a href="{{ route('admin.staffs.trashed') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Danh sách đã xóa mềm</a></li>
+>>>>>>> 97bdc70b8bb5462aa09108e4d7e3c0cab57782c6
                     </ul>
                 </li>
                 <li class="lh-sb-item-separator"></li>
