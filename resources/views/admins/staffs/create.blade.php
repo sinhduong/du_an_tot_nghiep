@@ -186,8 +186,8 @@
                                                     <select name="room_ids[]" class="form-control select2" multiple="multiple">
                                                         @foreach ($rooms as $room)
                                                             <option value="{{ $room->id }}" {{ $room->manager_id ? 'disabled' : '' }}>
-                                                                {{ $room->name }} @if ($room->manager_id)
-                                                                    (Đã có người quản lý)
+                                                                {{ $room->room_number }} @if ($room->manager_id)
+                                                                    (Đã có {{$room->name}} quản lý)
                                                                 @endif
                                                             </option>
                                                         @endforeach

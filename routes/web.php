@@ -74,9 +74,12 @@ Route::prefix('admin')
                 Route::get('/', [RoomController::class, 'index'])->name('index');
                 Route::get('/create', [RoomController::class, 'create'])->name('create');
                 Route::post('/store', [RoomController::class, 'store'])->name('store');
-                Route::get('{id}/edit', [RoomController::class, 'edit'])->name('edit');
-                Route::put('{id}/update', [RoomController::class, 'update'])->name('update');
-                Route::delete('{id}/destroy', [RoomController::class, 'destroy'])->name('destroy');
+                Route::get('{room}/edit', [RoomController::class, 'edit'])->name('edit');
+                Route::put('{room}/update', [RoomController::class, 'update'])->name('update');
+                Route::delete('{room}/destroy', [RoomController::class, 'destroy'])->name('destroy'); // Xóa
+                Route::get('/trashed', [RoomController::class, 'trashed'])->name('trashed'); // Danh sách đã xóa mềm
+                Route::patch('/{room}/restore', [RoomController::class, 'restore'])->name('restore'); // Khôi phục khi đã xóa mềm
+                Route::delete('/{room}/force-delete', [RoomController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
             });
 
         Route::prefix('bookings')

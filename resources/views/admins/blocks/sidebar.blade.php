@@ -82,7 +82,7 @@
                 <li class="lh-sb-item-separator"></li>
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
-                        <i class="ri-home-8-line"></i><span class="condense">Quản lý bình luận<i
+                        <i class="ri-home-8-line"></i><span class="condense">Quản lý đánh giá<i
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
                         <li><a href="{{ route('admin.reviews.index') }}" class="lh-page-link drop"><i

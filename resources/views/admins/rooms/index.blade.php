@@ -68,6 +68,7 @@
                                             <th>Giá</th>
                                             <th>Số người tối đa</th>
                                             <th>Tối đa trẻ em</th>
+                                            <th>Nhân viên quản lý</th>
                                             <th>mô tả</th>
                                             <th>Trạng thái</th>
                                             <th>Thao tác</th>
@@ -83,6 +84,7 @@
                                             <td class="active">{{ \App\Helpers\FormatHelper::formatPrice($item->price) }}</td>
                                             <td>{{ $item->max_capacity }}</td>
                                             <td>{{ $item->children_free_limit }}</td>
+                                            <td>{{ $item->manager_id }}</td>
                                             <td>{{ $item->description }}</td>
                                             <td>{{ $item->status }}</td>
                                             <td>
@@ -97,12 +99,12 @@
                                                                 class="ri-settings-3-line"></i></span>
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        {{-- <a class="dropdown-item" href="{{ route('admin.rooms.edit', $item->id) }}">Edit</a> --}}
-                                                        {{-- <form action="{{ route('admin.rooms.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Bạn có muốn xóa không?');">
+                                                        <a class="dropdown-item" href="{{ route('admin.rooms.edit', $item->id) }}">Edit</a>
+                                                        <form action="{{ route('admin.rooms.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Bạn có muốn xóa không?');">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit" class="dropdown-item">Delete</button>
-                                                        </form> --}}
+                                                        </form>
 
                                                     </div>
                                                 </div>

@@ -5,7 +5,7 @@
             <!-- Page title & breadcrumb -->
             <div class="lh-page-title">
                 <div class="lh-breadcrumb">
-                    <h5>Nhân viên</h5>
+                    <h5>Phòng</h5>
                     <ul>
                         <li><a href="index.html">Trang chủ</a></li>
                         <li>Dashboard</li>
@@ -37,7 +37,7 @@
                 <div class="col-xl-12 col-md-12">
                     <div class="lh-card" id="bookingtbl">
                         <div class="lh-card-header">
-                            <h4 class="lh-card-title">{{ $title }}</h4>
+                            <h4 class="lh-card-title"> Tài khoản nhân viên đã xóa </h4>
                             <div class="header-tools">
                                 <a href="javascript:void(0)" class="m-r-10 lh-full-card"><i class="ri-fullscreen-line"
                                         title="Full Screen"></i></a>
@@ -45,7 +45,7 @@
                                     <span></span>
                                 </div>
                                 <button class="btn btn-primary ms-2"
-                                    onclick="window.location.href='{{ route('admin.staffs.create') }}'">
+                                    onclick="window.location.href='{{ route('admin.rooms.create') }}'">
                                     Tạo mới
                                 </button>
 
@@ -61,33 +61,36 @@
                         <div class="lh-card-content card-default">
                             <div class="booking-table">
                                 <div class="table-responsive">
-                                    <table id="booking_table" class="table">
-                                        <thead>
-
+                                    <table id="booking_table" class="table table-striped table-hover">
+                                        <thead class="table-dark">
                                             <tr>
                                                 <th>ID</th>
-                                                <th>Name</th>
-                                                <th>Birthday</th>
-                                                <th>Phone</th>
-                                                <th>Email</th>
-                                                <th>Status</th>
-                                                <th>Salary</th>
-                                                <th>function</th>
+                                                <th>Tên phòng</th>
+                                                <th>Số phòng</th>
+                                                <th>Giá</th>
+                                                <th>Số người tối đa</th>
+                                                <th>Tối đa trẻ em</th>
+                                                <th>Nhân viên quản lý</th>
+                                                <th>mô tả</th>
+                                                <th>Trạng thái</th>
+                                                <th>Thao tác</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($staffs as $index => $item)
-                                                <tr>
-                                                    <td class="token">{{ $item->id }}</td>
-                                                    </td>
+
+                                            <tr>
+                                                @foreach ($rooms as $index => $item)
+                                                    <td class="token">{{ $index + 1 }}</td>
                                                     <td><span class="name">{{ $item->name }}</span>
                                                     </td>
-                                                    <td>{{ \Carbon\Carbon::parse($item->birthday)->format('d/m/Y') }}</td>
-                                                    <td>{{ $item->phone }}</td>
-                                                    <td>{{ $item->email }}</td>
+                                                    <td>{{ $item->room_number }}</td>
+                                                    <td class="active">
+                                                        {{ \App\Helpers\FormatHelper::formatPrice($item->price) }}</td>
+                                                    <td>{{ $item->max_capacity }}</td>
+                                                    <td>{{ $item->children_free_limit }}</td>
+                                                    <td>{{ $item->manager_id }}</td>
+                                                    <td>{{ $item->description }}</td>
                                                     <td>{{ $item->status }}</td>
-                                                    <td class="active">{{ \App\Helpers\FormatHelper::formatPrice($item->salary) }}</td>
-
 
                                                     <td>
                                                         <div class="btn-group">
@@ -98,38 +101,37 @@
                                                                 <i class="ri-settings-3-line"></i>
                                                             </button>
                                                             <ul class="dropdown-menu">
+
                                                                 <li>
-                                                                    <a class="dropdown-item"
-                                                                        href="{{ route('admin.staffs.show', $item->id) }}">
-                                                                        <i class="mdi-account-card-details"></i> Detail
-                                                                    </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a class="dropdown-item"
-                                                                        href="{{ route('admin.staffs.edit', $item->id) }}">
-                                                                        <i class="ri-edit-line"></i> Edit
-                                                                    </a>
+                                                                    <form
+                                                                        action="{{ route('admin.rooms.restore', $item->id) }}"
+                                                                        method="POST" style="display:inline;">
+                                                                        @csrf
+                                                                        @method('PATCH')
+                                                                        <button type="submit" class="btn btn-success">Khôi
+                                                                            phục</button>
+                                                                    </form>
                                                                 </li>
                                                                 <li>
                                                                     <form
-                                                                        action="{{ route('admin.staffs.destroy', $item->id) }}"
-                                                                        method="POST"
-                                                                        onsubmit="return confirm('Bạn có muốn xóa mềm không?');">
+                                                                        action="{{ route('admin.rooms.forceDelete', $item->id) }}"
+                                                                        method="POST" style="display:inline;">
                                                                         @csrf
                                                                         @method('DELETE')
-                                                                        <button type="submit"
-                                                                            class="dropdown-item text-danger">
-                                                                            <i class="ri-delete-bin-line"></i> Delete
-                                                                        </button>
+                                                                        <button type="submit" class="btn btn-danger"
+                                                                            onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn?');">Xóa
+                                                                            vĩnh viễn</button>
                                                                     </form>
                                                                 </li>
                                                             </ul>
                                                         </div>
                                                     </td>
-                                                </tr>
+                                            </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
+                                    <a href="{{ route('admin.rooms.index') }}" class="btn btn-primary">Quay lại danh
+                                        sách</a>
                                 </div>
                             </div>
                         </div>
