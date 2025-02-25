@@ -1,124 +1,209 @@
 @extends('layouts.admin')
 @section('content')
-<div class="lh-main-content">
-    <div class="container-fluid">
-        <!-- Page title & breadcrumb -->
-        <div class="lh-page-title">
-            <div class="lh-breadcrumb">
-                <h5>Hotel</h5>
-                <ul>
-                    <li><a href="index.html">Trang chủ</a></li>
-                    <li>Dashboard</li>
-                </ul>
-            </div>
-            <div class="lh-tools">
-                <a href="javascript:void(0)" title="Refresh" class="refresh"><i class="ri-refresh-line"></i></a>
-                <div id="pagedate">
-                    <div class="lh-date-range" title="Date">
-                        <span></span>
-                    </div>
-                </div>
-                <div class="filter">
-                    <div class="dropdown" title="Filter">
-                        <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="ri-sound-module-line"></i>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item" href="#">Booking</a></li>
-                            <li><a class="dropdown-item" href="#">Revenue</a></li>
-                            <li><a class="dropdown-item" href="#">Expence</a></li>
-                        </ul>
-                    </div>
+    <div class="lh-main-content">
+        <div class="container-fluid">
+            <!-- Page title & breadcrumb -->
+            <div class="lh-page-title">
+                <div class="lh-breadcrumb">
+                    <h5>Room</h5>
+                    <ul>
+                        <li><a href="index.html">Trang chủ</a></li>
+                        <li>Dashboard</li>
+                    </ul>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-xxl-12 col-xl-8 col-md-12">
-                <div class="lh-card" id="bookingtbl">
-                    <div class="lh-card-header">
-                        <h4 class="lh-card-title">{{ $title }}</h4>
-                        <div class="header-tools">
-                            <a href="javascript:void(0)" class="lh-full-card"><i class="ri-fullscreen-line" data-bs-toggle="tooltip" aria-label="Full Screen" data-bs-original-title="Full Screen"></i></a>
+
+            <div class="row">
+                <div class="col-xxl-12 col-xl-8 col-md-12">
+                    <div class="lh-card">
+                        <div class="lh-card-header">
+                            <h4 class="lh-card-title">{{ $title }}</h4>
                         </div>
-                    </div>
-                    <div class="lh-card-content card-booking">
-                        <form action="{{ route('admin.hotels.store') }}" method="POST">
-                            @csrf
-                            <div class="row mtb-m-12">
-                                <div class="col-md-6 col-sm-12">
-                                    <div class="lh-user-detail">
-                                        <ul>
-                                            <li><strong>Name *: </strong>
-                                                <div class="form-group">
-                                                    <input type="text" name="name" placeholder="Enter name" >
-                                                    @error('name')
-                                                        <p class="text-danger">{{ $message }}</p>
-                                                    @enderror
-                                                </div>
-                                            </li>
-                                            <li><strong>Address : </strong>
-                                                <div class="form-group">
-                                                    <input type="text" name="address" placeholder="Enter address">
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <div class="lh-user-detail">
-                                        <ul>
-                                            <li><strong>City : </strong>
-                                                <div class="form-group">
-                                                    <input name="city" type="text" class="form-control" placeholder="Enter city">
-                                                </div>
-                                            </li>
-                                            <li><strong>Description : </strong>
-                                                <input name="description" type="text" class="form-control" placeholder="Enter description">
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <div class="lh-user-detail">
-                                        <ul>
-                                            <li><strong>Price form *: </strong>
-                                                <input name="price_min" type="text" class="form-control" placeholder="Enter price form">
-                                                @error('price_min')
-                                                <p class="text-danger">{{ $message }}</p>
-                                                @enderror
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <div class="lh-user-detail">
-                                        <ul>
-                                            <li><strong>Price to *: </strong>
-                                                <input name="price_max" type="text" class="form-control" placeholder="Enter price to">
-                                                @error('price_max')
+                        <div class="lh-card-content">
+                            <form action="{{ route('admin.rooms.store') }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div class="row">
+
+                                    <!-- Name -->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Tên phòng *</label>
+                                            <input type="text" name="name" class="form-control"
+                                                value="{{ old('name') }}">
+                                            @error('name')
                                                 <p class="text-danger">{{ $message }}</p>
                                             @enderror
-                                            </li>
-                                        </ul>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <div class="lh-user-detail">
-                                        <ul>
-                                            <li>
-                                                <button type="submit" class="lh-btn-primary">Submit</button>
-                                            </li>
-                                        </ul>
+
+                                    <!-- Manager ID -->
+                                    {{-- <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>ID Nhân viên quản lý (nếu có)</label>
+                                        <input type="text" name="manager_id" class="form-control" value="{{ old('manager_id') }}">
+                                        @error('manager_id')
+                                            <p class="text-danger">{{ $message }}</p>
+                                        @enderror
                                     </div>
-                                </div>
-                            </div>
-                        </form>
+                                </div> --}}
+
+                                    <!-- Room Number -->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Số phòng *</label>
+                                            <input type="text" name="room_number" class="form-control"
+                                                value="{{ old('room_number') }}">
+                                            @error('room_number')
+                                                <p class="text-danger">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <!-- Price -->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Giá phòng *</label>
+                                            <input type="text" name="price" class="form-control"
+                                                value="{{ old('price') }}">
+                                            @error('price')
+                                                <p class="text-danger">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <!-- Max Capacity -->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Sức chứa tối đa *</label>
+                                            <input type="number" name="max_capacity" class="form-control"
+                                                value="{{ old('max_capacity') }}">
+                                            @error('max_capacity')
+                                                <p class="text-danger">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <!-- Bed Type -->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Loại giường *</label>
+                                            <select name="bed_type" class="form-control">
+                                                <option value="single" {{ old('bed_type') == 'single' ? 'selected' : '' }}>
+                                                    Single</option>
+                                                <option value="double" {{ old('bed_type') == 'double' ? 'selected' : '' }}>
+                                                    Double</option>
+                                                <option value="queen" {{ old('bed_type') == 'queen' ? 'selected' : '' }}>
+                                                    Queen</option>
+                                                <option value="king" {{ old('bed_type') == 'king' ? 'selected' : '' }}>
+                                                    King</option>
+                                                <option value="bunk" {{ old('bed_type') == 'bunk' ? 'selected' : '' }}>
+                                                    Bunk</option>
+                                                <option value="sofa" {{ old('bed_type') == 'sofa' ? 'selected' : '' }}>
+                                                    Sofa</option>
+                                            </select>
+                                            @error('bed_type')
+                                                <p class="text-danger">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <!-- Children Free Limit -->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Số trẻ em miễn phí</label>
+                                            <input type="number" name="children_free_limit" class="form-control"
+                                                value="{{ old('children_free_limit') }}">
+                                            @error('children_free_limit')
+                                                <p class="text-danger">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+
+                                    <!-- Room Type ID -->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Loại phòng *</label>
+                                            <select name="room_type_id" class="form-control">
+                                                <option value="">-- Chọn loại phòng --</option>
+                                                @foreach ($room_types_id as $room)
+                                                    <option value="{{ $room->id }}"
+                                                        {{ old('room_type_id') == $room->id ? 'selected' : '' }}
+                                                        {{ $room->manager_id ? 'disabled' : '' }}>
+                                                        {{ $room->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('room_type_id')
+                                                <p class="text-danger">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Nhân viên quản lý *</label>
+                                            <select name="manager_id" class="form-control">
+                                                <option value="">-- Chọn nhân viên --</option>
+                                                @foreach ($staffs_id as $staff)
+                                                    <option value="{{ $staff->id }}"
+                                                        {{ old('manager_id') == $staff->id ? 'selected' : '' }}
+                                                        {{ $staff->manager_id ? 'disabled' : '' }}>
+                                                        {{ $staff->id }} - {{ $staff->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('room_type_id')
+                                                <p class="text-danger">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <!-- Description -->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Mô tả</label>
+                                            <textarea name="description" class="form-control">{{ old('description') }}</textarea>
+                                            @error('description')
+                                                <p class="text-danger">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <!-- Status -->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Trạng thái *</label>
+                                            <select name="status" class="form-control">
+                                                <option value="available"
+                                                    {{ old('status') == 'available' ? 'selected' : '' }}>Available</option>
+                                                <option value="booked" {{ old('status') == 'booked' ? 'selected' : '' }}>
+                                                    Booked</option>
+                                                <option value="maintenance"
+                                                    {{ old('status') == 'maintenance' ? 'selected' : '' }}>Maintenance
+                                                </option>
+                                            </select>
+                                            @error('status')
+                                                <p class="text-danger">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+
+
+                                    <!-- Submit Button -->
+                                    <div class="col-md-12 text-center">
+                                        <button type="submit" class="btn btn-primary">Thêm phòng</button>
+                                    </div>
+
+                                </div> <!-- End row -->
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
-</div>
 @endsection
-

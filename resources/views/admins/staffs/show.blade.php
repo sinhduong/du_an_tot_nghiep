@@ -109,7 +109,8 @@
                                 </div>
                                 <div class="booking-info">
                                     <p><i class="ri-pass-valid-line"></i>Lương</p>
-                                    <h6>{{ $staff->salary }}</h6>
+                                    <td class="active">{{ \App\Helpers\FormatHelper::formatPrice($staff->salary) }}</td>
+
                                 </div>
                             </div>
                             <div class="facilities-details">
@@ -122,10 +123,10 @@
                                     </div>
                                 </div>
                             </div>
+                            <a href="{{ route('admin.staffs.index') }}" class="btn btn-secondary">Quay lại</a>
                         </div>
                     </div>
                 </div>
-                <a href="{{ route('admin.staffs.index') }}" class="btn btn-secondary">Quay lại</a>
             </div>
         </div>
     </div>
