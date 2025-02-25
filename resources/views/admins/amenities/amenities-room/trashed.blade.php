@@ -1,3 +1,4 @@
+
 @extends('layouts.admin')
 @section('content')
 <div class="lh-main-content">
@@ -44,12 +45,9 @@
                                 <div class="lh-date-range dots">
                                     <span></span>
                                 </div>
-                                <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create') }}'">
+                                {{-- <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create') }}'">
                                     Tạo mới
-                                </button>
-                                <button class="btn btn-success ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create_room') }}'">
-                                   Thêm Quy Tắc Vào Phòng
-                                </button>
+                                </button> --}}
 
                         </div>
                     </div>
@@ -67,49 +65,37 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>Tên Loại phòng</th>
-                                            {{-- <th>Trạng thái</th> --}}
+                                            <th>Trạng thái</th>
                                             <th>Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($room_rule as $index => $item)
-                                        <tr>
-                                            <td class="text-center">{{ $index + 1 }}</td>
-                                            <td>{{ $item->name }}</td>
-                                            {{-- <td>
-                                                <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">
-                                                    {{ $item->is_active ? 'Hoạt động' : 'Không hoạt động' }}
-                                                </span>
-                                            </td> --}}
-                                            <td>
-                                                <div class="btn-group">
-
-                                                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-                                                        <i class="ri-settings-3-line"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li>
-                                                            <a class="dropdown-item" href="{{ route('admin.rule-regulations.edit', $item->id) }}">
-                                                                <i class="ri-edit-line"></i> Edit
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <form action="{{ route('admin.rule-regulations.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Bạn có muốn xóa mềm không?');">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="dropdown-item text-danger">
-                                                                    <i class="ri-delete-bin-line"></i> Delete
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        @endforeach
+                                        @foreach ($room_rars as $item)
+            <tr>
+                <td>{{ $item->id }}</td>
+                <td>{{ $item->amenity->name }}</td>
+                <td>
+                    <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">
+                        {{ $item->is_active ? 'Hoạt động' : 'Không hoạt động' }}
+                    </span>
+                </td>
+                <td>
+                    <form action="{{ route('admin.amenities.restore_room', $item->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit" class="btn btn-success">Khôi phục</button>
+                    </form>
+                    <form action="{{ route('admin.amenities.forceDelete_room', $item->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn?');">Xóa vĩnh viễn</button>
+                    </form>
+                </td>
+            </tr>
+            @endforeach
                                     </tbody>
                                 </table>
-
+                                <a href="{{ route('admin.amenities.index') }}" class="btn btn-primary">Quay lại danh sách</a>
                             </div>
                         </div>
                     </div>

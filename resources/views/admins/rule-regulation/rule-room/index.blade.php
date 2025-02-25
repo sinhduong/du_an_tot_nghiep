@@ -44,11 +44,8 @@
                                 <div class="lh-date-range dots">
                                     <span></span>
                                 </div>
-                                <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create') }}'">
-                                    Tạo mới
-                                </button>
-                                <button class="btn btn-success ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create_room') }}'">
-                                   Thêm Quy Tắc Vào Phòng
+                                <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create_room') }}'">
+                                    Thêm Quy Tác Vào Phòng
                                 </button>
 
                         </div>
@@ -66,13 +63,13 @@
                                     <thead class="table-dark">
                                         <tr>
                                             <th>ID</th>
-                                            <th>Tên Loại phòng</th>
+                                            <th>Tên Phòng</th>
                                             {{-- <th>Trạng thái</th> --}}
                                             <th>Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($room_rule as $index => $item)
+                                        @foreach ($room as $index => $item)
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>{{ $item->name }}</td>
@@ -88,6 +85,11 @@
                                                         <i class="ri-settings-3-line"></i>
                                                     </button>
                                                     <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item" href="{{ route('admin.rule-regulations.view_room', $item->id) }}">
+                                                                <i class="ri-edit-line"></i> View
+                                                            </a>
+                                                        </li>
                                                         <li>
                                                             <a class="dropdown-item" href="{{ route('admin.rule-regulations.edit', $item->id) }}">
                                                                 <i class="ri-edit-line"></i> Edit

@@ -44,11 +44,8 @@
                                 <div class="lh-date-range dots">
                                     <span></span>
                                 </div>
-                                <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create') }}'">
-                                    Tạo mới
-                                </button>
-                                <button class="btn btn-success ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create_room') }}'">
-                                   Thêm Quy Tắc Vào Phòng
+                                <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.amenities.create_room') }}'">
+                                    Thêm Quy Tác Vào Phòng
                                 </button>
 
                         </div>
@@ -66,13 +63,13 @@
                                     <thead class="table-dark">
                                         <tr>
                                             <th>ID</th>
-                                            <th>Tên Loại phòng</th>
+                                            <th>Tên Phòng</th>
                                             {{-- <th>Trạng thái</th> --}}
                                             <th>Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($room_rule as $index => $item)
+                                        @foreach ($room as $index => $item)
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>{{ $item->name }}</td>
@@ -89,12 +86,17 @@
                                                     </button>
                                                     <ul class="dropdown-menu">
                                                         <li>
-                                                            <a class="dropdown-item" href="{{ route('admin.rule-regulations.edit', $item->id) }}">
+                                                            <a class="dropdown-item" href="{{ route('admin.amenities.view_room', $item->id) }}">
+                                                                <i class="ri-edit-line"></i> View
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="{{ route('admin.amenities.edit', $item->id) }}">
                                                                 <i class="ri-edit-line"></i> Edit
                                                             </a>
                                                         </li>
                                                         <li>
-                                                            <form action="{{ route('admin.rule-regulations.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Bạn có muốn xóa mềm không?');">
+                                                            <form action="{{ route('admin.amenities.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Bạn có muốn xóa mềm không?');">
                                                                 @csrf
                                                                 @method('DELETE')
                                                                 <button type="submit" class="dropdown-item text-danger">
