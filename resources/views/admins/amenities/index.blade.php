@@ -62,23 +62,23 @@
                                 <table id="booking_table" class="table table-striped table-hover">
                                     <thead class="table-dark">
                                         <tr>
-                                            <th>ID</th>
-                                            <th>Tên Loại phòng</th>
+                                            <th class="text-center">ID</th>
+                                            <th class="text-center">Tên Loại Tiện Ích </th>
                                             {{-- <th>Trạng thái</th> --}}
-                                            <th>Hành động</th>
+                                            <th class="text-center">Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($room_rule as $index => $item)
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
-                                            <td>{{ $item->name }}</td>
+                                            <td class="text-center">{{ $item->name }}</td>
                                             {{-- <td>
                                                 <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">
                                                     {{ $item->is_active ? 'Hoạt động' : 'Không hoạt động' }}
                                                 </span>
                                             </td> --}}
-                                            <td>
+                                            <td class="text-center">
                                                 <div class="btn-group">
 
                                                     <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">

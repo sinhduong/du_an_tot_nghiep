@@ -5,7 +5,7 @@
             <!-- Page title & breadcrumb -->
             <div class="lh-page-title">
                 <div class="lh-breadcrumb">
-                    <h5>Thêm Quy Định Vào Phòng</h5>
+                    <h5>Thêm Các Tiện Ích Vào Phòng</h5>
                     <ul>
                         <li><a href="index.html">Trang chủ</a></li>
                         <li>Dashboard</li>
@@ -65,7 +65,7 @@
                                                         @enderror
                                                     </div>
                                                 </li>
-                                                <li><strong>Tên Các Quy Định : </strong>
+                                                <li><strong>Tên Các Tiện Ích : </strong>
                                                     <div class="form-group">
                                                         {{-- <input type="text" name="name" placeholder="Tên Quy Tắc"
                                                             class="form-control" value="{{ old('name') }}"> --}}

@@ -30,7 +30,7 @@ class Room extends Model
         }
 
         public function rules(){
-            return $this->belongsToMany(Rules_and_regulation::class,
+            return $this->belongsToMany(RulesAndRegulation::class,
             'room_rars', 'room_id', 'rules_and_regulation_id')
             ->withPivot('id') // Lấy ID của bảng `room_rars`
             ->withTimestamps(); 

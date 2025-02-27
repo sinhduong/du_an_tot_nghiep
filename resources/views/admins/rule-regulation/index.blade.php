@@ -45,7 +45,7 @@
                                     <span></span>
                                 </div>
                                 <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create') }}'">
-                                    Tạo mới
+                                    Tạo mới Quy Định
                                 </button>
                                 <button class="btn btn-success ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create_room') }}'">
                                    Thêm Quy Tắc Vào Phòng
@@ -66,7 +66,7 @@
                                     <thead class="table-dark">
                                         <tr>
                                             <th>ID</th>
-                                            <th>Tên Loại phòng</th>
+                                            <th>Tên Loại Quy Định </th>
                                             {{-- <th>Trạng thái</th> --}}
                                             <th>Hành động</th>
                                         </tr>

@@ -96,28 +96,22 @@
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
                         <li><a href="{{ route('admin.rule-regulations.index') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Danh sách</a></li>
+                                    class="ri-git-commit-line"></i>Danh sách Quy Định </a></li>
                         <li><a href="{{ route('admin.rule-regulations.create') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Thêm mới</a></li>
+                                    class="ri-git-commit-line"></i>Thêm mới Quy đinh</a></li>
                         <li><a href="{{ route('admin.rule-regulations.trashed') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Danh sách xóa mềm</a></li>
+                                    class="ri-git-commit-line"></i>Danh sách quy đinh xóa mềm</a></li>
                         <li class="lh-sb-item sb-drop-item">
                             <a href="javascript:void(0)" class="lh-drop-toggle">
-                                <i class="ri-home-8-line"></i><span class="condense">Thêm QUy Định Vào Phòng<i
+                                <i class="ri-home-8-line"></i><span class="condense">Thêm Quy Định Vào Phòng<i
                                         class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                             <ul class="lh-sb-drop condense">
                                 <li><a href="{{ route('admin.rule-regulations.room_index') }}"
-                                        class="lh-page-link drop"><i class="ri-git-commit-line"></i>Danh sách</a></li>
-                                <li><a href="{{ route('admin.rule-regulations.create') }}"
-                                        class="lh-page-link drop"><i class="ri-git-commit-line"></i>Thêm mới</a></li>
-                                <li><a href="{{ route('admin.rule-regulations.trashed_room') }}"
-                                        class="lh-page-link drop"><i class="ri-git-commit-line"></i>Danh sách xóa
-                                        mềm</a></li>
+                                        class="lh-page-link drop"><i class="ri-git-commit-line"></i>Danh sách Quy Định trong phòng </a></li>
                                 <li><a href="{{ route('admin.rule-regulations.create_room') }}"
-                                        class="lh-page-link drop"><i class="ri-git-commit-line"></i>Thêm Vào Phòng
-                                    </a>
-
-                                </li>
+                                        class="lh-page-link drop"><i class="ri-git-commit-line"></i>Thêm mới Quy Định trong phòng</a></li>
+                                <li><a href="{{ route('admin.rule-regulations.trashed_room') }}"
+                                        class="lh-page-link drop"><i class="ri-git-commit-line"></i>Danh sách xóa mềm quy định phòng </a></li>
                             </ul>
                         </li>
                     </ul>

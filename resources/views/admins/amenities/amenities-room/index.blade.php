@@ -45,7 +45,7 @@
                                     <span></span>
                                 </div>
                                 <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.amenities.create_room') }}'">
-                                    Thêm Quy Tác Vào Phòng
+                                    Thêm Tiện Ích Vào Phòng
                                 </button>
 
                         </div>
