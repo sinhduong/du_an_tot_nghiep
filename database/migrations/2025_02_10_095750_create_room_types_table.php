@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('room_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('description')->nullable(); // Mô tả dài hơn
+            $table->decimal('price', 10, 2); // Giá của loại phòng
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-            $table->softDeletes();//delete_at xóa mềm
+            $table->softDeletes(); //delete_at xóa mềm
         });
     }
 

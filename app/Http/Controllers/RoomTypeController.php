@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\RoomType;
+use Illuminate\Http\Request;
+use App\Models\RoomTypeImage;
+use Illuminate\Support\Facades\Log;
 use App\Http\Requests\StoreRoom_typeRequest;
 use App\Http\Requests\UpdateRoom_typeRequest;
+use Illuminate\Support\Facades\Storage;
 
 class RoomTypeController extends Controller
 {
@@ -14,44 +18,60 @@ class RoomTypeController extends Controller
     public function index()
     {
         $title = 'Danh sách loại phòng';
-        $room_types = RoomType::orderBy('id', 'desc')->get();
+        $room_types = RoomType::orderBy('is_active', 'desc')->get();
         return view('admins.room-type.index', compact('title', 'room_types'));
     }
-
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        $title= 'Thêm loại phòng';
-        return  view('admins.room-type.create',compact('title'));
+        $title = 'Thêm loại phòng';
+        return view('admins.room-type.create', compact('title'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(StoreRoom_typeRequest $request)
-{
-    if ($request->isMethod('POST')) {
-        // Lấy dữ liệu từ request
-        $data = $request->except('_token');
+    {
+        if ($request->isMethod('POST')) {
+            $data = $request->except('_token', 'images');
+            $roomType = RoomType::create($data);
 
-        // Thêm loại phòng vào database
-        RoomType::create($data);
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $key => $image) {
+                    $imagePath = $image->store('room_type_images', 'public');
+                    RoomTypeImage::create([
+                        'room_type_id' => $roomType->id,
+                        'image' => $imagePath,
+                        'is_main' => ($key == 0) ? true : false,
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Thêm loại phòng thành công',
+                'redirect' => route('admin.room_types.index')
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Yêu cầu không hợp lệ'
+        ], 400);
     }
-
-    // Chuyển hướng về danh sách với thông báo thành công
-    return redirect()->route('admin.room_types.index')->with('success', 'Thêm loại phòng thành công');
-}
-
 
     /**
      * Display the specified resource.
      */
-    public function show(RoomType $room_type)
+    public function show(string $id)
     {
-        //
+        $title = 'Chi tiết loại phòng';
+        $roomType = RoomType::with('roomTypeImages')->findOrFail($id);
+        return view('admins.room-type.detail', compact('roomType', 'title'));
     }
 
     /**
@@ -59,9 +79,9 @@ class RoomTypeController extends Controller
      */
     public function edit(string $id)
     {
-        $title='Sửa loại phòng';
-        $room_types=RoomType::findOrfail($id);
-        return  view('admins.room-type.edit',compact('room_types','title'));
+        $title = 'Sửa loại phòng';
+        $roomType = RoomType::with('roomTypeImages')->findOrFail($id);
+        return view('admins.room-type.edit', compact('roomType', 'title'));
     }
 
     /**
@@ -69,53 +89,162 @@ class RoomTypeController extends Controller
      */
     public function update(UpdateRoom_typeRequest $request, string $id)
     {
-        // Tìm loại phòng theo ID, nếu không có sẽ báo lỗi 404
-        $room_type = RoomType::findOrFail($id);
+        try {
+            $roomType = RoomType::findOrFail($id);
+            $data = $request->except('_token', '_method', 'images', 'deleted_images', 'updated_images');
+            $roomType->update($data);
 
-        // Lấy dữ liệu từ request, loại bỏ _token và _method
-        $data = $request->except('_token', '_method');
+            if ($request->has('deleted_images')) {
+                $deletedImages = json_decode($request->input('deleted_images'), true);
+                if (!empty($deletedImages) && is_array($deletedImages)) {
+                    $imagesToDelete = RoomTypeImage::whereIn('id', $deletedImages)->get();
+                    foreach ($imagesToDelete as $image) {
+                        $imagePath = $image->image;
+                        if (Storage::disk('public')->exists($imagePath)) {
+                            Storage::disk('public')->delete($imagePath);
+                            Log::info("Deleted image: {$imagePath}");
+                        } else {
+                            Log::warning("Image not found: {$imagePath}");
+                        }
+                        $image->delete();
+                    }
+                }
+            }
 
-        // Cập nhật loại phòng
-        $room_type->update($data);
+            if ($request->has('updated_images')) {
+                $updatedImages = json_decode($request->input('updated_images'), true);
+                foreach ($updatedImages as $imageId => $tempPath) {
+                    $image = RoomTypeImage::find($imageId);
+                    if ($image && $request->hasFile("updated_files.{$imageId}")) {
+                        $oldImagePath = $image->image;
+                        if (Storage::disk('public')->exists($oldImagePath)) {
+                            Storage::disk('public')->delete($oldImagePath);
+                            Log::info("Deleted old image: {$oldImagePath}");
+                        }
+                        $newImage = $request->file("updated_files.{$imageId}");
+                        $imagePath = $newImage->store('room_type_images', 'public');
+                        $image->image = $imagePath;
+                        $image->save();
+                        Log::info("Updated image ID {$imageId} with new path: {$imagePath}");
+                    } else {
+                        Log::warning("Image ID {$imageId} not found or no file uploaded");
+                    }
+                }
+            }
 
-        // Chuyển hướng về danh sách với thông báo thành công
-        return redirect()->route('admin.room_types.index')->with('success', 'Cập nhật loại phòng thành công');
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $key => $image) {
+                    $imagePath = $image->store('room_type_images', 'public');
+                    RoomTypeImage::create([
+                        'room_type_id' => $roomType->id,
+                        'image' => $imagePath,
+                        'is_main' => $key == 0 && !$roomType->roomTypeImages()->where('is_main', true)->exists(),
+                    ]);
+                    Log::info("Added new image: {$imagePath}");
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật loại phòng thành công',
+                'redirect' => route('admin.room_types.index')
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in RoomTypeController@update: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã có lỗi xảy ra: ' . $e->getMessage(),
+            ], 500);
+        }
     }
-
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource from storage (Soft Delete).
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $room_type = RoomType::findOrFail($id);
-        $room_type->delete(); // Xóa mềm
+        try {
+            $roomType = RoomType::findOrFail($id);
+            $roomType->delete(); // Xóa mềm
 
-        return redirect()->route('admin.room_types.index')->with('success', 'Loại phòng đã được xóa mềm');
+            return response()->json([
+                'success' => true,
+                'message' => 'Loại phòng đã được xóa mềm thành công',
+                'redirect' => route('admin.room_types.index')
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in RoomTypeController@destroy: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
+    /**
+     * Display a listing of trashed resources.
+     */
+    public function trashed()
+    {
+        $title = 'Loại phòng đã xóa';
+        $room_types = RoomType::onlyTrashed()->get();
+        return view('admins.room-type.trashed', compact('title', 'room_types'));
+    }
 
+    /**
+     * Restore the specified resource from trash.
+     */
+    public function restore(Request $request, $id)
+    {
+        try {
+            $roomType = RoomType::onlyTrashed()->findOrFail($id);
+            $roomType->restore(); // Khôi phục
 
-public function trashed()
-{
-    $title = 'Loại phòng đã xóa';
-    $room_types = RoomType::onlyTrashed()->get();
-    return view('admins.room-type.trashed', compact('title', 'room_types'));
-}
+            return response()->json([
+                'success' => true,
+                'message' => 'Khôi phục loại phòng thành công',
+                'redirect' => route('admin.room_types.index')
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in RoomTypeController@restore: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
-public function restore($id)
-{
-    $room_type = RoomType::onlyTrashed()->findOrFail($id);
-    $room_type->restore(); // Khôi phục
-    return redirect()->route('admin.room_types.index')->with('success', 'Khôi phục loại phòng thành công');
-}
+    /**
+     * Permanently delete the specified resource from storage (Force Delete).
+     */
+    public function forceDelete(Request $request, $id)
+    {
+        try {
+            $roomType = RoomType::onlyTrashed()->findOrFail($id);
 
-public function forceDelete($id)
-{
-    $room_type = RoomType::onlyTrashed()->findOrFail($id);
-    $room_type->forceDelete(); // Xóa vĩnh viễn
-    return redirect()->route('admin.room_types.trashed')->with('success', 'Xóa vĩnh viễn loại phòng thành công');
-}
+            // Xóa tất cả ảnh liên quan trước khi xóa vĩnh viễn
+            $images = $roomType->roomTypeImages;
+            foreach ($images as $image) {
+                if (Storage::disk('public')->exists($image->image)) {
+                    Storage::disk('public')->delete($image->image);
+                    Log::info("Deleted image before force delete: {$image->image}");
+                }
+                $image->delete();
+            }
 
+            $roomType->forceDelete(); // Xóa vĩnh viễn
 
+            return response()->json([
+                'success' => true,
+                'message' => 'Xóa vĩnh viễn loại phòng thành công',
+                'redirect' => route('admin.room_types.trashed')
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in RoomTypeController@forceDelete: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

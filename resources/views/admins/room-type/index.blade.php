@@ -1,119 +1,187 @@
 @extends('layouts.admin')
+<style>
+    
+</style>
 @section('content')
 <div class="lh-main-content">
     <div class="container-fluid">
-        <!-- Page title & breadcrumb -->
-        <div class="lh-page-title">
+        <div class="lh-page-title d-flex justify-content-between align-items-center mb-3">
             <div class="lh-breadcrumb">
-                <h5>Loại phòng</h5>
-                <ul>
-                    <li><a href="index.html">Trang chủ</a></li>
-                    <li>Dashboard</li>
-                </ul>
+                <h5 class="mb-0">Loại phòng</h5>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb p-0 bg-transparent">
+                        <li class="breadcrumb-item"><a href="">Trang chủ</a></li>
+                        <li class="breadcrumb-item active">Dashboard</li>
+                    </ol>
+                </nav>
             </div>
-            <div class="lh-tools">
-                <a href="javascript:void(0)" title="Refresh" class="refresh"><i class="ri-refresh-line"></i></a>
-                <div id="pagedate">
-                    <div class="lh-date-range" title="Date">
-                        <span></span>
-                    </div>
-                </div>
-                <div class="filter">
-                    <div class="dropdown" title="Filter">
-                        <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="ri-sound-module-line"></i>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item" href="#">Booking</a></li>
-                            <li><a class="dropdown-item" href="#">Revenue</a></li>
-                            <li><a class="dropdown-item" href="#">Expence</a></li>
-                        </ul>
-                    </div>
+            <div class="lh-tools d-flex gap-2">
+                <button class="btn btn-link p-0" title="Refresh"><i class="ri-refresh-line"></i></button>
+                <div class="lh-date-range" title="Date"><span></span></div>
+                <div class="dropdown" title="Filter">
+                    <button class="btn btn-link dropdown-toggle p-0" data-bs-toggle="dropdown">
+                        <i class="ri-sound-module-line"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Booking</a></li>
+                        <li><a class="dropdown-item" href="#">Revenue</a></li>
+                        <li><a class="dropdown-item" href="#">Expence</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xl-12 col-md-12">
-                <div class="lh-card" id="bookingtbl">
-                    <div class="lh-card-header">
-                        <h4 class="lh-card-title">{{ $title }}</h4>
-                        <div class="header-tools">
-                            <a href="javascript:void(0)" class="m-r-10 lh-full-card"><i
-                                class="ri-fullscreen-line" title="Full Screen"></i></a>
-                                <div class="lh-date-range dots">
-                                    <span></span>
-                                </div>
-                                <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.room_types.create') }}'">
-                                    Tạo mới
-                                </button>
 
-                        </div>
-                    </div>
-                    @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    @endif
-                    <div class="lh-card-content card-default">
-                        <div class="booking-table">
-                            <div class="table-responsive">
-                                <table id="booking_table" class="table table-striped table-hover">
-                                    <thead class="table-dark">
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Tên Loại phòng</th>
-                                            <th>Trạng thái</th>
-                                            <th>Hành động</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($room_types as $index => $item)
-                                        <tr>
-                                            <td class="text-center">{{ $index + 1 }}</td>
-                                            <td>{{ $item->name }}</td>
-                                            <td>
-                                                <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">
-                                                    {{ $item->is_active ? 'Hoạt động' : 'Không hoạt động' }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group">
+        <div class="lh-card">
+            <div class="lh-card-header d-flex justify-content-between align-items-center">
+                <h4 class="lh-card-title mb-0">{{ $title }}</h4>
+                <div class="header-tools d-flex align-items-center gap-2">
+                    <button class="btn btn-link p-0 lh-full-card" title="Full Screen"><i class="ri-fullscreen-line"></i></button>
+                    <div class="lh-date-range"><span></span></div>
+                    <a href="{{ route('admin.room_types.create') }}" class="btn btn-primary btn-sm">Tạo mới</a>
+                </div>
+            </div>
 
-                                                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-                                                        <i class="ri-settings-3-line"></i>
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            <div class="lh-card-content">
+                <div class="table-responsive">
+                    <table id="booking_table" class="table table-striped table-hover table-sm">
+                        <thead class="table-dark">
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th>Tên</th>
+                                <th>Hình ảnh</th>
+                                <th>Mô tả</th>
+                                <th>Giá</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($room_types as $index => $item)
+                            <tr data-id="{{ $item->id }}">
+                                <td class="text-center">{{ $index + 1 }}</td>
+                                <td>{{ $item->name }}</td>
+                                <td>
+                                    @if ($item->roomTypeImages->isNotEmpty())
+                                        <img src="{{ Storage::url($item->roomTypeImages->first()->image) }}"
+                                             width="100" height="100" alt="{{ $item->name }}"
+                                             class="img-thumbnail">
+                                    @else
+                                        <small>Chưa có</small>
+                                    @endif
+                                </td>
+                                <td>{{ Str::limit($item->description, 30) }}</td>
+                                <td>{{ \App\Helpers\FormatHelper::formatPrice($item->price) }}</td>
+                                <td>
+                                    <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">
+                                        {{ $item->is_active ? 'Hoạt động' : 'Không hoạt động' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="ri-settings-3-line"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" href="{{ route('admin.room_types.edit', $item->id) }}">
+                                                    <i class="ri-edit-line"></i> Sửa
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="{{ route('admin.room_types.show', $item->id) }}">
+                                                    <i class="ri-eye-line"></i> Chi tiết
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <form class="delete-form" data-id="{{ $item->id }}" action="{{ route('admin.room_types.destroy', $item->id) }}" method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="dropdown-item text-danger">
+                                                        <i class="ri-delete-bin-line"></i> Xóa
                                                     </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li>
-                                                            <a class="dropdown-item" href="{{ route('admin.room_types.edit', $item->id) }}">
-                                                                <i class="ri-edit-line"></i> Edit
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <form action="{{ route('admin.room_types.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Bạn có muốn xóa mềm không?');">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="dropdown-item text-danger">
-                                                                    <i class="ri-delete-bin-line"></i> Delete
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-
-                            </div>
-                        </div>
-                    </div>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="7" class="text-center">Không có dữ liệu</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 </div>
-@endsection
 
+<style>
+    .header-tools .btn-primary {
+        padding: 0.375rem 0.75rem; /* Đảm bảo kích thước hợp lý */
+        font-size: 0.875rem; /* Kích thước chữ nhỏ hơn */
+    }
+    .header-tools .btn-link {
+        line-height: 1; /* Căn chỉnh icon cho đồng đều */
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).ready(function() {
+    $('.delete-form').on('submit', function(e) {
+        e.preventDefault();
+
+        const form = $(this);
+        const roomTypeId = form.data('id');
+
+        Swal.fire({
+            title: 'Bạn có chắc chắn?',
+            text: 'Loại phòng này sẽ được xóa mềm!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: form.serialize(),
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công',
+                                text: response.message,
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                window.location.href = response.redirect;
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: xhr.responseJSON?.message || 'Đã có lỗi xảy ra!'
+                        });
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+@endsection
