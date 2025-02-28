@@ -31,7 +31,7 @@
         <div class="lh-card">
             <div class="lh-card-header d-flex justify-content-between align-items-center">
                 <h4 class="lh-card-title mb-0">{{ $title }}</h4>
-                <button class="btn btn-link p-0 lh-full-card" title="Full Screen"><i class="ri-fullscreen-line"></i></button>
+                <button class="btn btn-link p-0" title="Full Screen"><i class="ri-fullscreen-line"></i></button>
             </div>
 
             <div class="lh-card-content p-3">
@@ -45,18 +45,21 @@
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Tên loại phòng <span class="text-danger">*</span></label>
                             <input type="text" name="name" class="form-control form-control-sm @error('name') is-invalid @enderror"
-                                   value="{{ old('name', $roomType->name) }}" placeholder="Nhập tên loại phòng">
+                                   placeholder="Tên loại phòng" value="{{ old('name', $roomType->name) }}">
                             @error('name')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
+                            <small class="text-danger error-text name_error"></small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Giá <span class="text-danger">*</span></label>
                             <input type="number" name="price" class="form-control form-control-sm @error('price') is-invalid @enderror"
-                                   value="{{ old('price', $roomType->price) }}" placeholder="Nhập giá phòng" step="0.01" min="0">
+                                   placeholder="Giá phòng" value="{{ old('price', $roomType->price) }}"
+                                   step="0.01" min="0">
                             @error('price')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
+                            <small class="text-danger error-text price_error"></small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Số người tối đa <span class="text-danger">*</span></label>
@@ -96,19 +99,21 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-12">
                             <label class="form-label fw-bold">Mô tả</label>
                             <textarea name="description" class="form-control form-control-sm @error('description') is-invalid @enderror"
-                                      rows="2" placeholder="Nhập mô tả loại phòng">{{ old('description', $roomType->description) }}</textarea>
+                                      rows="2" placeholder="Mô tả loại phòng">{{ old('description', $roomType->description) }}</textarea>
                             @error('description')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
+                            <small class="text-danger error-text description_error"></small>
                         </div>
                         <div class="col-md-12">
                             <label class="form-label fw-bold">Trạng thái <span class="text-danger">*</span></label>
-                            <div class="form-check form-switch status-container">
-                                <input class="form-check-input status-toggle" type="checkbox" name="is_active"
-                                       id="isActive" value="1" {{ old('is_active', $roomType->is_active) == 1 ? 'checked' : '' }}>
+                            <div class="form-check form-switch ">
+                                <input type="hidden" name="is_active" value="0">
+                                <input class="form-check-input status-toggle" type="checkbox" name="is_active" value="1"
+                                       id="isActive" {{ old('is_active', $roomType->is_active) == 1 ? 'checked' : '' }}>
                                 <label class="form-check-label" for="isActive" id="statusLabel">
                                     {{ old('is_active', $roomType->is_active) == 1 ? 'Hoạt động' : 'Không hoạt động' }}
                                 </label>
@@ -117,7 +122,7 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-12">
                             <label class="form-label fw-bold">Hình ảnh hiện tại</label>
                             <div id="currentImages" class="d-flex flex-wrap gap-2">
                                 @forelse ($roomType->roomTypeImages as $image)
@@ -141,7 +146,7 @@
                                 @endforelse
                             </div>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-12">
                             <label class="form-label fw-bold">Thêm hình ảnh mới</label>
                             <div id="imageInputs">
                                 <div class="input-group input-group-sm mb-2" style="max-width: 400px;">
@@ -157,6 +162,7 @@
                             @error('images.*')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
+                            <small class="text-danger error-text images_error"></small>
                         </div>
                         <div class="col-12 text-end">
                             <button type="submit" class="btn btn-primary btn-sm px-4" id="submitBtn">Cập nhật</button>
@@ -196,8 +202,20 @@
 <style>
     .form-label { margin-bottom: 0.25rem; }
     .form-control-sm { padding: 0.25rem 0.5rem; }
-    .image-container { transition: opacity 0.3s; }
-    .error-text, .is-invalid { font-size: 0.8rem; color: #dc3545; }
+    .image-input-group { max-width: 400px; }
+    .error-text { font-size: 0.8rem; }
+    .is-invalid {
+        border-color: #dc3545;
+        padding-right: calc(1.5em + 0.75rem);
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+    .is-invalid:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+    }
     .form-check-input:checked { background-color: #28a745; border-color: #28a745; }
     .form-check-input:not(:checked) { background-color: #dc3545; border-color: #dc3545; }
     #statusLabel.active { color: #28a745; }
@@ -216,12 +234,12 @@
 </style>
 
 <script>
+// const initialIsActive = {{ $roomType->is_active ? 'true' : 'false' }};
 $(document).ready(function() {
     let deletedImages = [];
     let updatedImages = {};
     let updatedFiles = {};
-
-    function updateStatusLabel() {
+function updateStatusLabel() {
         const $checkbox = $('#isActive');
         const $label = $('#statusLabel');
         if ($checkbox.is(':checked')) {
@@ -232,6 +250,8 @@ $(document).ready(function() {
     }
     updateStatusLabel(); // Gọi lần đầu khi tải trang
     $('#isActive').on('change', updateStatusLabel);
+    // $('#isActive').prop('checked', initialIsActive);
+    // updateStatusLabel();
 
     $('#addImageInput').click(function() {
         const newInput = `
@@ -316,15 +336,8 @@ $(document).ready(function() {
             processData: false,
             success: function(response) {
                 if (response.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Thành công',
-                        text: response.message,
-                        timer: 1500,
-                        showConfirmButton: false
-                    }).then(() => {
-                        window.location.href = response.redirect;
-                    });
+                    Swal.fire({ icon: 'success', title: 'Thành công', text: response.message, timer: 1500, showConfirmButton: false })
+                        .then(() => { window.location.href = response.redirect; });
                 }
             },
             error: function(xhr) {
@@ -334,16 +347,28 @@ $(document).ready(function() {
                         $(`[name="${field}"]`).addClass('is-invalid');
                         $(`[name="${field}"]`).closest('.form-group').find('.error-text').text(errors[field][0]);
                     }
+
+                    // Reset trạng thái checkbox nếu có lỗi cho is_active
+                    if (errors['is_active']) {
+                        $('#isActive').prop('checked', initialIsActive);
+                        updateStatusLabel();
+                    }
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi',
-                        text: xhr.responseJSON?.message || 'Có lỗi xảy ra!'
-                    });
+                    Swal.fire({ icon: 'error', title: 'Lỗi', text: xhr.responseJSON?.message || 'Có lỗi xảy ra!' });
                 }
             }
         });
     });
+
+    function updateStatusLabel() {
+        const $checkbox = $('#isActive');
+        const $label = $('#statusLabel');
+        if ($checkbox.is(':checked')) {
+            $label.text('Hoạt động').removeClass('inactive').addClass('active');
+        } else {
+            $label.text('Không hoạt động').removeClass('active').addClass('inactive');
+        }
+    }
 });
 </script>
 @endsection
