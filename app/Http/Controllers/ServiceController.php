@@ -8,59 +8,80 @@ use App\Http\Requests\UpdateServiceRequest;
 
 class ServiceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        //
+        $title = 'Danh sách dịch vụ';
+        $services = Service::orderBy('id', 'desc')->get();
+        return view('admins.services.index', compact('title', 'services'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $title = 'Thêm dịch vụ';
+        return view('admins.services.create', compact('title'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreServiceRequest $request)
     {
-        //
+        if ($request->isMethod('POST')) {
+            $data = $request->except('_token');
+
+            // Thêm dịch vụ vào database
+            Service::create($data);
+        }
+
+        return redirect()->route('admin.services.index')->with('success', 'Thêm dịch vụ thành công');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Service $service)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Service $service)
+    public function edit(string $id)
     {
-        //
+        $title = 'Sửa dịch vụ';
+        $service = Service::findOrFail($id);
+        return view('admins.services.edit', compact('service', 'title'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateServiceRequest $request, Service $service)
+    public function update(UpdateServiceRequest $request, string $id)
     {
-        //
+        $service = Service::findOrFail($id);
+        $data = $request->except('_token', '_method');
+
+        $service->update($data);
+
+        return redirect()->route('admin.services.index')->with('success', 'Cập nhật dịch vụ thành công');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Service $service)
+    public function destroy($id)
     {
-        //
+        $service = Service::findOrFail($id);
+        $service->delete(); // Xóa mềm
+
+        return redirect()->route('admin.services.index')->with('success', 'Dịch vụ đã được xóa mềm');
+    }
+
+    public function trashed()
+    {
+        $title = 'Dịch vụ đã xóa';
+        $services = Service::onlyTrashed()->get();
+        return view('admins.services.trashed', compact('title', 'services'));
+    }
+
+    public function restore($id)
+    {
+        $service = Service::onlyTrashed()->findOrFail($id);
+        $service->restore(); // Khôi phục
+        return redirect()->route('admin.services.index')->with('success', 'Khôi phục dịch vụ thành công');
+    }
+
+    public function forceDelete($id)
+    {
+        $service = Service::onlyTrashed()->findOrFail($id);
+        $service->forceDelete(); // Xóa vĩnh viễn
+        return redirect()->route('admin.services.trashed')->with('success', 'Xóa vĩnh viễn dịch vụ thành công');
     }
 }
