@@ -9,9 +9,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class RoomType extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable=[
+    protected $fillable = [
         'name',
-        'is_active'
+        'description',
+        'price',
+        'is_active',
     ];
     public function rooms()
     {
@@ -21,5 +23,9 @@ class RoomType extends Model
     public function manager()
     {
         return $this->belongsTo(Staff::class, 'manager_id');
+    }
+    public function roomTypeImages()
+    {
+        return $this->hasMany(RoomTypeImage::class, 'room_type_id');
     }
 }
