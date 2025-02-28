@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 <style>
-    
+
 </style>
 @section('content')
 <div class="lh-main-content">
@@ -10,8 +10,6 @@
                 <h5 class="mb-0">Loại phòng</h5>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb p-0 bg-transparent">
-                        <li class="breadcrumb-item"><a href="">Trang chủ</a></li>
-                        <li class="breadcrumb-item active">Dashboard</li>
                     </ol>
                 </nav>
             </div>
@@ -34,10 +32,13 @@
         <div class="lh-card">
             <div class="lh-card-header d-flex justify-content-between align-items-center">
                 <h4 class="lh-card-title mb-0">{{ $title }}</h4>
-                <div class="header-tools d-flex align-items-center gap-2">
-                    <button class="btn btn-link p-0 lh-full-card" title="Full Screen"><i class="ri-fullscreen-line"></i></button>
-                    <div class="lh-date-range"><span></span></div>
-                    <a href="{{ route('admin.room_types.create') }}" class="btn btn-primary btn-sm">Tạo mới</a>
+                <div class="d-flex align-items-center gap-3">
+                    <div>
+                        <button class="btn btn-link p-0 lh-full-card" title="Full Screen"><i class="ri-fullscreen-line"></i></button>
+                    </div>
+                    <div>
+                        <a href="{{ route('admin.room_types.create') }}" class="btn btn-primary btn-sm">Tạo mới</a>
+                    </div>
                 </div>
             </div>
 
