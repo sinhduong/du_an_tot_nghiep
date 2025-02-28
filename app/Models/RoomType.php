@@ -32,4 +32,9 @@ class RoomType extends Model
     {
         return $this->hasMany(RoomTypeImage::class, 'room_type_id');
     }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'room_type_services', 'room_type_id', 'service_id');
+    }
 }
