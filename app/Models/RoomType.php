@@ -13,6 +13,10 @@ class RoomType extends Model
         'name',
         'description',
         'price',
+        'max_capacity',
+        'size',
+        'bed_type',
+        'children_free_limit',
         'is_active',
     ];
     public function rooms()
