@@ -22,7 +22,7 @@ class UpdateRoom_typeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|min:3|max:100|regex:/^[\pL\s\d]+$/u|unique:room_types,name'. $this->route('id'),
+            'name' => 'required|string|min:3|max:100|regex:/^[\pL\s\d]+$/u|unique:room_types,name,' . $this->route('id'),
             'description' => 'nullable|string|max:500',
             'price' => 'required|numeric|min:0',
             'max_capacity' => 'required|integer|min:1',
@@ -30,7 +30,7 @@ class UpdateRoom_typeRequest extends FormRequest
             'bed_type' => 'required|in:single,double,queen,king,bunk,sofa',
             'children_free_limit' => 'required|integer|min:0',
             'is_active' => 'required|boolean',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Cho phép nhiều ảnh
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 

@@ -62,6 +62,26 @@
                                                 <input type="number" class="form-control" value="{{ $roomType->price }}" step="0.01" disabled>
                                             </div>
                                         </li>
+                                        <li><strong>Số người tối đa: </strong>
+                                            <div class="form-group">
+                                                <input type="number" class="form-control" value="{{ $roomType->max_capacity }}" disabled>
+                                            </div>
+                                        </li>
+                                        <li><strong>Loại giường: </strong>
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" value="{{ $roomType->bed_type }}" disabled>
+                                            </div>
+                                        </li>
+                                        <li><strong>Kích thước (m²): </strong>
+                                            <div class="form-group">
+                                                <input type="number" class="form-control" value="{{ $roomType->size }}" step="0.1" disabled>
+                                            </div>
+                                        </li>
+                                        <li><strong>Số trẻ em miễn phí: </strong>
+                                            <div class="form-group">
+                                                <input type="number" class="form-control" value="{{ $roomType->children_free_limit }}" disabled>
+                                            </div>
+                                        </li>
                                         <li><strong>Trạng thái: </strong>
                                             <div class="form-group">
                                                 <input type="text" class="form-control" value="{{ $roomType->is_active ? 'Hoạt động' : 'Không hoạt động' }}" disabled>
@@ -87,16 +107,13 @@
                                                 </div>
                                             </div>
                                         </li>
-
                                     </ul>
                                 </div>
-                                <div class="col-md-12 ">
-                                    <a href="{{ route('admin.room_types.index') }}" >
-
+                                <div class="col-md-12">
+                                    <a href="{{ route('admin.room_types.index') }}">
                                         <button type="submit" class="btn btn-primary btn-sm px-4" id="submitBtn">Quay lại</button>
                                     </a>
                                 </div>
-                            </div>
                             </div>
                         </div>
                     </div>
