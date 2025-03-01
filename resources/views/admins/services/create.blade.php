@@ -58,11 +58,20 @@
                                                     @enderror
                                                 </div>
                                             </li>
-                                            <li><strong>Giá dịch vụ *: </strong>
+                                            <li>
+                                                <strong>Áp dụng cho *: </strong>
                                                 <div class="form-group">
-                                                    <input type="text" name="price" placeholder="Giá dịch vụ" class="form-control" value="{{ old('price') }}">
-                                                    @error('price')
-                                                        <p class="text-danger">{{ $message }}</p>
+                                                    <select name="roomTypes[]" multiple="multiple" class="form-select">
+                                                        <option value="">Chọn nhiều loại phòng</option>
+                                                        @foreach($roomTypes as $roomType)
+                                                            <option value="{{ $roomType->id }}"
+                                                                {{ in_array($roomType->id, old('roomTypes', isset($roomTypeService) ? [$roomTypeService->room_type_id] : [])) ? 'selected' : '' }}>
+                                                                {{ $roomType->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('roomTypes')
+                                                    <p class="text-danger">{{ $message }}</p>
                                                     @enderror
                                                 </div>
                                             </li>

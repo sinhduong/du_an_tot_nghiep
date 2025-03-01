@@ -22,8 +22,9 @@ class StoreServiceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            // 'price' => 'required|decimal|min:0|max:20'
+            'name' => 'required|string|max:255|unique:services,name',
+            'roomTypes' => 'required|array|min:1',
+            'roomTypes.*' => 'exists:room_types,id',
         ];
     }
 
@@ -32,9 +33,6 @@ class StoreServiceRequest extends FormRequest
         return [
             'name.required'=>'Tên dịch vụ phòng không được bỏ trống',
             'name.max'=>'Tên dịch vụ phòng không được vượt quá 255 ký tự',
-            'price.required'=>'Giá dịch vụ phòng không được bỏ trống',
-            'price.min'=>'Giá dịch vụ phòng phải lớn hơn 2',
-            'price.max'=>'Giá dịch vụ phòng không được vượt quá 20',
         ];
     }
 }
