@@ -30,7 +30,6 @@ return new class extends Migration
                 'refunded' //được hoàn tiền
             ])->default('pending_confirmation');
             $table->bigInteger('user_id');
-            $table->bigInteger('room_id');
             $table->timestamps();
             $table->softDeletes(); //dekete_at xóa mềm
         });
