@@ -17,7 +17,7 @@ class Room extends Model
     ];
     public function bookings()
     {
-        return $this->hasMany(Booking::class, 'room_id'); // 1 phòng có nhiều đơn đặt phòng
+        return $this->belongsToMany(Booking::class, 'booking_rooms', 'room_id', 'booking_id');
     }
     public function roomType()
     {

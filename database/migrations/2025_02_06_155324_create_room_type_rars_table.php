@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('room_amenities', function (Blueprint $table) {
+        Schema::create('room_type_rars', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('room_id');
-            $table->bigInteger('amenity_id');
+            $table->bigInteger('room_type_id');
+            $table->bigInteger('rules_and_regulation_id');
             $table->timestamps();
             $table->softDeletes();//dekete_at xóa mềm
         });
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('room_amenities');
+        Schema::dropIfExists('room_rars');
     }
 };
