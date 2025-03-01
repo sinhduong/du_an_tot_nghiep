@@ -59,8 +59,8 @@
                                     class="ri-git-commit-line"></i>Danh sách </a></li>
                         <li><a href="{{ route('admin.rooms.create') }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Thêm mới </a></li>
-                        {{-- <li><a href="{{ route('admin.rooms.trashed') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Danh sách phòng đã xóa mềm</a></li> --}}
+                        <li><a href="{{ route('admin.rooms.trashed') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Danh sách đã xóa mềm</a></li>
                     </ul>
                 </li>
                 <li class="lh-sb-item-separator"></li>
@@ -99,7 +99,7 @@
                                     class="ri-git-commit-line"></i>Thêm mới</a></li>
                         <li><a href="{{ route('admin.rule-regulations.trashed') }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Danh sách xóa mềm</a></li>
-                    
+
                     </ul>
                 </li>
                 <li class="lh-sb-item-separator"></li>

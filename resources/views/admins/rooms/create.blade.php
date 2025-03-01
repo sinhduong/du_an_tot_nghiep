@@ -24,28 +24,7 @@
                                 @csrf
                                 <div class="row">
 
-                                    <!-- Name -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Tên phòng *</label>
-                                            <input type="text" name="name" class="form-control"
-                                                value="{{ old('name') }}">
-                                            @error('name')
-                                                <p class="text-danger">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
 
-                                    <!-- Manager ID -->
-                                    {{-- <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>ID Nhân viên quản lý (nếu có)</label>
-                                        <input type="text" name="manager_id" class="form-control" value="{{ old('manager_id') }}">
-                                        @error('manager_id')
-                                            <p class="text-danger">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-                                </div> --}}
 
                                     <!-- Room Number -->
                                     <div class="col-md-6">
@@ -58,67 +37,6 @@
                                             @enderror
                                         </div>
                                     </div>
-
-                                    <!-- Price -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Giá phòng *</label>
-                                            <input type="text" name="price" class="form-control"
-                                                value="{{ old('price') }}">
-                                            @error('price')
-                                                <p class="text-danger">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Max Capacity -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Sức chứa tối đa *</label>
-                                            <input type="number" name="max_capacity" class="form-control"
-                                                value="{{ old('max_capacity') }}">
-                                            @error('max_capacity')
-                                                <p class="text-danger">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Bed Type -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Loại giường *</label>
-                                            <select name="bed_type" class="form-control">
-                                                <option value="single" {{ old('bed_type') == 'single' ? 'selected' : '' }}>
-                                                    Single</option>
-                                                <option value="double" {{ old('bed_type') == 'double' ? 'selected' : '' }}>
-                                                    Double</option>
-                                                <option value="queen" {{ old('bed_type') == 'queen' ? 'selected' : '' }}>
-                                                    Queen</option>
-                                                <option value="king" {{ old('bed_type') == 'king' ? 'selected' : '' }}>
-                                                    King</option>
-                                                <option value="bunk" {{ old('bed_type') == 'bunk' ? 'selected' : '' }}>
-                                                    Bunk</option>
-                                                <option value="sofa" {{ old('bed_type') == 'sofa' ? 'selected' : '' }}>
-                                                    Sofa</option>
-                                            </select>
-                                            @error('bed_type')
-                                                <p class="text-danger">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Children Free Limit -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Số trẻ em miễn phí</label>
-                                            <input type="number" name="children_free_limit" class="form-control"
-                                                value="{{ old('children_free_limit') }}">
-                                            @error('children_free_limit')
-                                                <p class="text-danger">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
-
 
                                     <!-- Room Type ID -->
                                     <div class="col-md-6">
@@ -140,7 +58,6 @@
                                         </div>
                                     </div>
 
-
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Nhân viên quản lý *</label>
@@ -154,18 +71,7 @@
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            @error('room_type_id')
-                                                <p class="text-danger">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Description -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Mô tả</label>
-                                            <textarea name="description" class="form-control">{{ old('description') }}</textarea>
-                                            @error('description')
+                                            @error('manager_id')
                                                 <p class="text-danger">{{ $message }}</p>
                                             @enderror
                                         </div>

@@ -46,17 +46,7 @@
                                 @method('PUT')
 
                                 <div class="row">
-                                    <!-- Name -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Tên phòng *</label>
-                                            <input type="text" name="name" class="form-control"
-                                                value="{{ $room->name }}">
-                                            @error('name')
-                                                <p class="text-danger">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
+
 
                                     <!-- Room Number -->
                                     <div class="col-md-6">
@@ -70,59 +60,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- Price -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Giá phòng *</label>
-                                            <input type="text" name="price" class="form-control"
-                                                value="{{ $room->price }}">
-                                            @error('price')
-                                                <p class="text-danger">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
 
-                                    <!-- Max Capacity -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Sức chứa tối đa *</label>
-                                            <input type="number" name="max_capacity" class="form-control"
-                                                value="{{ $room->max_capacity }}">
-                                            @error('max_capacity')
-                                                <p class="text-danger">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Bed Type -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Loại giường *</label>
-                                            <select name="bed_type" class="form-control">
-                                                @foreach (['single', 'double', 'queen', 'king', 'bunk', 'sofa'] as $type)
-                                                    <option value="{{ $type }}"
-                                                        {{ old('bed_type', $room->bed_type) == $type ? 'selected' : '' }}>
-                                                        {{ ucfirst($type) }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            @error('bed_type')
-                                                <p class="text-danger">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Children Free Limit -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Số trẻ em miễn phí</label>
-                                            <input type="number" name="children_free_limit" class="form-control"
-                                                value="{{ $room->children_free_limit }}">
-                                            @error('children_free_limit')
-                                                <p class="text-danger">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
 
                                     <!-- Room Type ID -->
                                     <div class="col-md-6">
@@ -162,16 +100,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Description -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Mô tả</label>
-                                            <textarea name="description" class="form-control">{{ $room->description }}</textarea>
-                                            @error('description')
-                                                <p class="text-danger">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                    </div>
 
                                     <!-- Status -->
                                     <div class="col-md-6">
@@ -199,7 +127,7 @@
 
                                 </div> <!-- End row -->
                             </form>
-                            <a href="{{ route('admin.staffs.index') }}" class="btn btn-secondary">Quay lại</a>
+                            <a href="{{ route('admin.rooms.index') }}" class="btn btn-secondary">Quay lại</a>
                         </div>
                     </div>
                 </div>
