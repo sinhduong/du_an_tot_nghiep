@@ -18,10 +18,8 @@ class RoomController extends Controller
     public function index()
     {
         $title = 'Danh sách phòng';
-        $room_types_id = RoomType::all();
-        $staffs = Staff::all();
         $rooms = Room::orderBy('id', 'desc')->get();
-        return  view('admins.rooms.index', compact(['rooms', 'staffs', 'room_types_id'], 'title'));
+        return  view('admins.rooms.index', compact('rooms', 'title'));
     }
 
     /**
