@@ -12,7 +12,11 @@ class Service extends Model
 
     protected $fillable = [
         'name',
-        'price',
         'is_active'
     ];
+
+    public function roomTypes()
+    {
+        return $this->belongsToMany(RoomType::class, 'room_type_services', 'service_id', 'room_type_id');
+    }
 }

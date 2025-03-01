@@ -26,13 +26,10 @@
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
                         <li><a href="team-add.html" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Danh
-                                sách tài khản </a></li>
-                        <li><a href="team-update.html" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Tài
-                                khoản quản trị</a></li>
-                        <li><a href="team-profile.html" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Tài
-                                khoản Khác</a></li>
-                        <li><a href="team-list.html" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Danh
-                                sách nhân viên</a></li>
+                                sách khách hàng</a></li>
+                        <li><a href="{{ route('admin.staffs.index') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Danh sách quản trị viên</a></li>
+                        <li><a href="{{route('admin.roles.index')}}" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Phân quyền người dùng</a></li>
                     </ul>
                 </li>
                 <li class="lh-sb-item-separator"></li>
@@ -99,27 +96,20 @@
                                     class="ri-git-commit-line"></i>Thêm mới</a></li>
                         <li><a href="{{ route('admin.rule-regulations.trashed') }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Danh sách xóa mềm</a></li>
-                    
+
                     </ul>
                 </li>
                 <li class="lh-sb-item-separator"></li>
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
-                        <i class="ri-home-8-line"></i><span class="condense">Quản lý tiện nghi<i
+                        <i class="ri-home-8-line"></i><span class="condense">Dịch vụ & Tiện nghi<i
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
+                        <li><a href="{{ route('admin.services.index') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Dịch vụ</a></li>
+
                         <li><a href="{{ route('admin.amenities.index') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Danh sách</a></li>
-                        <li><a href="{{ route('admin.amenities.create') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Thêm mới</a></li>
-                        <li><a href="{{ route('admin.amenities.trashed') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Danh sách xóa mềm</a></li>
-                        <li><a href="{{ route('admin.amenities.room_index') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Danh sách Tiện Ích Phòng</a></li>
-                        <li><a href="{{ route('admin.amenities.trashed_room') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Danh sách Tiện Ích xóa mềm</a></li>
-                        <li><a href="{{ route('admin.amenities.trashed') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Danh sách xóa mềm</a></li>
+                                    class="ri-git-commit-line"></i>Tiện nghi</a></li>
                     </ul>
                 </li>
                 <li class="lh-sb-item-separator"></li>
@@ -152,6 +142,14 @@
                     </a>
                 </li>
 
+                <li class="lh-sb-item">
+                    <a href="{{ route('admin.contacts.index') }}" class="lh-page-link">
+                        <i class="ri-bill-line"></i><span class="condense"><span class="hover-title">Liên hệ</span>
+                        </span>
+                    </a>
+                </li>
+
+
                 <li class="lh-sb-item-separator"></li>
                 <li class="lh-sb-title condense">Pages</li>
                 <li class="lh-sb-item sb-drop-item">
@@ -160,20 +158,15 @@
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
 
-                        <li><a href="team-add.html" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Trang
-                                liên hệ</a></li>
-                        <li><a href="team-add.html" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Trang
-                                liên hệ</a></li>
+                        <li><a href="{{route('admin.abouts.index')}}" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Trang
+                                Về chúng tôi</a></li>
+                        <li><a href="{{route('admin.introductions.index')}}" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Trang
+                                Giới thiệu</a></li>
 
                     </ul>
                 </li>
                 <li class="lh-sb-item-separator"></li>
                 <li class="lh-sb-title condense">Settings</li>
-                <li class="lh-sb-item">
-                    <a href="role.html" class="lh-page-link">
-                        <i class="ri-magic-line"></i><span class="condense"><span
-                                class="hover-title"></span></span></a>
-                </li>
             </ul>
         </div>
     </div>

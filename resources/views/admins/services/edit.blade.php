@@ -58,11 +58,19 @@
                                                     @enderror
                                                 </div>
                                             </li>
-                                            <li><strong>Giá dịch vụ *: </strong>
+                                            <li><strong>Áp dụng cho *: </strong>
                                                 <div class="form-group">
-                                                    <input type="text" name="price" placeholder="Enter price" value="{{ $service->price  }}">
-                                                    @error('price')
-                                                        <p class="text-danger">{{ $message }}</p>
+                                                    <select name="roomTypes[]" multiple="multiple" class="form-select">
+                                                        <option value="">Chọn nhiều loại phòng</option>
+                                                        @foreach($roomTypes as $roomType)
+                                                            <option value="{{ $roomType->id }}"
+                                                                {{ in_array($roomType->id, old('roomTypes', $selectedRoomTypes ?? [])) ? 'selected' : '' }}>
+                                                                {{ $roomType->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('is_active')
+                                                    <p class="text-danger">{{ $message }}</p>
                                                     @enderror
                                                 </div>
                                             </li>
