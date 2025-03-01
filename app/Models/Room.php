@@ -10,16 +10,10 @@ class Room extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = [
-        'name',
         'room_number',
-        'price',
-        'max_capacity',
-        'bed_type',
-        'children_free_limit',
-        'room_type_id',
         'manager_id',
-        'description',
-        'status'
+        'status',
+        'room_type_id',
     ];
     public function bookings()
     {

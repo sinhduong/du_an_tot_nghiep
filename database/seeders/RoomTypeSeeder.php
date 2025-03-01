@@ -12,6 +12,6 @@ class RoomTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        RoomType::factory(4)->create(); // Tạo 4 loại phòng giả
+        RoomType::factory(10)->create(); // Tạo 10 loại phòng giả
     }
 }

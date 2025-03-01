@@ -12,19 +12,20 @@ class RoomTypeFactory extends Factory
     /**
      * Define the model's default state.
      */
+
     public function definition(): array
     {
         return [
-            'name' => $this->faker->randomElement([
-                'Phòng Deluxe',
-                'Phòng Suite',
-                'Phòng Family',
-                'Phòng VIP',
-            ]),
-            'image' => $this->faker->imageUrl(640, 480, 'room'),
-            'description' => $this->faker->paragraph(),
-            'price' => $this->faker->randomFloat(2, 100, 1000),
-            'is_active' => $this->faker->boolean(),
+            'name' => $this->faker->unique()->word . ' Room', // Ví dụ: Deluxe Room
+            'description' => $this->faker->sentence(10), // Mô tả ngẫu nhiên
+            'price' => $this->faker->randomFloat(2, 50, 500), // Giá ngẫu nhiên từ 50 đến 500
+            'max_capacity' => $this->faker->numberBetween(1, 6), // Tối đa từ 1 đến 6 người
+            'size' => $this->faker->randomFloat(2, 15, 100), // Diện tích từ 15 đến 100 m²
+            'bed_type' => $this->faker->randomElement(['single', 'double', 'queen', 'king', 'bunk', 'sofa']),
+            'children_free_limit' => $this->faker->numberBetween(0, 2), // Từ 0 đến 2 trẻ miễn phí
+            'is_active' => $this->faker->boolean(80), // 80% là active
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 }

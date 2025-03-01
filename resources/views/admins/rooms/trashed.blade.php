@@ -1,14 +1,23 @@
 @extends('layouts.admin')
 @section('content')
+<main class="wrapper sb-default">
+    <!-- Loader -->
+    <div class="lh-loader">
+        <span class="loader"></span>
+    </div>
+    <div class="lh-sidebar-overlay"></div>
+    <!-- Notify sidebar -->
+    <div class="lh-notify-bar-overlay"></div>
+    <!-- main content -->
     <div class="lh-main-content">
         <div class="container-fluid">
             <!-- Page title & breadcrumb -->
             <div class="lh-page-title">
                 <div class="lh-breadcrumb">
-                    <h5>Phòng</h5>
+                    <h5>Rooms</h5>
                     <ul>
-                        <li><a href="index.html">Trang chủ</a></li>
-                        <li>Dashboard</li>
+                        <li><a href="index.html">Home</a></li>
+                        <li>Rooms</li>
                     </ul>
                 </div>
                 <div class="lh-tools">
@@ -33,111 +42,81 @@
                     </div>
                 </div>
             </div>
+            <div class="lh-card-header d-flex justify-content-between align-items-center">
+                <div class="section-title">
+                    <h4>Các phòng đã xóa</h4>
+                </div>
+
+            </div>
+
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
             <div class="row">
-                <div class="col-xl-12 col-md-12">
-                    <div class="lh-card" id="bookingtbl">
-                        <div class="lh-card-header">
-                            <h4 class="lh-card-title"> Tài khoản nhân viên đã xóa </h4>
-                            <div class="header-tools">
-                                <a href="javascript:void(0)" class="m-r-10 lh-full-card"><i class="ri-fullscreen-line"
-                                        title="Full Screen"></i></a>
-                                <div class="lh-date-range dots">
-                                    <span></span>
+                @foreach ($rooms as $room)
+                    <div class="col-xl-3 col-md-6">
+                        <div class="lh-card booked room-card" id="bookingtbl">
+                            <div class="lh-card-header">
+                                <h4 class="lh-card-title">{{ $room->room_number }}</h4>
+                                <div class="header-tools">
+                                    <div class="dropdown" data-bs-toggle="tooltip" data-bs-original-title="Settings">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="mdi mdi-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <form
+                                                    action="{{ route('admin.rooms.restore', $room->id) }}"
+                                                    method="POST" style="display:inline;">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="btn btn-success">Khôi
+                                                        phục</button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form
+                                                    action="{{ route('admin.rooms.forceDelete', $room->id) }}"
+                                                    method="POST" style="display:inline;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger"
+                                                        onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn?');">Xóa
+                                                        vĩnh viễn</button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
-                                <button class="btn btn-primary ms-2"
-                                    onclick="window.location.href='{{ route('admin.rooms.create') }}'">
-                                    Tạo mới
-                                </button>
-
                             </div>
-                        </div>
-                        @if (session('success'))
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                {{ session('success') }}
-                                <button type="button" class="btn btn-close" data-bs-dismiss="alert"
-                                    aria-label="Close"></button>
-                            </div>
-                        @endif
-                        <div class="lh-card-content card-default">
-                            <div class="booking-table">
-                                <div class="table-responsive">
-                                    <table id="booking_table" class="table table-striped table-hover">
-                                        <thead class="table-dark">
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Tên phòng</th>
-                                                <th>Số phòng</th>
-                                                <th>Giá</th>
-                                                <th>Số người tối đa</th>
-                                                <th>Tối đa trẻ em</th>
-                                                <th>Nhân viên quản lý</th>
-                                                <th>mô tả</th>
-                                                <th>Trạng thái</th>
-                                                <th>Thao tác</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-
-                                            <tr>
-                                                @foreach ($rooms as $index => $item)
-                                                    <td class="token">{{ $index + 1 }}</td>
-                                                    <td><span class="name">{{ $item->name }}</span>
-                                                    </td>
-                                                    <td>{{ $item->room_number }}</td>
-                                                    <td class="active">
-                                                        {{ \App\Helpers\FormatHelper::formatPrice($item->price) }}</td>
-                                                    <td>{{ $item->max_capacity }}</td>
-                                                    <td>{{ $item->children_free_limit }}</td>
-                                                    <td>{{ $item->manager_id }}</td>
-                                                    <td>{{ $item->description }}</td>
-                                                    <td>{{ $item->status }}</td>
-
-                                                    <td>
-                                                        <div class="btn-group">
-
-                                                            <button type="button"
-                                                                class="btn btn-outline-secondary dropdown-toggle"
-                                                                data-bs-toggle="dropdown">
-                                                                <i class="ri-settings-3-line"></i>
-                                                            </button>
-                                                            <ul class="dropdown-menu">
-
-                                                                <li>
-                                                                    <form
-                                                                        action="{{ route('admin.rooms.restore', $item->id) }}"
-                                                                        method="POST" style="display:inline;">
-                                                                        @csrf
-                                                                        @method('PATCH')
-                                                                        <button type="submit" class="btn btn-success">Khôi
-                                                                            phục</button>
-                                                                    </form>
-                                                                </li>
-                                                                <li>
-                                                                    <form
-                                                                        action="{{ route('admin.rooms.forceDelete', $item->id) }}"
-                                                                        method="POST" style="display:inline;">
-                                                                        @csrf
-                                                                        @method('DELETE')
-                                                                        <button type="submit" class="btn btn-danger"
-                                                                            onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn?');">Xóa
-                                                                            vĩnh viễn</button>
-                                                                    </form>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                    <a href="{{ route('admin.rooms.index') }}" class="btn btn-primary">Quay lại danh
-                                        sách</a>
+                            <div class="lh-card-content card-default">
+                                <div class="lh-room-details">
+                                    <ul class="list">
+                                        @foreach ($staffs as $item)
+                                            @if ($room->manager_id == $item->id)
+                                                <li>Nhân viên quản lý phòng : {{ $item->name }}</li>
+                                            @endif
+                                        @endforeach
+                                        <li>Trạng thái : {{ $room->status }}</li>
+                                        @foreach ($room_types_id as $item)
+                                            @if ($room->room_type_id == $item->id)
+                                                <li>Loại phòng : {{ $item->name }}</li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                @endforeach
+
             </div>
         </div>
-    </div>
+</main>
 @endsection
+
