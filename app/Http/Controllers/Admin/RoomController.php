@@ -18,8 +18,10 @@ class RoomController extends Controller
     public function index()
     {
         $title = 'Danh sách phòng';
+        $room_types_id = RoomType::all();
+        $staffs = Staff::all();
         $rooms = Room::orderBy('id', 'desc')->get();
-        return  view('admins.rooms.index', compact('rooms', 'title'));
+        return  view('admins.rooms.index', compact(['rooms', 'staffs', 'room_types_id'], 'title'));
     }
 
     /**
@@ -105,8 +107,10 @@ class RoomController extends Controller
     //  Hiển thị danh sách Phòng đã bị xóa mềm (trong thùng rác)
     public function trashed()
     {
+        $room_types_id = RoomType::all();
+        $staffs = Staff::all();
         $rooms = Room::onlyTrashed()->get();
-        return view('admins.rooms.trashed', compact('rooms'));
+        return view('admins.rooms.trashed', compact(['room_types_id', 'staffs', 'rooms']));
     }
 
     //  Khôi phục Phòng đã xóa mềm

@@ -12,8 +12,7 @@ class RoomsSeeder extends Seeder
      * Run the database seeds.
      */
     public function run(): void
-{
-    Room::factory(20)->create();
-}
-
+    {
+        Room::factory(20)->create();
+    }
 }
