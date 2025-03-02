@@ -45,7 +45,7 @@
                                     <span></span>
                                 </div>
                                 <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create') }}'">
-                                    Tạo mới
+                                    Tạo mới Quy Định
                                 </button>
                                 <button class="btn btn-success ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create_room') }}'">
                                    Thêm Quy Tắc Vào Phòng
@@ -65,9 +65,10 @@
                                 <table id="booking_table" class="table table-striped table-hover">
                                     <thead class="table-dark">
                                         <tr>
-                                            <th>ID</th>
-                                            <th>Tên Loại phòng</th>
-                                            {{-- <th>Trạng thái</th> --}}
+                                            <th>STT</th>
+                                            <th>Tên Loại Quy Định </th>
+                                            <th>Loại Phòng </th>
+                                            <th>Trạng thái</th>
                                             <th>Hành động</th>
                                         </tr>
                                     </thead>
@@ -76,11 +77,22 @@
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>{{ $item->name }}</td>
-                                            {{-- <td>
+                                            <td>
+                                                @foreach ($item->roomTypes as $roomType)
+                                                    <span class="badge bg-primary">{{ $roomType->name }}</span>
+                                                    @if (!$loop->last)
+                                                        ,
+                                                    @endif
+                                                @endforeach
+                                                @if ($item->roomTypes->isEmpty())
+                                                    <span class="badge bg-secondary">Chưa gán loại phòng</span>
+                                                @endif
+                                            </td>
+                                            <td>
                                                 <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">
                                                     {{ $item->is_active ? 'Hoạt động' : 'Không hoạt động' }}
                                                 </span>
-                                            </td> --}}
+                                            </td>
                                             <td>
                                                 <div class="btn-group">
 

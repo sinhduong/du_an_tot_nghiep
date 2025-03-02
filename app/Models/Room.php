@@ -17,7 +17,7 @@ class Room extends Model
     ];
     public function bookings()
     {
-        return $this->hasMany(Booking::class, 'room_id'); // 1 phòng có nhiều đơn đặt phòng
+        return $this->belongsToMany(Booking::class, 'booking_rooms', 'room_id', 'booking_id');
     }
     public function roomType()
     {
@@ -27,36 +27,36 @@ class Room extends Model
     {
         return $this->belongsTo(Staff::class, 'manager_id', 'id');
     }
-    public function amenities()
-    {
-        return $this->belongsToMany(Amenity::class, 'room_amenities', 'room_id', 'amenity_id');
-    }
-    public function rulesAndRegulations()
-    {
-        return $this->belongsToMany(RulesAndRegulation::class, 'room_rars', 'room_id', 'rules_and_regulation_id');
-    }
+    // public function amenities()
+    // {
+    //     return $this->belongsToMany(Amenity::class, 'room_amenities', 'room_id', 'amenity_id');
+    // }
+    // public function rulesAndRegulations()
+    // {
+    //     return $this->belongsToMany(RulesAndRegulation::class, 'room_rars', 'room_id', 'rules_and_regulation_id');
+    // }
 
-    public function rules()
-    {
-        return $this->belongsToMany(
-            RulesAndRegulation::class,
-            'room_rars',
-            'room_id',
-            'rules_and_regulation_id'
-        )
-            ->withPivot('id') // Lấy ID của bảng `room_rars`
-            ->withTimestamps();
-    }
-    public function rars()
-    {
-        return $this->hasMany(Room_rar::class, 'room_id');
-    }
-
-
+    // public function rules()
+    // {
+    //     return $this->belongsToMany(
+    //         RulesAndRegulation::class,
+    //         'room_rars',
+    //         'room_id',
+    //         'rules_and_regulation_id'
+    //     )
+    //         ->withPivot('id') // Lấy ID của bảng `room_rars`
+    //         ->withTimestamps();
+    // }
+    // public function rars()
+    // {
+    //     return $this->hasMany(Room_rar::class, 'room_id');
+    // }
 
 
-    public function rameniti()
-    {
-        return $this->hasMany(Room_amenity::class, 'room_id');
-    }
+
+
+    // public function rameniti()
+    // {
+    //     return $this->hasMany(Room_amenity::class, 'room_id');
+    // }
 }

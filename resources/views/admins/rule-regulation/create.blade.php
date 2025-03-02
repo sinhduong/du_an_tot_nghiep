@@ -45,7 +45,9 @@
                             </div>
                         </div>
                         <div class="lh-card-content card-booking">
-                            <form action="{{ route('admin.rule-regulations.store') }}" enctype="multipart/form-data" method="POST">
+                          
+                            <form action="{{ route( 'admin.rule-regulations.store') }}" method="POST">
+
                                 @csrf
                                 <div class="row mtb-m-12">
                                     <div class="col-md-12 col-sm-12">
@@ -53,29 +55,84 @@
                                             <ul>
                                                 <li><strong>Tên Quy Tắc *: </strong>
                                                     <div class="form-group">
-                                                        <input type="text" name="name" placeholder="Tên Quy Tắc"
-                                                            class="form-control" value="{{ old('name') }}">
+                                                        <input type="text" name="name" placeholder="Tên Quy Tắc" class="form-control" value="{{ old('name') }}">
                                                         @error('name')
                                                             <p class="text-danger">{{ $message }}</p>
                                                         @enderror
                                                     </div>
                                                 </li>
-                                                {{-- <li><strong>Trạng thái *: </strong>
-                                                <div class="form-group">
-                                                    <select name="is_active" class="form-control">
-                                                        <option value="1" {{ old('is_active') == 1 ? 'selected' : '' }}>Hoạt động</option>
-                                                        <option value="0" {{ old('is_active') == 0 ? 'selected' : '' }}>Không hoạt động</option>
-                                                    </select>
-                                                    @error('is_active')
+                                                <li>
+                                                    <strong>Áp dụng cho *: </strong>
+                                                    <div class="form-group">
+                                                        <select name="roomTypes[]" multiple="multiple" class="form-select">
+                                                            <option value="">Chọn nhiều loại phòng</option>
+                                                            @foreach($roomTypes as $roomType)
+                                                                <option value="{{ $roomType->id }}"
+                                                                    {{ in_array($roomType->id, old('roomTypes', isset($roomTypeService) ? [$roomTypeService->room_type_id] : [])) ? 'selected' : '' }}>
+                                                                    {{ $roomType->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                        @error('roomTypes')
                                                         <p class="text-danger">{{ $message }}</p>
-                                                    @enderror
-                                                </div>
-                                            </li> --}}
+                                                        @enderror
+                                                    </div>
+                                                </li>
+                                                <li><strong>Trạng thái *: </strong>
+                                                    <div class="form-group">
+                                                        <select name="is_active" class="form-control">
+                                                            <option value="1" {{ old('is_active') == 1 ? 'selected' : '' }}>Hoạt động</option>
+                                                            <option value="0" {{ old('is_active') == 0 ? 'selected' : '' }}>Không hoạt động</option>
+                                                        </select>
+                                                        @error('is_active')
+                                                            <p class="text-danger">{{ $message }}</p>
+                                                        @enderror
+                                                    </div>
+                                                </li>
                                             </ul>
                                         </div>
-
+    
                                     </div>
-
+    
+    
+                                    {{-- <div class="col-md-6 col-sm-12">
+                                        <div class="lh-user-detail">
+                                            <ul>
+                                                <li><strong>City : </strong>
+                                                    <div class="form-group">
+                                                        <input name="city" type="text" class="form-control" placeholder="Enter city">
+                                                    </div>
+                                                </li>
+                                                <li><strong>Description : </strong>
+                                                    <input name="description" type="text" class="form-control" placeholder="Enter description">
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="lh-user-detail">
+                                            <ul>
+                                                <li><strong>Price form *: </strong>
+                                                    <input name="price_min" type="text" class="form-control" placeholder="Enter price form">
+                                                    @error('price_min')
+                                                    <p class="text-danger">{{ $message }}</p>
+                                                    @enderror
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="lh-user-detail">
+                                            <ul>
+                                                <li><strong>Price to *: </strong>
+                                                    <input name="price_max" type="text" class="form-control" placeholder="Enter price to">
+                                                    @error('price_max')
+                                                    <p class="text-danger">{{ $message }}</p>
+                                                @enderror
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div> --}}
                                     <div class="col-md-12 col-sm-12">
                                         <div class="lh-user-detail">
                                             <ul>

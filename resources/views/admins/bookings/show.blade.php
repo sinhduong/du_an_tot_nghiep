@@ -1,79 +1,217 @@
 @extends('layouts.admin')
+
+@section('content')
 <style>
-    .guest-profile .form-group {
-    font-size: 16px; /* Tăng kích thước chữ */
-    font-weight: 500; /* Làm đậm chữ một chút */
-    color: #333; /* Màu chữ tối hơn */
-    background: #f8f9fa; /* Nền nhẹ */
-    padding: 10px 15px; /* Thêm khoảng cách */
-    border-radius: 8px; /* Bo góc */
-    margin-bottom: 8px; /* Khoảng cách giữa các dòng */
-    display: flex;
-    align-items: center;
-}
-
-.guest-profile .form-group::before {
-    content: "•"; /* Thêm dấu chấm trước mỗi thông tin */
-    margin-right: 8px;
-    font-size: 18px;
-    color: #007bff;
-}
-.lh-main-room {
-        text-align: center;
+    /* Theme đơn giản, không lòe loẹt */
+    .booking-details-container {
+        background: #f5f6f8;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
-    .lh-room-details-image img {
-        width: 100%;
-        max-width: 600px;
-        height: auto;
-        border-radius: 10px;
+    .booking-section {
         margin-bottom: 15px;
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        overflow: hidden;
     }
 
-    .lh-room-details-thumbnails {
+    .booking-section-header {
+        padding: 12px 15px;
+        background: #f0f1f3;
+        color: #333;
+        cursor: pointer;
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .booking-section-header h5 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .booking-section-header .toggle-icon {
+        font-size: 18px;
+    }
+
+    .booking-section-header .toggle-icon.open {
+        transform: rotate(180deg);
+    }
+
+    .booking-section-content {
+        padding: 15px;
+        display: none;
+    }
+
+    .booking-section-content.open {
+        display: block;
+    }
+
+    .booking-info {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .info-item {
+        padding: 10px;
+        background: #fafafa;
+        border: 1px solid #e8e8e8;
+        border-radius: 4px;
+    }
+
+    .info-item label {
+        font-weight: 500;
+        color: #555;
+        margin-bottom: 4px;
+        display: block;
+        font-size: 14px;
+    }
+
+    .info-item span {
+        color: #333;
+        font-size: 14px;
+        word-break: break-word;
+    }
+
+    .user-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 10px;
+        border: 2px solid #ccc;
+    }
+
+    .room-image {
+        width: 100%;
+        max-width: 300px;
+        height: auto;
+        border-radius: 4px;
+        margin-top: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #fff;
+    }
+
+    .status-pending_confirmation { background: #f1c40f; }
+    .status-confirmed { background: #2ecc71; }
+    .status-paid { background: #3498db; }
+    .status-check_in { background: #1abc9c; }
+    .status-check_out { background: #7f8c8d; }
+    .status-cancelled { background: #e74c3c; }
+    .status-refunded { background: #e67e22; }
+
+    .room-list, .payment-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .room-list li, .payment-list li {
+        padding: 10px;
+        background: #fafafa;
+        border: 1px solid #e8e8e8;
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
+
+    .amenities-list, .rules-list {
+        list-style: none;
+        padding-left: 10px;
+        margin: 0;
+    }
+
+    .amenities-list li, .rules-list li {
+        margin-bottom: 6px;
+        color: #666;
+        font-size: 13px;
+    }
+
+    .amenities-list li:before, .rules-list li:before {
+        content: "✓";
+        color: #2ecc71;
+        margin-right: 6px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        background: #3498db;
+        color: #fff;
+        border: none;
+        font-size: 14px;
+    }
+
+    .btn-secondary {
+        background: #7f8c8d;
+    }
+
+    .lh-page-title {
+        padding: 15px 0;
+        background: transparent;
+    }
+
+    .lh-breadcrumb h5 {
+        font-size: 18px;
+        color: #333;
+    }
+
+    .lh-breadcrumb ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        gap: 8px;
+        color: #666;
+    }
+
+    .lh-breadcrumb ul li a {
+        color: #666;
+        text-decoration: none;
+    }
+
+    .lh-breadcrumb ul li a:hover {
+        color: #3498db;
+    }
+
+    .lh-tools {
+        display: flex;
         gap: 10px;
     }
-
-    .lh-room-details-thumbnails img {
-        width: 100px;
-        height: auto;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: transform 0.3s ease;
-    }
-
-    .lh-room-details-thumbnails img:hover {
-        transform: scale(1.1);
-    }
 </style>
-@section('content')
+
 <div class="lh-main-content">
     <div class="container-fluid">
         <!-- Page title & breadcrumb -->
-        <div class="lh-page-title">
+        <div class="lh-page-title d-flex justify-content-between align-items-center">
             <div class="lh-breadcrumb">
                 <h5>{{ $title }}</h5>
                 <ul>
-                    <li><a href="index.html">Trang chủ</a></li>
-                    <li>Dashboard</li>
+                    <li><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                    <li><a href="{{ route('admin.bookings.index') }}">Đơn đặt phòng</a></li>
+                    <li>Chi tiết</li>
                 </ul>
             </div>
             <div class="lh-tools">
-                <a href="javascript:void(0)" title="Refresh" class="refresh"><i class="ri-refresh-line"></i></a>
-                <div id="pagedate">
-                    <div class="lh-date-range" title="Date">
-                        <span></span>
-                    </div>
-                </div>
+                <a href="javascript:void(0)" title="Refresh"><i class="ri-refresh-line"></i></a>
+                <div class="lh-date-range" title="Date"><span></span></div>
                 <div class="filter">
                     <div class="dropdown" title="Filter">
-                        <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1"
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-link dropdown-toggle p-0" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="ri-sound-module-line"></i>
                         </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#">Booking</a></li>
                             <li><a class="dropdown-item" href="#">Revenue</a></li>
                             <li><a class="dropdown-item" href="#">Expence</a></li>
@@ -82,152 +220,260 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            {{-- <div class="col-xxl-3 col-xl-4 col-md-12">
-                <div class="lh-card-sticky guest-card">
-                    <div class="lh-card">
-                        <div class="lh-card-content card-default">
-                            <div class="guest-profile">
-                                <img
-                                 style="background-image: url({{ $booking->user->avatar ? assets('upload/avatars/'. $booking->user->avatar) : 'https://dongvat.edu.vn/upload/200x200/2025/01/lam-anh-200x200.webp' }})"
-                                src="{{asset('assets/admin/assets/img/user/1.jpg') }}" alt="profile">
-                                <h5>{{ $booking->user->name }}</h5>
+
+        <div class="booking-details-container">
+            <div class="row">
+                <!-- Thông tin người đặt & người ở -->
+                <div class="col-md-6">
+                    <div class="booking-section">
+                        <div class="booking-section-header">
+                            <h5>Thông tin người đặt</h5>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="booking-section-content">
+                            <div class="text-center">
+                                <img src="{{ $booking->user->avatar ? asset('upload/avatars/' . $booking->user->avatar) : asset('assets/admin/assets/img/user/1.jpg') }}" alt="{{ $booking->user->name }}" class="user-avatar">
+                                <h6 class="mt-2">{{ $booking->user->name }}</h6>
                             </div>
-                            <ul class="list">
-                                <li><i class="ri-phone-line"></i><span>{{ $booking->user->phone }}</span></li>
-                                <li><i class="ri-mail-line"></i><span>{{ $booking->user->email }}</span></li>
-                                <li><i class="ri-map-pin-line"></i><span>{{ $booking->user->address }}</span></li>
-                                <li><i class="ri-genderless-line"></i><span>{{ $booking->user->gender }}</span></li>
-                                <li><i class=""></i><span>Trạng thái: {{ $booking->user->is_active ? 'Hoạt động' : 'Bị hóa'  }}</span></li>
+                            <div class="booking-info">
+                                <div class="info-item">
+                                    <label>Số điện thoại:</label>
+                                    <span>{{ $booking->user->phone ?? 'Không có' }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Email:</label>
+                                    <span>{{ $booking->user->email ?? 'Không có' }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Địa chỉ:</label>
+                                    <span>{{ $booking->user->address ?? 'Không có' }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Giới tính:</label>
+                                    <span>{{ $booking->user->gender ?? 'Không xác định' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="booking-section">
+                        <div class="booking-section-header">
+                            <h5>Thông tin người ở</h5>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="booking-section-content">
+                            <div class="booking-info">
+                                @foreach ($booking->guests as $guest)
+                                    <div class="info-item">
+                                        <label>Tên:</label><span>{{ $guest->name ?? 'Không có' }}</span><br>
+                                        <label>Số CMND/CCCD:</label><span>{{ $guest->id_number ?? 'Không có' }}</span><br>
+                                        <label>Ngày sinh:</label><span>{{ $guest->birth_date ? \App\Helpers\FormatHelper::formatDate($guest->birth_date) : 'Không có' }}</span><br>
+                                        <label>Giới tính:</label><span>{{ $guest->gender ?? 'Không xác định' }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin phòng & đơn đặt phòng -->
+                <div class="col-md-6">
+                    <div class="booking-section">
+                        <div class="booking-section-header">
+                            <h5>Thông tin phòng</h5>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="booking-section-content">
+                            <ul class="room-list">
+                                @foreach ($booking->rooms as $room)
+                                    <li>
+                                        <div class="booking-info">
+                                            <div class="info-item">
+                                                <label>Số phòng:</label><span>{{ $room->room_number }}</span><br>
+                                                <label>Loại phòng:</label><span>{{ $room->roomType->name ?? 'Chưa xác định' }}</span><br>
+                                                <label>Giá:</label><span>{{ \App\Helpers\FormatHelper::formatPrice($room->roomType->price ?? 0) }}</span>
+                                            </div>
+                                            @if ($room->image)
+                                                <img src="{{ asset('upload/rooms/' . $room->image) }}" alt="{{ $room->room_number }}" class="room-image">
+                                            @endif
+                                        </div>
+                                        <div class="booking-info">
+                                            <div class="info-item">
+                                                <label>Tiện nghi:</label>
+                                                <ul class="amenities-list">
+                                                    @forelse ($room->roomType->amenities as $amenity)
+                                                        <li>{{ $amenity->name }}</li>
+                                                    @empty
+                                                        <li>Không có tiện nghi.</li>
+                                                    @endforelse
+                                                </ul>
+                                            </div>
+                                            <div class="info-item">
+                                                <label>Quy tắc & quy định:</label>
+                                                <ul class="amenities-list">
+                                                    @forelse ($room->roomType->rulesAndRegulations as $rule)
+                                                        <li>{{ $rule->name }}</li>
+                                                    @empty
+                                                        <li>Không có Quy tắc & quy định.</li>
+                                                    @endforelse
+                                                </ul>
+                                            </div>
+                                            <div class="info-item">
+                                                <label>Dịch vụ khách sạn:</label>
+                                                <ul class="amenities-list">
+                                                    @forelse ($room->roomType->services as $services)
+                                                        <li>{{ $services->name }}</li>
+                                                    @empty
+                                                        <li>Không có tiện nghi.</li>
+                                                    @endforelse
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="booking-section">
+                        <div class="booking-section-header">
+                            <h5>Thông tin đơn đặt phòng</h5>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="booking-section-content">
+                            <div class="booking-info">
+                                <div class="info-item">
+                                    <label>Mã đặt phòng:</label><span>{{ $booking->booking_code }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Ngày check-in:</label><span>{{ \App\Helpers\FormatHelper::formatDate($booking->check_in) }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Ngày check-out:</label><span>{{ \App\Helpers\FormatHelper::formatDate($booking->check_out) }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Tổng tiền:</label><span>{{ \App\Helpers\FormatHelper::formatPrice($booking->total_price) }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Số người:</label><span>Người lớn: {{ $booking->total_guests }} | Trẻ em: {{ $booking->children_count }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Trạng thái:</label>
+                                    <span class="status-badge {{ 'status-' . $booking->status }}">
+                                        @php
+                                            $statusMapping = [
+                                                'pending_confirmation' => 'Chưa xác nhận',
+                                                'confirmed' => 'Đã xác nhận',
+                                                'paid' => 'Đã thanh toán',
+                                                'check_in' => 'Đã check in',
+                                                'check_out' => 'Đã checkout',
+                                                'cancelled' => 'Đã hủy',
+                                                'refunded' => 'Đã hoàn tiền',
+                                            ];
+                                        @endphp
+                                        {{ $statusMapping[$booking->status] }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="booking-section">
+                        <div class="booking-section-header">
+                            <h5>Thông tin thanh toán</h5>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="booking-section-content">
+                            <ul class="payment-list">
+                                @forelse ($booking->payments as $payment)
+                                    <li>
+                                        <div class="booking-info">
+                                            <div class="info-item">
+                                                <label>Phương thức:</label><span>{{ $payment->method }}</span><br>
+                                                <label>Số tiền:</label><span>{{ \App\Helpers\FormatHelper::formatPrice($payment->amount ?? 0) }}</span><br>
+                                                <label>Ngày thanh toán:</label><span>{{ \App\Helpers\FormatHelper::formatDate($payment->created_at) }}</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                @empty
+                                    <li>Chưa có thông tin thanh toán.</li>
+                                @endforelse
                             </ul>
                         </div>
                     </div>
                 </div>
-            </div> --}}
-            <div class="col-xxl-12 col-xl-8 col-md-12">
-                <div class="lh-card" id="bookingtbl">
-                    <div class="lh-card-header">
-                        {{-- <h4 class="lh-card-title">chi tiết đặt phòng</h4> --}}
-                        <div class="header-tools">
-                            <a href="javascript:void(0)" class="lh-full-card"><i class="ri-fullscreen-line" data-bs-toggle="tooltip" aria-label="Full Screen" data-bs-original-title="Full Screen"></i></a>
-                        </div>
-                    </div>
+            </div>
 
-
-                    <div class="lh-card-content card-default p-3 border rounded">
-                        <h5 class="mb-3">Thông tin đặt phòng</h5>
-                        <table class="table table-striped">
-                            <tbody>
-                                <tr>
-                                    <th>Tên khách hàng:</th>
-                                    <td>
-                                        <a href="#" class="badge bg-primary text-decoration-none">{{ $booking->user->name }} </a>
-                                    </td>
-                                </tr>
-                                {{-- <tr>
-                                    <th>Email khách hàng:</th>
-                                    <td>{{ $booking->user->email }}</td>
-                                </tr> --}}
-                                <tr>
-                                    <th>Tên phòng:</th>
-                                    <td>
-                                        @foreach ($booking->rooms as $room)
-                                            <span class="badge bg-primary">
-                                                <a href="#" class="badge bg-primary text-decoration-none">
-                                                    {{ $room->name }}
-                                                </a>
-                                            </span>
-                                        @endforeach
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Ngày check-in:</th>
-                                    <td>
-                                        <span class="badge bg-primary">{{\App\Helpers\FormatHelper::formatDate($booking->check_int) }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Ngày check-out:</th>
-                                    <td>
-                                        <span class="badge bg-primary">{{\App\Helpers\FormatHelper::formatDate($booking->check_out) }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Thanh toán:</th>
-                                    <td>
-                                        <span> @foreach ($booking->payments as $payment)
-                                            {{ $payment->method }}
-                                            @endforeach</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Loại phòng:</th>
-                                    <td>
-                                        <span>
-                                            @foreach ($booking->rooms as $rooms)
-                                                {{ $rooms->roomType->name }} <br>
-                                            @endforeach
-                                            @foreach ($booking->rooms as $keyI => $room)
-                                            <span>{{ $room->room_number }}{{ $keyI < count($booking->rooms) - 1 ? ', ' : '' }}</span>
-                                            @endforeach
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Tổng tiền:</th>
-                                    <td>
-                                        <span>
-                                            {{ \App\Helpers\FormatHelper::formatPrice($booking->total_price) }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Số người:</th>
-                                    <td>
-                                        <span>Người lớn{{ $booking->total_guests }} |  </span>Trẻ em: {{ $booking->children_count }}
-                                    </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Trạng thái:</th>
-                                    <td>
-                                        <span>
-                                            @php
-                                            $bedTypeMapping = [
-                                                'pending_confirmation' => 'Chưa xác nhận',
-                                                'confirmed' => 'Đã xác nhận',
-                                                'paid'  => 'Đã thanh toán',
-                                                'check_in'   => 'Đã check in',
-                                                'check_out'   => 'Đã checkout',
-                                                'cancelled'   => 'Đã hủy',
-                                                'refunded'   => 'Đã hoàn tiền',
-                                            ];
-                                            @endphp
-
-                                                {{ $bedTypeMapping[$booking->status] }}
-
-                                        </span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
+            <div class="mt-4">
+                <a href="{{ route('admin.bookings.index') }}" class="btn btn-secondary">Quay lại</a>
             </div>
         </div>
-
     </div>
 </div>
-@endsection
-<!-- SwiperJS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<!-- Modal cập nhật trạng thái -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateStatusModalLabel">Cập nhật trạng thái</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('admin.bookings.update', $booking->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Trạng thái mới</label>
+                        <select name="status" id="status" class="form-control" required>
+                            @php
+                                $statusOptions = [
+                                    'pending_confirmation' => 'Chưa xác nhận',
+                                    'confirmed' => 'Đã xác nhận',
+                                    'paid' => 'Đã thanh toán',
+                                    'check_in' => 'Đã check in',
+                                    'check_out' => 'Đã checkout',
+                                    'cancelled' => 'Đã hủy',
+                                    'refunded' => 'Đã hoàn tiền',
+                                ];
+                            @endphp
+                            @foreach ($statusOptions as $key => $value)
+                                <option value="{{ $key }}" {{ $booking->status === $key ? 'selected' : '' }}>
+                                    {{ $value }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <script>
-    document.querySelectorAll('.thumbnail').forEach(img => {
-        img.addEventListener('click', function() {
-            document.getElementById('mainImage').src = this.src;
+    document.addEventListener('DOMContentLoaded', function () {
+        const sectionHeaders = document.querySelectorAll('.booking-section-header');
+
+        sectionHeaders.forEach(header => {
+            header.addEventListener('click', function () {
+                const content = this.nextElementSibling;
+                const toggleIcon = this.querySelector('.toggle-icon');
+
+                if (content.classList.contains('open')) {
+                    content.classList.remove('open');
+                    toggleIcon.classList.remove('open');
+                    toggleIcon.textContent = '▼';
+                } else {
+                    content.classList.add('open');
+                    toggleIcon.classList.add('open');
+                    toggleIcon.textContent = '▲';
+                }
+            });
         });
     });
 </script>
+@endsection

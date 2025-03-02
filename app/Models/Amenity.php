@@ -11,9 +11,10 @@ class Amenity extends Model
     use HasFactory, SoftDeletes;
     protected $fillable=[
         'name',
+        'is_active',
     ];
-    public function rooms()
+    public function roomTypes()
     {
-        return $this->belongsToMany(Room::class, 'room_amenities', 'amenity_id', 'room_id');
+        return $this->belongsToMany(RoomType::class, 'room_type_amenities', 'amenity_id', 'room_type_id');
     }
 }

@@ -55,11 +55,12 @@
                                                         {{-- <input type="text" name="name" placeholder="Tên Quy Tắc"
                                                             class="form-control" value="{{ old('name') }}"> --}}
                                                         <select name="room_ids[]" id="room_ids" class="form-control"
-                                                            multiple>
+                                                            multiple="multiple">
                                                             @foreach ($room as $id => $name)
                                                                 <option value="{{ $id }}">{{ $name }} </option>
                                                             @endforeach
                                                         </select>
+                                                        
                                                         @error('name')
                                                             <p class="text-danger">{{ $message }}</p>
                                                         @enderror

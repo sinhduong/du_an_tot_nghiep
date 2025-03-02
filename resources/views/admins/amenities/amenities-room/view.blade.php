@@ -50,7 +50,7 @@
                                 <thead class="table-dark">
                                     <tr>
                                         <th class="text-center">ID</th>
-                                        <th class="text-center">Tên Quy Tắc && Quy Định </th>
+                                        <th class="text-center">Tên Tiện Ích Của Phòng </th>
                                         {{-- <th>Trạng thái</th> --}}
                                         <th class="text-center">Hành động</th>
                                         <th class="text-center">Hành động</th>

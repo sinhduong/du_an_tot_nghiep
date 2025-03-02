@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Amenity;
+use App\Models\RulesAndRegulation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class RoomType extends Model
 {
@@ -36,5 +38,15 @@ class RoomType extends Model
     public function services()
     {
         return $this->belongsToMany(Service::class, 'room_type_services', 'room_type_id', 'service_id');
+    }
+
+    public function rulesAndRegulations()
+    {
+        return $this->belongsToMany(RulesAndRegulation::class, 'room_type_rars', 'room_type_id', 'rules_and_regulation_id');
+    }
+
+    public function amenities()
+    {
+        return $this->belongsToMany(Amenity::class, 'room_type_amenities', 'room_type_id', 'amenity_id');
     }
 }

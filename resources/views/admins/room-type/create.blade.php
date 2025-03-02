@@ -103,10 +103,11 @@
                         <div class="col-md-12">
                             <label class="form-label fw-bold">Trạng thái <span class="text-danger">*</span></label>
                             <div class="form-check form-switch">
-                                <input class="form-check-input status-toggle" type="checkbox" name="is_active"
-                                       id="isActive" value="1" {{ old('is_active', 1) ? 'checked' : '' }}>
+                                <input type="hidden" name="is_active" value="0">
+                                <input class="form-check-input status-toggle" type="checkbox" name="is_active" value="1"
+                                       id="isActive" {{ old('is_active') ? 'checked' : '' }}>
                                 <label class="form-check-label" for="isActive" id="statusLabel">
-                                    {{ old('is_active', 1) ? 'Hoạt động' : 'Không hoạt động' }}
+                                    {{ old('is_active') ? 'Hoạt động' : 'Không hoạt động' }}
                                 </label>
                             </div>
                             @error('is_active')

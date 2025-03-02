@@ -45,7 +45,7 @@
                             </div>
                         </div>
                         <div class="container mt-4">
-                            <h2 class="text-center">Chi Tiết Phòng: {{ $room->name }}</h2>
+                            <h2 class="text-center">Chi Tiết Quy Định Của : {{ $room->name }}</h2>
 
                             {{-- <div class="card shadow-lg">
                                 <div class="card-body">
@@ -71,20 +71,20 @@
                                         <th class="text-center">Tên Quy Tắc && Quy Định </th>
                                         {{-- <th>Trạng thái</th> --}}
                                         <th class="text-center">Hành động</th>
-                                        <th class="text-center">Hành động</th>
+                                      
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($room_rars as $rule)
                                    
                                         <tr>
-
-                                            <td class="text-center"> {{$rule->id}} </td>
+                                            <td class="text-center">  {{$rule->id}}</td>
+                                            {{-- <td class="text-center"> {{index + 1 }} </td> --}}
                                             <td class="text-center">
                                                 {{ $rule->rule->name }}
                                             </td>
-                                            <td> {{$rule->id}}</td>
-                                            <td>
+                                          
+                                            <td class="text-center"> 
                                                 <div class="btn-group">
 
                                                     <button type="button" class="btn btn-outline-secondary dropdown-toggle"
