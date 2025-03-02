@@ -11,24 +11,27 @@ class Staff extends Model
     protected $table = 'staffs';
 
     protected $fillable = [
-        'name',
-        'avatar',
-        'birthday',
-        'phone',
-        'address',
-        'email',
+        'user_id',
+        'role_id',
+        'shift_id',
         'status',
-        'salary',
-        'role',
-        'date_hired',
-        'insurance_number',
-        'contract_type',
-        'contract_start',
-        'contract_end',
         'notes',
     ];
     public function rooms()
     {
         return $this->hasMany(Room::class, 'manager_id');
+    }
+    public function role()
+    {
+        return $this->belongsTo(StaffRole::class, 'role_id');
+    }
+
+    public function shift()
+    {
+        return $this->belongsTo(StaffShift::class, 'shift_id', 'id');
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id','id');
     }
 }

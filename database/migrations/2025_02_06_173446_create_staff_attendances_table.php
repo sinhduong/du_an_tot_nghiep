@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('staffs_activity_logs', function (Blueprint $table) {
+        Schema::create('staff_attendances', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('staff_id')->constrained('staffs')->onDelete('cascade'); // Nhân viên
+            $table->dateTime('check_in')->nullable(); // Giờ vào
+            $table->dateTime('check_out')->nullable(); // Giờ ra
+            $table->date('date'); // Ngày làm việc
             $table->timestamps();
         });
     }
@@ -22,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('staffs_activity_logs');
+        Schema::dropIfExists('staff_attendances');
     }
 };

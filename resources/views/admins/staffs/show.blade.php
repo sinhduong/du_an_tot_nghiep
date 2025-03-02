@@ -35,32 +35,36 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-xxl-3 col-xl-4 col-md-12">
-                    <div class="lh-card-sticky guest-card">
-                        <div class="lh-card">
-                            <div class="lh-card-content card-default">
-                                <div class="guest-profile">
-                                    @if ($staff->avatar)
-                                        <img src="{{ Storage::url($staff->avatar) }}" alt="profile" width="150px">
-                                    @endif
-                                    {{-- @foreach ($staff->rooms as $room)
-                                        <td>
-
-                                            <span class="badge bg-primary">{{ $room->name }}</span>
-                                        </td>
-                                    @endforeach --}}
-                                    <h5>{{ $staff->name }}</h5>
-                                    <p>{{ \Carbon\Carbon::parse($staff->birthday)->format('d/m/Y') }}</p>
+                @if ($staff->user)
+                    <div class="col-xxl-3 col-xl-4 col-md-12">
+                        <div class="lh-card-sticky guest-card">
+                            <div class="lh-card">
+                                <div class="lh-card-content card-default">
+                                    <div class="guest-profile">
+                                        @if ($staff->user->avatar && Storage::exists($staff->user->avatar))
+                                            <img src="{{ Storage::url($staff->user->avatar) }}" alt="profile"
+                                                width="150px">
+                                        @else
+                                            <img class="user" src="{{ asset('assets/admin/assets/img/user/thumb.jpg') }}"
+                                                alt="user">
+                                        @endif
+                                        <h5>{{ $staff->user->name }}</h5>
+                                        <p>{{ \Carbon\Carbon::parse($staff->user->birthday)->format('d/m/Y') }}</p>
+                                    </div>
+                                    <ul class="list">
+                                        <li><i class="ri-phone-line"></i><span>{{ $staff->user->phone }}</span></li>
+                                        <li><i class="ri-mail-line"></i><span>{{ $staff->user->email }}</span></li>
+                                        <li><i class="ri-map-pin-line"></i><span>{{ $staff->user->address }}</span></li>
+                                    </ul>
                                 </div>
-                                <ul class="list">
-                                    <li><i class="ri-phone-line"></i><span>{{ $staff->phone }}</span></li>
-                                    <li><i class="ri-mail-line"></i><span>{{ $staff->email }}</span></li>
-                                    <li><i class="ri-map-pin-line"></i><span>{{ $staff->address }}</span></li>
-                                </ul>
                             </div>
                         </div>
                     </div>
-                </div>
+                @endif
+
+
+
+
                 <div class="col-xxl-9 col-xl-8 col-md-12">
                     <div class="lh-card" id="bookingtbl">
                         <div class="lh-card-header">
@@ -74,47 +78,45 @@
                             <div class="booking-details">
                                 <i class="ri-home-8-line"></i>
                                 <span>
-                                    <p>ID : {{ $staff->id }}</p>
-
-                                    <h5>{{ $staff->status }}</h5>
+                                    @foreach ($roles as $role)
+                                        @if ($role->id == $staff->role_id)
+                                            <h5>{{ $role->name }}</h5>
+                                        @endif
+                                    @endforeach
                                     <h5>
-                                        @foreach ($staff->rooms as $room)
+                                        {{-- @foreach ($staff->rooms as $room)
                                             <td>
                                                 <span class="badge bg-primary">{{ $room->name }}</span>
                                             </td>
-                                        @endforeach
+                                        @endforeach --}}
                                     </h5>
                                 </span>
                             </div>
                             <div class="booking-box">
+                                <h5 class="lh-card-title">Quản lý các phòng:</h5>
+
                                 <div class="booking-info">
-                                    <p><i class="ri-calendar-check-line"></i>Ngày bắt đầu hợp đồng</p>
-                                    <h6>{{ \Carbon\Carbon::parse($staff->contract_start)->format('d/m/Y') }}</h6>
+                                    @foreach ($rooms as $room)
+                                        <div class="booking-details">
+                                            <h5><span class="badge bg-primary">{{ $room->room_number }}</span></h5>
+                                        </div>
+                                    @endforeach
+
                                 </div>
+                            </div>
+                            <div class="booking-box">
+                                <h5 class="lh-card-title">Ca làm:</h5>
+
                                 <div class="booking-info">
-                                    <p><i class="ri-calendar-check-line"></i>Ngày kết thúc hợp đồng</p>
-                                    <h6>{{ \Carbon\Carbon::parse($staff->contract_end)->format('d/m/Y') }}</h6>
-                                </div>
-                                <div class="booking-info">
-                                    <p><i class="ri-hotel-bed-line"></i>Loại hợp đồng</p>
-                                    <h6>{{ $staff->contract_type }}</h6>
-                                </div>
-                                <div class="booking-info">
-                                    <p><i class="ri-user-line"></i>Vai trò</p>
-                                    <h6>{{ $staff->role }}</h6>
-                                </div>
-                                <div class="booking-info">
-                                    <p><i class="ri-hotel-bed-line"></i>Số bảo hiểm</p>
-                                    <h6><span>{{ $staff->insurance_number }}</span></h6>
-                                </div>
-                                <div class="booking-info">
-                                    <p><i class="ri-pass-valid-line"></i>Lương</p>
-                                    <td class="active">{{ \App\Helpers\FormatHelper::formatPrice($staff->salary) }}</td>
+                                    <div class="booking-details">
+                                        <h5><span class="badge bg-primary">{{ $shifts->name }} {{ $shifts->start_time }} -
+                                                {{ $shifts->end_time }}</span></h5>
+                                    </div>
 
                                 </div>
                             </div>
                             <div class="facilities-details">
-                                <h6 class="lh-card-title">Ghi chú</h6>
+                                <h5 class="lh-card-title">Ghi chú</h5>
                                 <div class="row">
                                     <div class="col-lg-3 col-md-6">
                                         <div class="facilities-info">

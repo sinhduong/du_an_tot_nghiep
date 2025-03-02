@@ -1,5 +1,14 @@
 <?php
 
+<<<<<<< HEAD
+use App\Http\Controllers\AmenityController;
+use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\RulesAndRegulationController;
+use App\Http\Controllers\StaffAttendanceController;
+use App\Http\Controllers\StaffRoleController;
+use App\Http\Controllers\StaffShiftController;
+use App\Models\Room_amenity;
+=======
 use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\AmenityController;
 use App\Http\Controllers\Admin\BookingController;
@@ -15,6 +24,7 @@ use App\Http\Controllers\Admin\RulesAndRegulationController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\HomeController;
+>>>>>>> origin/main
 use Illuminate\Support\Facades\Route;
 
 
@@ -50,26 +60,27 @@ require __DIR__ . '/auth.php';
 Route::prefix('admin')
 
     ->as('admin.')
+    // ->middleware(['auth', 'role:admin']) // Chỉ admin mới truy cập
     ->group(function () {
         Route::get('/', function () {
             return view('admins/dashboard');
         })->name('dashboard');
 
         Route::prefix('room-types')
-        ->as('room_types.')
-        ->group(function () {
-            Route::get('/', [RoomTypeController::class, 'index'])->name('index');
-            Route::get('/create', [RoomTypeController::class, 'create'])->name('create');
-            Route::post('/store', [RoomTypeController::class, 'store'])->name('store');
-            Route::get('{id}/edit', [RoomTypeController::class, 'edit'])->name('edit');
-            Route::get('{id}/show', [RoomTypeController::class, 'show'])->name('show');
-            Route::put('{id}/update', [RoomTypeController::class, 'update'])->name('update');
-            Route::post('{id}/delete-image', [RoomTypeController::class, 'deleteImage'])->name('delete-image');
-            Route::delete('{id}/destroy', [RoomTypeController::class, 'destroy'])->name('destroy');
-            Route::get('/trashed', [RoomTypeController::class, 'trashed'])->name('trashed');
-            Route::patch('{id}/restore', [RoomTypeController::class, 'restore'])->name('restore');
-            Route::delete('{id}/force-delete', [RoomTypeController::class, 'forceDelete'])->name('forceDelete');
-        });
+            ->as('room_types.')
+            ->group(function () {
+                Route::get('/', [RoomTypeController::class, 'index'])->name('index');
+                Route::get('/create', [RoomTypeController::class, 'create'])->name('create');
+                Route::post('/store', [RoomTypeController::class, 'store'])->name('store');
+                Route::get('{id}/edit', [RoomTypeController::class, 'edit'])->name('edit');
+                Route::get('{id}/show', [RoomTypeController::class, 'show'])->name('show');
+                Route::put('{id}/update', [RoomTypeController::class, 'update'])->name('update');
+                Route::post('{id}/delete-image', [RoomTypeController::class, 'deleteImage'])->name('delete-image');
+                Route::delete('{id}/destroy', [RoomTypeController::class, 'destroy'])->name('destroy');
+                Route::get('/trashed', [RoomTypeController::class, 'trashed'])->name('trashed');
+                Route::patch('{id}/restore', [RoomTypeController::class, 'restore'])->name('restore');
+                Route::delete('{id}/force-delete', [RoomTypeController::class, 'forceDelete'])->name('forceDelete');
+            });
 
         Route::prefix('rooms')
             ->as('rooms.')
@@ -111,6 +122,46 @@ Route::prefix('admin')
                 Route::patch('/{staff}/restore', [StaffController::class, 'restore'])->name('restore'); // Khôi phục khi đã xóa mềm
                 Route::delete('/{staff}/force-delete', [StaffController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
 
+            });
+
+            Route::prefix('staff_roles') // Đặt tên theo số nhiều chuẩn RESTful
+            ->as('staff_roles.') // Tên route để sử dụng dễ dàng trong view/controller
+            ->group(function () {
+                Route::get('/', [StaffRoleController::class, 'index'])->name('index');
+                Route::get('/create', [StaffRoleController::class, 'create'])->name('create');
+                Route::post('/store', [StaffRoleController::class, 'store'])->name('store');
+                Route::get('{staffRole}/show', [StaffRoleController::class, 'show'])->name('show');
+                Route::get('{staffRole}/edit', [StaffRoleController::class, 'edit'])->name('edit');
+                Route::put('{staffRole}/update', [StaffRoleController::class, 'update'])->name('update');
+                Route::delete('{staffRole}/destroy', [StaffRoleController::class, 'destroy'])->name('destroy'); // Xóa
+                Route::get('/trashed', [StaffRoleController::class, 'trashed'])->name('trashed'); // Danh sách đã xóa mềm
+                Route::patch('/{staffRole}/restore', [StaffRoleController::class, 'restore'])->name('restore'); // Khôi phục khi đã xóa mềm
+                Route::delete('/{staffRole}/force-delete', [StaffRoleController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
+
+            });
+
+            Route::prefix('staff_shifts') // Đặt tên theo số nhiều chuẩn RESTful
+            ->as('staff_shifts.') // Tên route để sử dụng dễ dàng trong view/controller
+            ->group(function () {
+                Route::get('/', [StaffShiftController::class, 'index'])->name('index');
+                Route::get('/create', [StaffShiftController::class, 'create'])->name('create');
+                Route::post('/store', [StaffShiftController::class, 'store'])->name('store');
+                Route::get('{staffShift}/show', [StaffShiftController::class, 'show'])->name('show');
+                Route::get('{staffShift}/edit', [StaffShiftController::class, 'edit'])->name('edit');
+                Route::put('{staffShift}/update', [StaffShiftController::class, 'update'])->name('update');
+                Route::delete('{staffShift}/destroy', [StaffShiftController::class, 'destroy'])->name('destroy'); // Xóa
+                Route::get('/trashed', [StaffShiftController::class, 'trashed'])->name('trashed'); // Danh sách đã xóa mềm
+                Route::patch('/{staffShift}/restore', [StaffShiftController::class, 'restore'])->name('restore'); // Khôi phục khi đã xóa mềm
+                Route::delete('/{staffShift}/force-delete', [StaffShiftController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
+
+            });
+
+        Route::prefix('staff_attendances') // Đặt tên theo số nhiều chuẩn RESTful
+            ->as('staff_attendances.') // Tên route để sử dụng dễ dàng trong view/controller
+            ->group(function () {
+                Route::get('/', [StaffAttendanceController::class, 'index'])->name('index');
+                Route::post('/check-in', [StaffAttendanceController::class, 'checkIn'])->name('check-in');
+                Route::post('/check-out', [StaffAttendanceController::class, 'checkOut'])->name('check-out');
             });
 
         Route::prefix('reviews') // Đặt tên theo số nhiều chuẩn RESTful
@@ -183,7 +234,23 @@ Route::prefix('admin')
                 Route::delete('{id}/destroy',   [BookingController::class, 'destroy'])->name('destroy');
             });
 
+<<<<<<< HEAD
+        Route::prefix('services') // Quản lý dịch vụ khách sạn
+            ->as('services.')
+            ->group(function () {
+                Route::get('/', [ServiceController::class, 'index'])->name('index'); // Danh sách dịch vụ
+                Route::get('/create', [ServiceController::class, 'create'])->name('create'); // Form thêm mới
+                Route::post('/store', [ServiceController::class, 'store'])->name('store'); // Lưu dịch vụ
+                Route::get('{id}/edit', [ServiceController::class, 'edit'])->name('edit'); // Form chỉnh sửa
+                Route::put('{id}/update', [ServiceController::class, 'update'])->name('update'); // Cập nhật
+                Route::delete('{id}/destroy', [ServiceController::class, 'destroy'])->name('destroy'); // Xóa dịch vụ
+                Route::get('/trashed', [ServiceController::class, 'trashed'])->name('trashed'); // Danh sách dịch vụ đã xóa mềm
+                Route::patch('/{id}/restore', [ServiceController::class, 'restore'])->name('restore'); // Khôi phục dịch vụ đã xóa mềm
+                Route::delete('/{id}/force-delete', [ServiceController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
+            });
+=======
         Route::resource('services', ServiceController::class);
+>>>>>>> origin/main
 
         Route::resource('promotions', PromotionController::class);
         Route::resource('roles', RoleController::class);
