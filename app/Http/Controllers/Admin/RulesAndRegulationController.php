@@ -8,7 +8,9 @@ use App\Http\Requests\Storerules_and_regulationRequest;
 use App\Http\Requests\Updaterules_and_regulationRequest;
 use App\Models\Room;
 use App\Models\Room_rar;
+use App\Models\RoomType;
 use App\Models\RulesAndRegulation;
+use Illuminate\Support\Facades\DB;
 
 class RulesAndRegulationController extends Controller
 {
@@ -29,7 +31,9 @@ class RulesAndRegulationController extends Controller
     public function create()
     {
         $title = 'Thêm Quy Tắc ';
-        return  view('admins.rule-regulation.create', compact('title'));
+        $roomTypes = RoomType::all();
+
+        return  view('admins.rule-regulation.create', compact('title','roomTypes'));
     }
 
     //     /**
@@ -37,16 +41,21 @@ class RulesAndRegulationController extends Controller
     //      */
     public function store(Storerules_and_regulationRequest $request)
     {
-        if ($request->isMethod('POST')) {
-            // Lấy dữ liệu từ request
-            $data = $request->except('_token');
-
-            // Thêm loại phòng vào database
-            RulesAndRegulation::create($data);
+       
+        try {
+            DB::beginTransaction();
+            $service = RulesAndRegulation::create($request->all());
+            if ($request->has('roomTypes')) {
+                $service->roomTypes()->sync($request->roomTypes);
+            }
+            DB::commit();
+            return redirect()->route('admin.rule-regulations.index')->with('success', 'Thêm  quy định thành công');
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            throw $exception;
         }
 
         // Chuyển hướng về danh sách với thông báo thành công
-        return redirect()->route('admin.rule-regulations.index')->with('success', 'Thêm quy định phòng thành công');
     }
 
 
@@ -64,8 +73,10 @@ class RulesAndRegulationController extends Controller
     public function edit(string $id)
     {
         $title = 'Sửa loại phòng';
-        $room_types = RulesAndRegulation::findOrfail($id);
-        return  view('admins.rule-regulation.edit', compact('room_types', 'title'));
+        $roomTypes = RoomType::all();
+        $rules = RulesAndRegulation::findOrfail($id);
+        $selectedRoomTypes = $rules->roomTypes->pluck('id')->toArray();
+        return  view('admins.rule-regulation.edit', compact('rules', 'title','roomTypes','selectedRoomTypes'));
     }
 
     //     /**
@@ -73,17 +84,24 @@ class RulesAndRegulationController extends Controller
     //      */
     public function update(Updaterules_and_regulationRequest $request, string $id)
     {
-        // Tìm loại phòng theo ID, nếu không có sẽ báo lỗi 404
-        $room_type = RulesAndRegulation::findOrFail($id);
+       
+        try {
+            DB::beginTransaction();
+            $service = RulesAndRegulation::findOrFail($id);
 
-        // Lấy dữ liệu từ request, loại bỏ _token và _method
-        $data = $request->except('_token', '_method');
+            $service->update($request->all());
 
-        // Cập nhật loại phòng
-        $room_type->update($data);
+            if ($request->has('roomTypes')) {
+                $service->roomTypes()->sync($request->roomTypes);
+            }
+            DB::commit();
+            return redirect()->route('admin.rule-regulations.index')->with('success', 'Cập nhật dịch vụ thành công');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
 
         // Chuyển hướng về danh sách với thông báo thành công
-        return redirect()->route('admin.rule-regulations.index')->with('success', 'Cập nhật loại phòng thành công');
     }
 
 
@@ -163,56 +181,56 @@ foreach ($roomIds as $roomId) {
         // Chuyển hướng về danh sách với thông báo thành công
         // return redirect()->route('admin.rule-regulations.index')->with('success', 'Thêm quy định phòng thành công');
     }
-    public function view_room( string $id){
-        $title = 'Các Quy Định Của Phòng ' ;
-        // $data = Room::with(['rules', 'rars'])->findOrFail($id);
-        // $room_types =Room::findOrfail($id);
-        // $room_rule = rules_and_regulation::orderBy('id', 'desc')->get();
-        // // dd( $room_types) ;
-        // dd( $data) ;
-        // // dd( $room_rule) ;
-        // $room_rar = Room_rar::findOrFail($id);
-        // $rooms = Room::all();
-        // $rules = Rules_and_regulation::all();
-        // return view('admin.room_rars.edit', compact('room_rar', 'rooms', 'rules'));
-        $room = Room::with(['rules'])->findOrFail($id);
-        $room_rars = Room_rar::where('room_id', $id)->get(); // Lấy tất cả bản ghi từ `room_rars`
-        // dd($room_rars);
+    // public function view_room( string $id){
+    //     $title = 'Các Quy Định Của Phòng ' ;
+    //     // $data = Room::with(['rules', 'rars'])->findOrFail($id);
+    //     // $room_types =Room::findOrfail($id);
+    //     // $room_rule = rules_and_regulation::orderBy('id', 'desc')->get();
+    //     // // dd( $room_types) ;
+    //     // dd( $data) ;
+    //     // // dd( $room_rule) ;
+    //     // $room_rar = Room_rar::findOrFail($id);
+    //     // $rooms = Room::all();
+    //     // $rules = Rules_and_regulation::all();
+    //     // return view('admin.room_rars.edit', compact('room_rar', 'rooms', 'rules'));
+    //     $room = Room::with(['rules'])->findOrFail($id);
+    //     $room_rars =Room_rar::where('room_id', $id)->get(); // Lấy tất cả bản ghi từ `room_rars`
+    //     // dd($room_rars);
 
 
-        return view('admins.rule-regulation.rule-room.view',
-        //  compact('title', 'room_rule' ,'data','room_types','room_rar', 'rooms', 'rules'));
-        compact('title', 'room' ,'room_rars'));
+    //     return view('admins.rule-regulation.rule-room.view',
+    //     //  compact('title', 'room_rule' ,'data','room_types','room_rar', 'rooms', 'rules'));
+    //     compact('title', 'room' ,'room_rars'));
 
-    }
+    // }
 
 
 
-    // xóa bảng
-    public function destroy_room(string $id)
-    {
-        // $room_type = rules_and_regulation::findOrFail($id);
-        // $room_type->delete(); // Xóa mềm
-        $room_rar = Room_rar::findOrFail($id);
-        $room_rar->delete();
-        return redirect()->route('admin.rule-regulations.room_index')->with('success', 'Loại phòng đã được xóa mềm');
-    }
+    // // xóa bảng
+    // public function destroy_room(string $id)
+    // {
+    //     // $room_type = rules_and_regulation::findOrFail($id);
+    //     // $room_type->delete(); // Xóa mềm
+    //     $room_rar = Room_rar::findOrFail($id);
+    //     $room_rar->delete();
+    //     return redirect()->route('admin.rule-regulations.room_index')->with('success', 'Loại phòng đã được xóa mềm');
+    // }
 
-    public function trashed_room()
-    {
-        $title = 'Loại phòng đã xóa';
-        $room_rars = Room_rar::onlyTrashed()->get(); // ✅ Lấy dữ liệu đã xóa mềm
-        return view('admins.rule-regulation.rule-room.trashed', compact('title', 'room_rars'));
-    }
-    public function restore_room($id)
-    {
-        Room_rar::onlyTrashed()->findOrFail($id)->restore(); // ✅ Laravel tự động khôi phục
-        return redirect()->route('admin.rule-regulations.room_index')->with('success', 'Khôi phục loại phòng thành công');
-    }
+    // public function trashed_room()
+    // {
+    //     $title = 'Loại phòng đã xóa';
+    //     $room_rars = Room_rar::onlyTrashed()->get(); // ✅ Lấy dữ liệu đã xóa mềm
+    //     return view('admins.rule-regulation.rule-room.trashed', compact('title', 'room_rars'));
+    // }
+    // public function restore_room($id)
+    // {
+    //     Room_rar::onlyTrashed()->findOrFail($id)->restore(); // ✅ Laravel tự động khôi phục
+    //     return redirect()->route('admin.rule-regulations.room_index')->with('success', 'Khôi phục loại phòng thành công');
+    // }
 
-    public function forceDelete_room($id)
-    {
-        Room_rar::onlyTrashed()->findOrFail($id)->forceDelete(); // ✅ Xóa hẳn khỏi database
-        return redirect()->route('admin.rule-regulations.trashed_room')->with('success', 'Xóa vĩnh viễn loại phòng thành công');
-    }
+    // public function forceDelete_room($id)
+    // {
+    //     Room_rar::onlyTrashed()->findOrFail($id)->forceDelete(); // ✅ Xóa hẳn khỏi database
+    //     return redirect()->route('admin.rule-regulations.trashed_room')->with('success', 'Xóa vĩnh viễn loại phòng thành công');
+    // }
 }

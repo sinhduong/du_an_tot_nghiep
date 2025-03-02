@@ -37,7 +37,8 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Tên dịch vụ</th>
-                                        <th>Trạng thái</th>
+                                          <th>Loại Phòng</th>
+                                            <th>Trạng Thái </th>
                                         <th>Hành động</th>
                                     </tr>
                                 </thead>
@@ -46,6 +47,17 @@
                                     <tr>
                                         <td class="text-center">{{ $index + 1 }}</td>
                                         <td>{{ $service->name }}</td>
+                                        <td>
+                                            @foreach ($service->roomTypes as $roomType)
+                                                <span class="badge bg-primary">{{ $roomType->name }}</span>
+                                                @if (!$loop->last)
+                                                    ,
+                                                @endif
+                                            @endforeach
+                                            @if ($service->roomTypes->isEmpty())
+                                                <span class="badge bg-secondary">Chưa gán loại phòng</span>
+                                            @endif
+                                        </td>
                                         <td>
                                             <span class="badge {{ $service->is_active ? 'bg-success' : 'bg-danger' }}">
                                                 {{ $service->is_active ? 'Hoạt động' : 'Không hoạt động' }}

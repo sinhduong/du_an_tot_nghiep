@@ -45,46 +45,30 @@
                             </div>
                         </div>
                         <div class="container mt-4">
-                            <h2 class="text-center">Chi Tiết Quy Định Của : {{ $room->name }}</h2>
-
-                            {{-- <div class="card shadow-lg">
-                                <div class="card-body">
-                                    <h4>Quy Tắc Áp Dụng</h4> --}}
-                                    {{-- @if ($data->rules_and_regulations->isEmpty())
-                                    <p class="text-muted">Chưa có quy tắc nào cho phòng này.</p>
-                                    @else --}}
-                                    {{-- <ul class="list-group">
-                                        @foreach ($data->rules as $rule)
-                                        <li class="list-group-item">{{ $rule->name }}</li>
-
-                                        @endforeach
-                                    </ul> --}}
-                                    {{-- @endif --}}
-                                    {{-- <a href="{{ route('admin.rule-regulations.room_index') }}"
-                                        class="btn btn-secondary mt-3">Quay Lại</a>
-                                </div>
-                            </div> --}}
+                            <h2 class="text-center">Chi Tiết Phòng: {{ $room->name }}</h2>
                             <table id="booking_table" class="table table-striped table-hover">
                                 <thead class="table-dark">
                                     <tr>
                                         <th class="text-center">ID</th>
-                                        <th class="text-center">Tên Quy Tắc && Quy Định </th>
+                                        <th class="text-center">Tên Tiện Ích Của Phòng </th>
                                         {{-- <th>Trạng thái</th> --}}
                                         <th class="text-center">Hành động</th>
-                                      
+                                        <th class="text-center">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($room_rars as $rule)
                                    
                                         <tr>
-                                            <td class="text-center">  {{$rule->id}}</td>
-                                            {{-- <td class="text-center"> {{index + 1 }} </td> --}}
+
+                                            <td class="text-center"> {{$rule->id}} </td>
                                             <td class="text-center">
-                                                {{ $rule->rule->name }}
+                                                {{$rule->amenity->name}}
+                                                {{-- <td> {{ optional($rule->amenity)->name }} </td> --}}
+
                                             </td>
-                                          
-                                            <td class="text-center"> 
+                                            <td> {{$rule->id}}</td>
+                                            <td>
                                                 <div class="btn-group">
 
                                                     <button type="button" class="btn btn-outline-secondary dropdown-toggle"
@@ -94,7 +78,7 @@
                                                     <ul class="dropdown-menu">
                                                         <li>
                                                             <form
-                                                                action="{{ route('admin.rule-regulations.destroy_room', $rule->id) }}"
+                                                                action="{{ route('admin.amenities.destroy_room', $rule->id) }}"
                                                                 method="POST"
                                                                 onsubmit="return confirm('Bạn có muốn xóa mềm không?');">
                                                                 @csrf

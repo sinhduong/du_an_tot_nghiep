@@ -5,7 +5,7 @@
             <!-- Page title & breadcrumb -->
             <div class="lh-page-title">
                 <div class="lh-breadcrumb">
-                    <h5>Thêm Quy Định Vào Phòng</h5>
+                    <h5>Thêm Các Tiện Ích Vào Phòng</h5>
                     <ul>
                         <li><a href="index.html">Trang chủ</a></li>
                         <li>Dashboard</li>
@@ -45,7 +45,7 @@
                             </div>
                         </div>
                         <div class="lh-card-content card-booking">
-                            <form action="{{ route('admin.rule-regulations.room_store') }}" method="POST" enctype="multipart/form-data">                                @csrf
+                            <form action="{{ route('admin.amenities.room_store') }}" method="POST" enctype="multipart/form-data">                                @csrf
                                 <div class="row mtb-m-12">
                                     <div class="col-md-12 col-sm-12">
                                         <div class="lh-user-detail">
@@ -55,18 +55,17 @@
                                                         {{-- <input type="text" name="name" placeholder="Tên Quy Tắc"
                                                             class="form-control" value="{{ old('name') }}"> --}}
                                                         <select name="room_ids[]" id="room_ids" class="form-control"
-                                                            multiple="multiple">
+                                                            multiple>
                                                             @foreach ($room as $id => $name)
                                                                 <option value="{{ $id }}">{{ $name }} </option>
                                                             @endforeach
                                                         </select>
-                                                        
                                                         @error('name')
                                                             <p class="text-danger">{{ $message }}</p>
                                                         @enderror
                                                     </div>
                                                 </li>
-                                                <li><strong>Tên Các Quy Định : </strong>
+                                                <li><strong>Tên Các Tiện Ích : </strong>
                                                     <div class="form-group">
                                                         {{-- <input type="text" name="name" placeholder="Tên Quy Tắc"
                                                             class="form-control" value="{{ old('name') }}"> --}}

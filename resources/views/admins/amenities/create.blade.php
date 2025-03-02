@@ -60,14 +60,30 @@
                                                     @enderror
                                                 </div>
                                             </li>
-                                            <li><strong>Chọn Loại Phòng *: </strong>
+                                            <li>
+                                                <strong>Áp dụng cho *: </strong>
                                                 <div class="form-group">
-                                                    <select name="room_type_id[]" class="form-control select2" multiple>
-                                                        @foreach($roomTypes as $id => $name)
-                                                            <option value="{{ $id }}">{{ $name }}</option>
+                                                    <select name="roomTypes[]" multiple="multiple" class="form-select">
+                                                        <option value="">Chọn nhiều loại phòng</option>
+                                                        @foreach($roomTypes as $roomType)
+                                                            <option value="{{ $roomType->id }}"
+                                                                {{ in_array($roomType->id, old('roomTypes', isset($roomTypeService) ? [$roomTypeService->room_type_id] : [])) ? 'selected' : '' }}>
+                                                                {{ $roomType->name }}
+                                                            </option>
                                                         @endforeach
                                                     </select>
-                                                    @error('room_type_id')
+                                                    @error('roomTypes')
+                                                    <p class="text-danger">{{ $message }}</p>
+                                                    @enderror
+                                                </div>
+                                            </li>
+                                            <li><strong>Trạng thái *: </strong>
+                                                <div class="form-group">
+                                                    <select name="is_active" class="form-control">
+                                                        <option value="1" {{ old('is_active') == 1 ? 'selected' : '' }}>Hoạt động</option>
+                                                        <option value="0" {{ old('is_active') == 0 ? 'selected' : '' }}>Không hoạt động</option>
+                                                    </select>
+                                                    @error('is_active')
                                                         <p class="text-danger">{{ $message }}</p>
                                                     @enderror
                                                 </div>

@@ -91,9 +91,9 @@
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
                         <li><a href="{{ route('admin.rule-regulations.index') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Danh sách</a></li>
+                                    class="ri-git-commit-line"></i>Danh sách Quy Định </a></li>
                         <li><a href="{{ route('admin.rule-regulations.create') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Thêm mới</a></li>
+                                    class="ri-git-commit-line"></i>Thêm mới Quy đinh</a></li>
                         <li><a href="{{ route('admin.rule-regulations.trashed') }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Danh sách xóa mềm</a></li>
 

@@ -44,11 +44,8 @@
                                 <div class="lh-date-range dots">
                                     <span></span>
                                 </div>
-                                <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create') }}'">
-                                    Tạo mới Quy Định
-                                </button>
-                                <button class="btn btn-success ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create_room') }}'">
-                                   Thêm Quy Tắc Vào Phòng
+                                <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.amenities.create_room') }}'">
+                                    Thêm Tiện Ích Vào Phòng
                                 </button>
 
                         </div>
@@ -65,34 +62,22 @@
                                 <table id="booking_table" class="table table-striped table-hover">
                                     <thead class="table-dark">
                                         <tr>
-                                            <th>STT</th>
-                                            <th>Tên Loại Quy Định </th>
-                                            <th>Loại Phòng </th>
-                                            <th>Trạng thái</th>
+                                            <th>ID</th>
+                                            <th>Tên Phòng</th>
+                                            {{-- <th>Trạng thái</th> --}}
                                             <th>Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($room_rule as $index => $item)
+                                        @foreach ($room as $index => $item)
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>{{ $item->name }}</td>
-                                            <td>
-                                                @foreach ($item->roomTypes as $roomType)
-                                                    <span class="badge bg-primary">{{ $roomType->name }}</span>
-                                                    @if (!$loop->last)
-                                                        ,
-                                                    @endif
-                                                @endforeach
-                                                @if ($item->roomTypes->isEmpty())
-                                                    <span class="badge bg-secondary">Chưa gán loại phòng</span>
-                                                @endif
-                                            </td>
-                                            <td>
+                                            {{-- <td>
                                                 <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">
                                                     {{ $item->is_active ? 'Hoạt động' : 'Không hoạt động' }}
                                                 </span>
-                                            </td>
+                                            </td> --}}
                                             <td>
                                                 <div class="btn-group">
 
@@ -101,12 +86,17 @@
                                                     </button>
                                                     <ul class="dropdown-menu">
                                                         <li>
-                                                            <a class="dropdown-item" href="{{ route('admin.rule-regulations.edit', $item->id) }}">
+                                                            <a class="dropdown-item" href="{{ route('admin.amenities.view_room', $item->id) }}">
+                                                                <i class="ri-edit-line"></i> View
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="{{ route('admin.amenities.edit', $item->id) }}">
                                                                 <i class="ri-edit-line"></i> Edit
                                                             </a>
                                                         </li>
                                                         <li>
-                                                            <form action="{{ route('admin.rule-regulations.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Bạn có muốn xóa mềm không?');">
+                                                            <form action="{{ route('admin.amenities.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Bạn có muốn xóa mềm không?');">
                                                                 @csrf
                                                                 @method('DELETE')
                                                                 <button type="submit" class="dropdown-item text-danger">

@@ -64,6 +64,7 @@
                                             <th>ID</th>
                                             <th>Tên Tiện Ích</th>
                                             <th>Loại Phòng</th>
+                                            <th>Trạng Thái </th>
                                             <th>Hành động</th>
                                         </tr>
                                     </thead>
@@ -83,6 +84,11 @@
                                                     <span class="badge bg-secondary">Chưa gán loại phòng</span>
                                                 @endif
                                             </td>
+                                            <td>
+                                                <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">
+                                                    {{ $item->is_active ? 'Hoạt động' : 'Không hoạt động' }}
+                                                </span>
+                                            </td>  
                                             <td>
                                                 <div class="btn-group">
                                                     <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
