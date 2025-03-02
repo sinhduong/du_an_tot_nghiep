@@ -61,32 +61,17 @@
                                 <table id="booking_table" class="table table-striped table-hover">
                                     <thead class="table-dark">
                                         <tr>
-<<<<<<< HEAD
-                                            <th class="text-center">ID</th>
-                                            <th class="text-center">Tên Loại Tiện Ích </th>
-                                            {{-- <th>Trạng thái</th> --}}
-                                            <th class="text-center">Hành động</th>
-=======
                                             <th>ID</th>
                                             <th>Tên Tiện Ích</th>
                                             <th>Loại Phòng</th>
+                                            <th>Trạng Thái </th>
                                             <th>Hành động</th>
->>>>>>> 161bfcc6de110ae079d1d68e45662d37ae0584a6
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($amenities as $index => $item)
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
-<<<<<<< HEAD
-                                            <td class="text-center">{{ $item->name }}</td>
-                                            {{-- <td>
-                                                <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">
-                                                    {{ $item->is_active ? 'Hoạt động' : 'Không hoạt động' }}
-                                                </span>
-                                            </td> --}}
-                                            <td class="text-center">
-=======
                                             <td>{{ $item->name }}</td>
                                             <td>
                                                 @foreach ($item->roomTypes as $roomType)
@@ -100,7 +85,11 @@
                                                 @endif
                                             </td>
                                             <td>
->>>>>>> 161bfcc6de110ae079d1d68e45662d37ae0584a6
+                                                <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">
+                                                    {{ $item->is_active ? 'Hoạt động' : 'Không hoạt động' }}
+                                                </span>
+                                            </td>  
+                                            <td>
                                                 <div class="btn-group">
                                                     <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
                                                         <i class="ri-settings-3-line"></i>

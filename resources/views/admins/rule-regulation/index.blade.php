@@ -65,9 +65,10 @@
                                 <table id="booking_table" class="table table-striped table-hover">
                                     <thead class="table-dark">
                                         <tr>
-                                            <th>ID</th>
+                                            <th>STT</th>
                                             <th>Tên Loại Quy Định </th>
-                                            {{-- <th>Trạng thái</th> --}}
+                                            <th>Loại Phòng </th>
+                                            <th>Trạng thái</th>
                                             <th>Hành động</th>
                                         </tr>
                                     </thead>
@@ -76,11 +77,22 @@
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>{{ $item->name }}</td>
-                                            {{-- <td>
+                                            <td>
+                                                @foreach ($item->roomTypes as $roomType)
+                                                    <span class="badge bg-primary">{{ $roomType->name }}</span>
+                                                    @if (!$loop->last)
+                                                        ,
+                                                    @endif
+                                                @endforeach
+                                                @if ($item->roomTypes->isEmpty())
+                                                    <span class="badge bg-secondary">Chưa gán loại phòng</span>
+                                                @endif
+                                            </td>
+                                            <td>
                                                 <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">
                                                     {{ $item->is_active ? 'Hoạt động' : 'Không hoạt động' }}
                                                 </span>
-                                            </td> --}}
+                                            </td>
                                             <td>
                                                 <div class="btn-group">
 

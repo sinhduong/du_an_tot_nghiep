@@ -8,6 +8,7 @@ use App\Models\Amenity;
 use App\Http\Requests\StoreAmenityRequest;
 use App\Http\Requests\UpdateAmenityRequest;
 use App\Models\RoomType;
+use Illuminate\Support\Facades\DB;
 
 class AmenityController extends Controller
 {
@@ -22,25 +23,25 @@ class AmenityController extends Controller
     public function create()
     {
         $title = 'Thêm Tiện nghi Mới';
-        $roomTypes = RoomType::pluck('name', 'id')->all(); // Lấy danh sách loại phòng
+        $roomTypes = RoomType::all();
         return view('admins.amenities.create', compact('title', 'roomTypes'));
     }
 
 
     public function store(StoreAmenityRequest $request)
     {
-        if ($request->isMethod('POST')) {
-            // Tạo tiện nghi mới
-            $data = $request->except('_token', 'room_type_id');
-            $amenity = Amenity::create($data);
 
-            // Gán loại phòng vào tiện nghi
-            $roomTypeIds = $request->input('room_type_id', []);
-            if (!empty($roomTypeIds)) {
-                $amenity->roomTypes()->attach($roomTypeIds);
+        try {
+            DB::beginTransaction();
+            $service = Amenity::create($request->all());
+            if ($request->has('roomTypes')) {
+                $service->roomTypes()->sync($request->roomTypes);
             }
-
-            return redirect()->route('admin.amenities.index')->with('success', 'Thêm tiện nghi thành công');
+            DB::commit();
+            return redirect()->route('admin.amenities.index')->with('success', 'Thêm dịch vụ thành công');
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            throw $exception;
         }
     }
 
@@ -48,22 +49,33 @@ class AmenityController extends Controller
     public function edit(string $id)
     {
         $title = 'Sửa Tiện nghi';
-        $amenity = Amenity::with('roomTypes')->findOrFail($id);
-        $roomTypes = RoomType::pluck('name', 'id')->all(); // Lấy danh sách loại phòng
-        return view('admins.amenities.edit', compact('amenity', 'title', 'roomTypes'));
+        $amenity = Amenity::findOrFail($id);
+        $roomTypes = RoomType::all();
+        $selectedRoomTypes = $amenity->roomTypes->pluck('id')->toArray();
+
+        return view('admins.amenities.edit', compact('amenity', 'title', 'roomTypes','selectedRoomTypes'));
+
     }
 
     public function update(UpdateAmenityRequest $request, string $id)
     {
-        $amenity = Amenity::findOrFail($id);
-        $data = $request->except('_token', '_method', 'room_type_id');
-        $amenity->update($data);
+       
+        try {
+            DB::beginTransaction();
+            $service = Amenity::findOrFail($id);
 
-        // Cập nhật loại phòng cho tiện nghi
-        $roomTypeIds = $request->input('room_type_id', []);
-        $amenity->roomTypes()->sync($roomTypeIds);
+            $service->update($request->all());
 
-        return redirect()->route('admin.amenities.index')->with('success', 'Cập nhật tiện nghi thành công');
+            if ($request->has('roomTypes')) {
+                $service->roomTypes()->sync($request->roomTypes);
+            }
+            DB::commit();
+            return redirect()->route('admin.amenities.index')->with('success', 'Cập nhật dịch vụ thành công');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+
     }
 
 

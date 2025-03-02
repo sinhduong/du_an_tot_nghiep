@@ -26,22 +26,10 @@
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
                         <li><a href="team-add.html" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Danh
-<<<<<<< HEAD
-                                sách tài khản </a></li>
-                        <li><a href="team-update.html" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Tài
-                                khoản quản trị</a></li>
-                        <li><a href="team-profile.html" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Tài
-                                khoản Khác</a></li>
-                        <li><a href="{{ route('admin.staffs.index') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Danh sách nhân viên</a></li>
-                        <li><a href="{{ route('admin.staffs.trashed') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Danh sách đã xóa mềm</a></li>
-=======
                                 sách khách hàng</a></li>
                         <li><a href="{{ route('admin.staffs.index') }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Danh sách quản trị viên</a></li>
                         <li><a href="{{route('admin.roles.index')}}" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Phân quyền người dùng</a></li>
->>>>>>> 161bfcc6de110ae079d1d68e45662d37ae0584a6
                     </ul>
                 </li>
                 <li class="lh-sb-item-separator"></li>
@@ -107,25 +95,8 @@
                         <li><a href="{{ route('admin.rule-regulations.create') }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Thêm mới Quy đinh</a></li>
                         <li><a href="{{ route('admin.rule-regulations.trashed') }}" class="lh-page-link drop"><i
-<<<<<<< HEAD
-                                    class="ri-git-commit-line"></i>Danh sách quy đinh xóa mềm</a></li>
-                        <li class="lh-sb-item sb-drop-item">
-                            <a href="javascript:void(0)" class="lh-drop-toggle">
-                                <i class="ri-home-8-line"></i><span class="condense">Thêm Quy Định Vào Phòng<i
-                                        class="drop-arrow ri-arrow-down-s-line"></i></span></a>
-                            <ul class="lh-sb-drop condense">
-                                <li><a href="{{ route('admin.rule-regulations.room_index') }}"
-                                        class="lh-page-link drop"><i class="ri-git-commit-line"></i>Danh sách Quy Định trong phòng </a></li>
-                                <li><a href="{{ route('admin.rule-regulations.create_room') }}"
-                                        class="lh-page-link drop"><i class="ri-git-commit-line"></i>Thêm mới Quy Định trong phòng</a></li>
-                                <li><a href="{{ route('admin.rule-regulations.trashed_room') }}"
-                                        class="lh-page-link drop"><i class="ri-git-commit-line"></i>Danh sách xóa mềm quy định phòng </a></li>
-                            </ul>
-                        </li>
-=======
                                     class="ri-git-commit-line"></i>Danh sách xóa mềm</a></li>
 
->>>>>>> 161bfcc6de110ae079d1d68e45662d37ae0584a6
                     </ul>
                 </li>
                 <li class="lh-sb-item-separator"></li>

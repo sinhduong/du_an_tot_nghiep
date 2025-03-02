@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('amenities', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->boolean('is_active');
             $table->timestamps();
             $table->softDeletes();//dekete_at xóa mềm
         });
