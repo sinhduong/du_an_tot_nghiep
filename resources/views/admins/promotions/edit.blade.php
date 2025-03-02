@@ -53,7 +53,7 @@
                                                 giá</label>
                                             <div class="col-sm-9">
                                                 <input class="form-control" type="text" name="name"
-                                                       value="{{ $promotion->name }}"
+                                                       {{ $isEdit ? "" : "disabled" }} value="{{ $promotion->name }}"
                                                        placeholder="Ví dụ: Lễ tình nhân, ...">
                                                 @error('name')
                                                 <span class="text-danger">{{ $message }}</span>

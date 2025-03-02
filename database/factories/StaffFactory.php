@@ -10,25 +10,26 @@ class StaffFactory extends Factory
 {
     protected $model = Staff::class;
 
-    public function definition()
+    public function definition(): array
     {
         return [
-            'staffs_code' => 'NV' . str_pad($this->faker->unique()->numberBetween(1, 999), 3, '0', STR_PAD_LEFT),
             'name' => $this->faker->name(),
-            'avatar' => $this->faker->imageUrl(200, 200, 'people'),
-            'birthday' => $this->faker->date(),
-            'phone' => $this->faker->phoneNumber(),
+            'avatar' => $this->faker->imageUrl(200, 200, 'people'), // Ảnh ngẫu nhiên
+            'birthday' => $this->faker->date('Y-m-d', '2002-01-01'), // Ngày sinh ngẫu nhiên trước 2002
+            'phone' => $this->faker->unique()->phoneNumber(),
             'address' => $this->faker->address(),
             'email' => $this->faker->unique()->safeEmail(),
             'status' => $this->faker->randomElement(['active', 'inactive', 'on_leave']),
-            'salary' => $this->faker->randomFloat(2, 5000, 50000),
-            'role' => $this->faker->randomElement(['Admin', 'Manager', 'Employee']),
+            'role' => $this->faker->randomElement(['admin', 'manager', 'employee']),
+            'salary' => $this->faker->randomFloat(2, 500, 5000), // Lương từ 500 đến 5000
             'date_hired' => $this->faker->date(),
-            'insurance_number' => Str::random(10),
-            'contract_type' => $this->faker->randomElement(['Full-time', 'Part-time', 'Contract']),
+            'insurance_number' => $this->faker->unique()->numerify('INS###-###-###'),
+            'contract_type' => $this->faker->randomElement(['full-time', 'part-time', 'contract']),
             'contract_start' => $this->faker->date(),
-            'contract_end' => $this->faker->optional()->date(),
+            'contract_end' => $this->faker->optional()->date(), // Có thể null
             'notes' => $this->faker->optional()->sentence(),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 }

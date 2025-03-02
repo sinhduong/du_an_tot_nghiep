@@ -86,8 +86,7 @@
                                                     <td>{{ $item->phone }}</td>
                                                     <td>{{ $item->email }}</td>
                                                     <td>{{ $item->status }}</td>
-                                                    <td class="active">$ {{ $item->salary }}</td>
-
+                                                    <td class="active">{{ \App\Helpers\FormatHelper::formatPrice($item->salary) }}</td>
 
 
                                                     <td>

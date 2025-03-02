@@ -11,7 +11,7 @@ class UpdateServiceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,20 @@ class UpdateServiceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => [
+                "required","string","max:255",
+                "unique:services,name," . $this->service
+            ],
+            'roomTypes' => 'required|array|min:1',
+            'roomTypes.*' => 'exists:room_types,id',
+        ];
+    }
+
+    public function messages():array
+    {
+        return [
+            'name.required'=>'Tên dịch vụ phòng không được bỏ trống',
+            'name.max'=>'Tên dịch vụ phòng không được vượt quá 255 ký tự',
         ];
     }
 }

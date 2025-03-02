@@ -5,7 +5,7 @@
         <!-- Page title & breadcrumb -->
         <div class="lh-page-title">
             <div class="lh-breadcrumb">
-                <h5>Phòng</h5>
+                <h5>Loại Tiện nghi</h5>
                 <ul>
                     <li><a href="index.html">Trang chủ</a></li>
                     <li>Dashboard</li>
@@ -40,14 +40,13 @@
                         <h4 class="lh-card-title">{{ $title }}</h4>
                         <div class="header-tools">
                             <a href="javascript:void(0)" class="m-r-10 lh-full-card"><i
-                                class="ri-fullscreen-line" title="Full Screen"></i></a>
-                                <div class="lh-date-range dots">
-                                    <span></span>
-                                </div>
-                                <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.amenities.create') }}'">
-                                    Tạo mới
-                                </button>
-
+                                    class="ri-fullscreen-line" title="Full Screen"></i></a>
+                            <div class="lh-date-range dots">
+                                <span></span>
+                            </div>
+                            <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.amenities.create') }}'">
+                                Tạo mới
+                            </button>
                         </div>
                     </div>
                     @if (session('success'))
@@ -62,16 +61,24 @@
                                 <table id="booking_table" class="table table-striped table-hover">
                                     <thead class="table-dark">
                                         <tr>
+<<<<<<< HEAD
                                             <th class="text-center">ID</th>
                                             <th class="text-center">Tên Loại Tiện Ích </th>
                                             {{-- <th>Trạng thái</th> --}}
                                             <th class="text-center">Hành động</th>
+=======
+                                            <th>ID</th>
+                                            <th>Tên Tiện Ích</th>
+                                            <th>Loại Phòng</th>
+                                            <th>Hành động</th>
+>>>>>>> 161bfcc6de110ae079d1d68e45662d37ae0584a6
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($room_rule as $index => $item)
+                                        @foreach ($amenities as $index => $item)
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
+<<<<<<< HEAD
                                             <td class="text-center">{{ $item->name }}</td>
                                             {{-- <td>
                                                 <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">
@@ -79,15 +86,29 @@
                                                 </span>
                                             </td> --}}
                                             <td class="text-center">
+=======
+                                            <td>{{ $item->name }}</td>
+                                            <td>
+                                                @foreach ($item->roomTypes as $roomType)
+                                                    <span class="badge bg-primary">{{ $roomType->name }}</span>
+                                                    @if (!$loop->last)
+                                                        ,
+                                                    @endif
+                                                @endforeach
+                                                @if ($item->roomTypes->isEmpty())
+                                                    <span class="badge bg-secondary">Chưa gán loại phòng</span>
+                                                @endif
+                                            </td>
+                                            <td>
+>>>>>>> 161bfcc6de110ae079d1d68e45662d37ae0584a6
                                                 <div class="btn-group">
-
                                                     <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
                                                         <i class="ri-settings-3-line"></i>
                                                     </button>
                                                     <ul class="dropdown-menu">
                                                         <li>
                                                             <a class="dropdown-item" href="{{ route('admin.amenities.edit', $item->id) }}">
-                                                                <i class="ri-edit-line"></i> Edit
+                                                                <i class="ri-edit-line"></i> Sửa
                                                             </a>
                                                         </li>
                                                         <li>
@@ -95,7 +116,7 @@
                                                                 @csrf
                                                                 @method('DELETE')
                                                                 <button type="submit" class="dropdown-item text-danger">
-                                                                    <i class="ri-delete-bin-line"></i> Delete
+                                                                    <i class="ri-delete-bin-line"></i> Xóa
                                                                 </button>
                                                             </form>
                                                         </li>
@@ -106,7 +127,6 @@
                                         @endforeach
                                     </tbody>
                                 </table>
-
                             </div>
                         </div>
                     </div>
@@ -116,4 +136,3 @@
     </div>
 </div>
 @endsection
-

@@ -11,7 +11,7 @@ class StoreroomRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,20 @@ class StoreroomRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'manager_id' => 'nullable|integer|exists:users,id',
+            'room_number' => 'required|string|unique:rooms,room_number|max:20',
+            'status' => 'required|in:available,booked,maintenance',
+            'room_type_id' => 'required|integer|exists:room_types,id',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'room_number.required' => 'Số phòng là bắt buộc.',
+            'room_number.unique' => 'Số phòng này đã tồn tại.',
+            'status.in' => 'Trạng thái phòng không hợp lệ.',
+            'room_type_id.exists' => 'Loại phòng không tồn tại.',
         ];
     }
 }

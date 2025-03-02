@@ -29,12 +29,11 @@
                 </div>
             @endif
             @if (session('success'))
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                {{ session('success') }}
-                                <button type="button" class="btn btn-close" data-bs-dismiss="alert"
-                                    aria-label="Close"></button>
-                            </div>
-                        @endif
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
 
 
             <form action="{{ route('admin.staffs.update', ['staff' => $staff->id]) }}" method="POST"
@@ -51,7 +50,7 @@
                                             <div class="profile-img">
                                                 <div class="avatar-preview">
                                                     <div class="t-img" id="imagePreview"
-                                                        style="background-image: url({{Storage::url($staff->avatar)}});">
+                                                        style="background-image: url({{ Storage::url($staff->avatar) }});">
                                                     </div>
                                                 </div>
                                                 <div class="avatar-edit">
@@ -236,10 +235,12 @@
                                                 </li>
 
                                                 <li>
-                                                    <button type="submit" class="lh-btn-primary">Cập nhật Nhân Viên</button>
+                                                    <button type="submit" class="lh-btn-primary">Cập nhật Nhân
+                                                        Viên</button>
                                                 </li>
                                             </ul>
                                         </div>
+                                        <a href="{{ route('admin.staffs.index') }}" class="btn btn-secondary">Quay lại</a>
                                     </div>
                                 </div>
                             </div>

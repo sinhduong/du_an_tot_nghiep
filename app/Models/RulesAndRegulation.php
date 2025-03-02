@@ -9,20 +9,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class RulesAndRegulation extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable=[
+    protected $fillable = [
         'name',
     ];
 
-   
-    public function rooms()
+    public function roomTypes()
     {
-        return $this->belongsToMany(Room::class, 'room_rars', 'rules_and_regulation_id', 'room_id');
+        return $this->belongsToMany(RoomType::class, 'room_type_rars', 'rules_and_regulation_id', 'room_type_id');
     }
-
-    // public function rooms()
-    // {
-    //     return $this->belongsToMany(Room::class, 'room_rules', 'rules_and_regulation_id', 'room_id');
-    // }
-
 
 }

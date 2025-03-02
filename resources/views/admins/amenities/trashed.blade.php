@@ -1,4 +1,3 @@
-
 @extends('layouts.admin')
 @section('content')
 <div class="lh-main-content">
@@ -6,7 +5,7 @@
         <!-- Page title & breadcrumb -->
         <div class="lh-page-title">
             <div class="lh-breadcrumb">
-                <h5>Phòng</h5>
+                <h5>Loại Tiện Ích Đã Xóa</h5>
                 <ul>
                     <li><a href="index.html">Trang chủ</a></li>
                     <li>Dashboard</li>
@@ -41,14 +40,10 @@
                         <h4 class="lh-card-title">{{ $title }}</h4>
                         <div class="header-tools">
                             <a href="javascript:void(0)" class="m-r-10 lh-full-card"><i
-                                class="ri-fullscreen-line" title="Full Screen"></i></a>
-                                <div class="lh-date-range dots">
-                                    <span></span>
-                                </div>
-                                <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.amenities.create') }}'">
-                                    Tạo mới
-                                </button>
-
+                                    class="ri-fullscreen-line" title="Full Screen"></i></a>
+                            <div class="lh-date-range dots">
+                                <span></span>
+                            </div>
                         </div>
                     </div>
                     @if (session('success'))
@@ -64,35 +59,29 @@
                                     <thead class="table-dark">
                                         <tr>
                                             <th>ID</th>
-                                            <th>Tên Loại phòng</th>
-                                            <th>Trạng thái</th>
+                                            <th>Tên Tiện Ích</th>
                                             <th>Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($room_types as $item)
-            <tr>
-                <td>{{ $item->id }}</td>
-                <td>{{ $item->name }}</td>
-                <td>
-                    <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">
-                        {{ $item->is_active ? 'Hoạt động' : 'Không hoạt động' }}
-                    </span>
-                </td>
-                <td>
-                    <form action="{{ route('admin.amenities.restore', $item->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('PATCH')
-                        <button type="submit" class="btn btn-success">Khôi phục</button>
-                    </form>
-                    <form action="{{ route('admin.amenities.forceDelete', $item->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn?');">Xóa vĩnh viễn</button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
+                                        @foreach ($amenities as $item)
+                                        <tr>
+                                            <td>{{ $item->id }}</td>
+                                            <td>{{ $item->name }}</td>
+                                            <td>
+                                                <form action="{{ route('admin.amenities.restore', $item->id) }}" method="POST" style="display:inline;">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="btn btn-success">Khôi phục</button>
+                                                </form>
+                                                <form action="{{ route('admin.amenities.forceDelete', $item->id) }}" method="POST" style="display:inline;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn?');">Xóa vĩnh viễn</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                                 <a href="{{ route('admin.amenities.index') }}" class="btn btn-primary">Quay lại danh sách</a>
@@ -105,4 +94,3 @@
     </div>
 </div>
 @endsection
-

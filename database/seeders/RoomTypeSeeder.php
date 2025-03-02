@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\RoomType;
 use Illuminate\Database\Seeder;
 
 class RoomTypeSeeder extends Seeder
@@ -12,6 +12,6 @@ class RoomTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        RoomType::factory(10)->create(); // Tạo 10 loại phòng giả
     }
 }

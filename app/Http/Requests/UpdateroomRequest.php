@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateroomRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateroomRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +22,27 @@ class UpdateroomRequest extends FormRequest
      */
     public function rules(): array
     {
+        $roomId = $this->route('room');
         return [
-            //
+            'manager_id' => 'nullable|integer|exists:users,id',
+            'room_number' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('rooms', 'room_number')->ignore($roomId),
+            ],
+            'status' => 'required|in:available,booked,maintenance',
+            'room_type_id' => 'required|integer|exists:room_types,id',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'room_number.required' => 'Số phòng là bắt buộc.',
+            'room_number.unique' => 'Số phòng này đã tồn tại.',
+            'status.in' => 'Trạng thái phòng không hợp lệ.',
+            'room_type_id.exists' => 'Loại phòng không tồn tại.',
         ];
     }
 }

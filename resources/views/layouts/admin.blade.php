@@ -38,6 +38,8 @@
     <link href="{{ asset('assets/admin/assets/css/vendor/simplebar.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/admin/assets/css/vendor/jquery-jvectormap-1.2.2.css') }}" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+
     </style>
     <!-- Main CSS -->
 
@@ -216,6 +218,11 @@
     {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> --}}
     <!-- Select2 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+    <script>
+        CKEDITOR.replace('editor');
+    </script>
+
 </body>
 
 
