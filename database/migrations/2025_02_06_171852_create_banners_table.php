@@ -9,18 +9,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('banners', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('link',255);
-            $table->string('image');
-            $table->boolean('is_use')->default(true);
-            $table->timestamps();
-            $table->softDeletes();//dekete_at xóa mềm
-        });
-    }
+    public function up()
+{
+    // Schema::create('banners', function (Blueprint $table) {
+    //     $table->id();
+    //     $table->string('image');
+    //     $table->string('link')->nullable();
+    //     $table->boolean('is_active')->default(1);
+    //     $table->timestamps();
+    // });f
+}
+
 
     /**
      * Reverse the migrations.

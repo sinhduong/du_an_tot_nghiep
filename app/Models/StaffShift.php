@@ -13,4 +13,9 @@ class StaffShift extends Model
         'start_time',
         'end_time',
     ];
+
+    public function staff()
+    {
+        return $this->belongsTo(Staff::class, 'staff_id', 'id');
+    }
 }

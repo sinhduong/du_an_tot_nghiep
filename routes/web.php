@@ -4,6 +4,8 @@ use App\Http\Controllers\AmenityController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\RulesAndRegulationController;
 use App\Http\Controllers\StaffAttendanceController;
+use App\Http\Controllers\StaffRoleController;
+use App\Http\Controllers\StaffShiftController;
 use App\Models\Room_amenity;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoomController;
@@ -112,6 +114,38 @@ Route::prefix('admin')
                 Route::get('/trashed', [StaffController::class, 'trashed'])->name('trashed'); // Danh sách đã xóa mềm
                 Route::patch('/{staff}/restore', [StaffController::class, 'restore'])->name('restore'); // Khôi phục khi đã xóa mềm
                 Route::delete('/{staff}/force-delete', [StaffController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
+
+            });
+
+            Route::prefix('staff_roles') // Đặt tên theo số nhiều chuẩn RESTful
+            ->as('staff_roles.') // Tên route để sử dụng dễ dàng trong view/controller
+            ->group(function () {
+                Route::get('/', [StaffRoleController::class, 'index'])->name('index');
+                Route::get('/create', [StaffRoleController::class, 'create'])->name('create');
+                Route::post('/store', [StaffRoleController::class, 'store'])->name('store');
+                Route::get('{staffRole}/show', [StaffRoleController::class, 'show'])->name('show');
+                Route::get('{staffRole}/edit', [StaffRoleController::class, 'edit'])->name('edit');
+                Route::put('{staffRole}/update', [StaffRoleController::class, 'update'])->name('update');
+                Route::delete('{staffRole}/destroy', [StaffRoleController::class, 'destroy'])->name('destroy'); // Xóa
+                Route::get('/trashed', [StaffRoleController::class, 'trashed'])->name('trashed'); // Danh sách đã xóa mềm
+                Route::patch('/{staffRole}/restore', [StaffRoleController::class, 'restore'])->name('restore'); // Khôi phục khi đã xóa mềm
+                Route::delete('/{staffRole}/force-delete', [StaffRoleController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
+
+            });
+
+            Route::prefix('staff_shifts') // Đặt tên theo số nhiều chuẩn RESTful
+            ->as('staff_shifts.') // Tên route để sử dụng dễ dàng trong view/controller
+            ->group(function () {
+                Route::get('/', [StaffShiftController::class, 'index'])->name('index');
+                Route::get('/create', [StaffShiftController::class, 'create'])->name('create');
+                Route::post('/store', [StaffShiftController::class, 'store'])->name('store');
+                Route::get('{staffShift}/show', [StaffShiftController::class, 'show'])->name('show');
+                Route::get('{staffShift}/edit', [StaffShiftController::class, 'edit'])->name('edit');
+                Route::put('{staffShift}/update', [StaffShiftController::class, 'update'])->name('update');
+                Route::delete('{staffShift}/destroy', [StaffShiftController::class, 'destroy'])->name('destroy'); // Xóa
+                Route::get('/trashed', [StaffShiftController::class, 'trashed'])->name('trashed'); // Danh sách đã xóa mềm
+                Route::patch('/{staffShift}/restore', [StaffShiftController::class, 'restore'])->name('restore'); // Khôi phục khi đã xóa mềm
+                Route::delete('/{staffShift}/force-delete', [StaffShiftController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
 
             });
 

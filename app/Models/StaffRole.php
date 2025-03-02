@@ -13,4 +13,9 @@ class StaffRole extends Model
         'name',
         'permissions',
     ];
+
+    public function staff()
+    {
+        return $this->belongsTo(Staff::class, 'staff_id', 'id');
+    }
 }

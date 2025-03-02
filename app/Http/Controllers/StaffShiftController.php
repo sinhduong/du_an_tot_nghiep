@@ -1,64 +1,56 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use App\Models\StaffShift;
+use App\Models\Staff;
 use Illuminate\Http\Request;
 
 class StaffShiftController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $staff_shifts = StaffShift::with('staff')->get();
+        return view('admins.staff_shifts.index', compact('staff_shifts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $staffs = Staff::all();
+        return view('admins.staff_shifts.create', compact('staffs'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+        ]);
+
+        StaffShift::create($request->all());
+        return redirect()->route('admin.staff_shifts.index')->with('success', 'Ca làm việc được tạo thành công.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(StaffShift $staffShift)
     {
-        //
+        $staffs = Staff::all();
+        return view('admins.staff_shifts.edit', compact('staffShift', 'staffs'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, StaffShift $staffShift)
     {
-        //
+        $request->validate([
+            'name' => 'nullable',
+            'start_time' => 'nullable|date_format:H:i',
+            'end_time' => 'nullable|date_format:H:i|after:start_time',
+        ]);
+        $staffShift->update($request->all());
+        return redirect()->route('admin.staff_shifts.index')->with('success', 'Cập nhật ca làm việc thành công.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(StaffShift $staffShift)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $staffShift->delete();
+        return redirect()->route('admin.staff_shifts.index')->with('success', 'Xóa ca làm việc thành công.');
     }
 }

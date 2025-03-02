@@ -18,16 +18,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-
+        \App\Models\Review::factory(10)->create();
         User::factory(5)->create();
         StaffShift::factory(5)->create();
-        StaffRole::factory(5)->create();
-        if (Staff::count() === 0) {
-            \App\Models\Staff::factory(5)->create();
-        }
+        // StaffRole::factory(5)->create();
+        // if (Staff::count() === 0) {
+        //     \App\Models\Staff::factory(5)->create();
+        // }
 
         // Tạo dữ liệu chấm công ngẫu nhiên
-        StaffAttendance::factory(5)->create();
+        // StaffAttendance::factory(5)->create();
 
 
         // // Tạo vai trò

@@ -19,14 +19,14 @@ class StaffRoleFactory extends Factory
 
     public function definition()
     {
-        return [
-            'name' => $this->faker->unique()->randomElement(['Admin', 'Quản lý', 'Nhân viên', 'Lễ tân', 'Bảo vệ']),
-            'permissions' => json_encode([
-                'view' => $this->faker->boolean(),
-                'edit' => $this->faker->boolean(),
-                'delete' => $this->faker->boolean(),
-                'create' => $this->faker->boolean(),
-            ]),
-        ];
+        // return [
+        //     'name' => $this->faker->unique()->randomElement(['Admin', 'Quản lý', 'Nhân viên', 'Lễ tân', 'Bảo vệ']),
+        //     'permissions' => json_encode([
+        //         'view' => $this->faker->boolean(),
+        //         'edit' => $this->faker->boolean(),
+        //         'delete' => $this->faker->boolean(),
+        //         'create' => $this->faker->boolean(),
+        //     ]),
+        // ];
     }
 }
