@@ -67,12 +67,12 @@
                                             <tr>
                                                 <th>ID</th>
                                                 <th>Name</th>
-                                                <th>Birthday</th>
                                                 <th>Phone</th>
                                                 <th>Email</th>
+                                                <th>Chức vụ</th>
+                                                <th>Ca làm</th>
                                                 <th>Status</th>
-                                                <th>Salary</th>
-                                                <th>function</th>
+                                                <th>Chức năng</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -80,13 +80,15 @@
                                                 <tr>
                                                     <td class="token">{{ $item->id }}</td>
                                                     </td>
-                                                    <td><span class="name">{{ $item->name }}</span>
+                                                    <td><span class="name">{{ $item->user->name }}</span>
                                                     </td>
-                                                    <td>{{ \Carbon\Carbon::parse($item->birthday)->format('d/m/Y') }}</td>
-                                                    <td>{{ $item->phone }}</td>
-                                                    <td>{{ $item->email }}</td>
-                                                    <td>{{ $item->status }}</td>
-                                                    <td class="active">{{ \App\Helpers\FormatHelper::formatPrice($item->salary) }}</td>
+                                                    <td class="phone">{{ $item->user->phone }}</td>
+                                                    <td class="email">{{ $item->user->email }}</td>
+                                                    <td class="role_id">{{ $item->role->name }}</td>
+                                                    <td class="shift_id">{{ $item->shift->name }}</td>
+                                                    <td class="status">{{ $item->status }}</td>
+                                                    {{-- <td>{{ \Carbon\Carbon::parse($item->birthday)->format('d/m/Y') }}</td> --}}
+                                                    {{-- <td class="active">{{ \App\Helpers\FormatHelper::formatPrice($item->salary) }}</td> --}}
 
 
                                                     <td>

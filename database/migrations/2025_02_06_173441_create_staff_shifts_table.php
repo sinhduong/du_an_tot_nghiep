@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('staffs_role_permission', function (Blueprint $table) {
+        Schema::create('staff_shifts', function (Blueprint $table) {
             $table->id();
+            $table->string('name'); // Tên ca (Ca sáng, Ca chiều)
+            $table->time('start_time'); // Giờ bắt đầu
+            $table->time('end_time'); // Giờ kết thúc
             $table->timestamps();
         });
     }
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('staffs_role_permission');
+        Schema::dropIfExists('staff_shifts');
     }
 };

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AmenityController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\RulesAndRegulationController;
+use App\Http\Controllers\StaffAttendanceController;
 use App\Models\Room_amenity;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoomController;
@@ -50,26 +51,27 @@ require __DIR__ . '/auth.php';
 Route::prefix('admin')
 
     ->as('admin.')
+    // ->middleware(['auth', 'role:admin']) // Chỉ admin mới truy cập
     ->group(function () {
         Route::get('/', function () {
             return view('admins/dashboard');
         })->name('dashboard');
 
         Route::prefix('room-types')
-        ->as('room_types.')
-        ->group(function () {
-            Route::get('/', [RoomTypeController::class, 'index'])->name('index');
-            Route::get('/create', [RoomTypeController::class, 'create'])->name('create');
-            Route::post('/store', [RoomTypeController::class, 'store'])->name('store');
-            Route::get('{id}/edit', [RoomTypeController::class, 'edit'])->name('edit');
-            Route::get('{id}/show', [RoomTypeController::class, 'show'])->name('show');
-            Route::put('{id}/update', [RoomTypeController::class, 'update'])->name('update');
-            Route::post('{id}/delete-image', [RoomTypeController::class, 'deleteImage'])->name('delete-image');
-            Route::delete('{id}/destroy', [RoomTypeController::class, 'destroy'])->name('destroy');
-            Route::get('/trashed', [RoomTypeController::class, 'trashed'])->name('trashed');
-            Route::patch('{id}/restore', [RoomTypeController::class, 'restore'])->name('restore');
-            Route::delete('{id}/force-delete', [RoomTypeController::class, 'forceDelete'])->name('forceDelete');
-        });
+            ->as('room_types.')
+            ->group(function () {
+                Route::get('/', [RoomTypeController::class, 'index'])->name('index');
+                Route::get('/create', [RoomTypeController::class, 'create'])->name('create');
+                Route::post('/store', [RoomTypeController::class, 'store'])->name('store');
+                Route::get('{id}/edit', [RoomTypeController::class, 'edit'])->name('edit');
+                Route::get('{id}/show', [RoomTypeController::class, 'show'])->name('show');
+                Route::put('{id}/update', [RoomTypeController::class, 'update'])->name('update');
+                Route::post('{id}/delete-image', [RoomTypeController::class, 'deleteImage'])->name('delete-image');
+                Route::delete('{id}/destroy', [RoomTypeController::class, 'destroy'])->name('destroy');
+                Route::get('/trashed', [RoomTypeController::class, 'trashed'])->name('trashed');
+                Route::patch('{id}/restore', [RoomTypeController::class, 'restore'])->name('restore');
+                Route::delete('{id}/force-delete', [RoomTypeController::class, 'forceDelete'])->name('forceDelete');
+            });
 
         Route::prefix('rooms')
             ->as('rooms.')
@@ -111,6 +113,14 @@ Route::prefix('admin')
                 Route::patch('/{staff}/restore', [StaffController::class, 'restore'])->name('restore'); // Khôi phục khi đã xóa mềm
                 Route::delete('/{staff}/force-delete', [StaffController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
 
+            });
+
+        Route::prefix('staff_attendances') // Đặt tên theo số nhiều chuẩn RESTful
+            ->as('staff_attendances.') // Tên route để sử dụng dễ dàng trong view/controller
+            ->group(function () {
+                Route::get('/', [StaffAttendanceController::class, 'index'])->name('index');
+                Route::post('/check-in', [StaffAttendanceController::class, 'checkIn'])->name('check-in');
+                Route::post('/check-out', [StaffAttendanceController::class, 'checkOut'])->name('check-out');
             });
 
         Route::prefix('reviews') // Đặt tên theo số nhiều chuẩn RESTful
@@ -183,8 +193,8 @@ Route::prefix('admin')
                 Route::delete('{id}/destroy',   [BookingController::class, 'destroy'])->name('destroy');
             });
 
-            Route::prefix('services') // Quản lý dịch vụ khách sạn
-            ->as('services.') 
+        Route::prefix('services') // Quản lý dịch vụ khách sạn
+            ->as('services.')
             ->group(function () {
                 Route::get('/', [ServiceController::class, 'index'])->name('index'); // Danh sách dịch vụ
                 Route::get('/create', [ServiceController::class, 'create'])->name('create'); // Form thêm mới

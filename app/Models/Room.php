@@ -25,7 +25,7 @@ class Room extends Model
     }
     public function manager()
     {
-        return $this->belongsTo(Staff::class, 'manager_id');
+        return $this->belongsTo(Staff::class, 'manager_id', 'id');
     }
     public function amenities()
     {
