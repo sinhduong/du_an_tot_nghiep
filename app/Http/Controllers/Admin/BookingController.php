@@ -42,12 +42,13 @@ class BookingController extends Controller
         $booking = Booking::with([
             'user',
             'rooms.roomType' => function ($query) {
-                $query->with(['amenities', 'rulesAndRegulations']); // Lấy tiện ích và quy định của loại phòng
+                $query->with(['amenities', 'rulesAndRegulations','services']); // Lấy tiện ích và quy định của loại phòng
             },
             'rooms' => function ($query) {
                 $query->withTrashed(); // Bao gồm cả phòng đã bị xóa mềm nếu cần
             },
             'payments',
+            'guests',
         ])->findOrFail($id);
 
         $title = 'Chi tiết đơn đặt phòng';
