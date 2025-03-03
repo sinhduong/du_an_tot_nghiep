@@ -1,30 +1,24 @@
 <?php
 
-<<<<<<< HEAD
-use App\Http\Controllers\AmenityController;
-use App\Http\Controllers\PromotionController;
-use App\Http\Controllers\RulesAndRegulationController;
+use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\PromotionController;
+use App\Http\Controllers\Admin\RulesAndRegulationController;
+use App\Http\Controllers\Admin\AmenityController;
 use App\Http\Controllers\StaffAttendanceController;
 use App\Http\Controllers\StaffRoleController;
 use App\Http\Controllers\StaffShiftController;
-use App\Models\Room_amenity;
-=======
 use App\Http\Controllers\Admin\AboutController;
-use App\Http\Controllers\Admin\AmenityController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\ContactsController;
 use App\Http\Controllers\Admin\IntroductionController;
 use App\Http\Controllers\Admin\ProfileController;
-use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\RoomTypeController;
-use App\Http\Controllers\Admin\RulesAndRegulationController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\HomeController;
->>>>>>> origin/main
 use Illuminate\Support\Facades\Route;
 
 
@@ -43,9 +37,6 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -65,6 +56,8 @@ Route::prefix('admin')
         Route::get('/', function () {
             return view('admins/dashboard');
         })->name('dashboard');
+
+        Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
         Route::prefix('room-types')
             ->as('room_types.')
@@ -234,7 +227,6 @@ Route::prefix('admin')
                 Route::delete('{id}/destroy',   [BookingController::class, 'destroy'])->name('destroy');
             });
 
-<<<<<<< HEAD
         Route::prefix('services') // Quản lý dịch vụ khách sạn
             ->as('services.')
             ->group(function () {
@@ -248,14 +240,13 @@ Route::prefix('admin')
                 Route::patch('/{id}/restore', [ServiceController::class, 'restore'])->name('restore'); // Khôi phục dịch vụ đã xóa mềm
                 Route::delete('/{id}/force-delete', [ServiceController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
             });
-=======
         Route::resource('services', ServiceController::class);
->>>>>>> origin/main
 
         Route::resource('promotions', PromotionController::class);
         Route::resource('roles', RoleController::class);
         Route::resource('abouts', AboutController::class);
         Route::resource('introductions', IntroductionController::class);
+        Route::resource('faqs', FaqController::class);
 
         Route::prefix('admin')->group(function () {
             Route::get('/contacts', [ContactsController::class, 'index'])->name('contacts.index');
