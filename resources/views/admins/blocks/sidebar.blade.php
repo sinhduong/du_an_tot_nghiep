@@ -176,6 +176,13 @@
                     </a>
                 </li>
 
+                <li class="lh-sb-item">
+                    <a href="{{ route('admin.faqs.index') }}" class="lh-page-link">
+                        <i class="ri-bill-line"></i><span class="condense"><span class="hover-title">Câu hỏi thường gặp</span>
+                        </span>
+                    </a>
+                </li>
+
 
                 <li class="lh-sb-item-separator"></li>
                 <li class="lh-sb-title condense">Pages</li>

@@ -6,15 +6,26 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFaqRequest;
 use App\Http\Requests\UpdateFaqRequest;
 use App\Models\Faq;
+use Illuminate\Http\Request;
 
 class FaqController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $query = Faq::query();
+
+        if ($request->has('question') && !empty($request->question)) {
+            $query->where('question', 'like', '%' . $request->question . '%');
+        }
+
+        $perPage = $request->size ?? 20;
+
+        $faqs = $query->latest()->paginate($perPage)->appends($request->query());
+
+        return view('admins.faqs.index', compact('faqs'));
     }
 
     /**
@@ -22,7 +33,7 @@ class FaqController extends Controller
      */
     public function create()
     {
-        //
+        return view('admins.faqs.form');
     }
 
     /**
@@ -30,7 +41,16 @@ class FaqController extends Controller
      */
     public function store(StoreFaqRequest $request)
     {
-        //
+        $validated = $request->validate([
+            'question' => 'required|string|max:255',
+            'answer' => 'required|string',
+            'is_active' => 'boolean'
+        ]);
+
+        Faq::create($validated);
+
+        return redirect()->route('admin.faqs.index')
+            ->with('success', 'Tạo mới "Câu hỏi thường gặp" thành công');
     }
 
     /**
@@ -46,7 +66,7 @@ class FaqController extends Controller
      */
     public function edit(Faq $faq)
     {
-        //
+        return view('admins.faqs.form', compact('faq'));
     }
 
     /**
@@ -54,7 +74,16 @@ class FaqController extends Controller
      */
     public function update(UpdateFaqRequest $request, Faq $faq)
     {
-        //
+        $validated = $request->validate([
+            'question' => 'required|string|max:255',
+            'answer' => 'required|string',
+            'is_active' => 'boolean'
+        ]);
+
+        $faq->update($validated);
+
+        return redirect()->route('admin.faqs.index')
+            ->with('success', 'Cập nhật "Câu hỏi thường gặp" thành công');
     }
 
     /**
@@ -62,6 +91,8 @@ class FaqController extends Controller
      */
     public function destroy(Faq $faq)
     {
-        //
+        $faq->delete();
+        return redirect()->route('admin.faqs.index')
+            ->with('success', 'Xóa bỏ "Câu hỏi thường gặp" thành công');
     }
 }
