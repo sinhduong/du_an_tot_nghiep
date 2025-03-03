@@ -38,7 +38,7 @@ class PromotionRequest extends FormRequest
         ];
 
         if ($this->input('type') === 'percent') {
-            $rules['value'] = 'required|numeric|min:0|max:100';
+            $rules['value'] = 'required|numeric|min:0|max:50';
         }
 
         return $rules;
