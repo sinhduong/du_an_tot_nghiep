@@ -189,6 +189,25 @@
         display: flex;
         gap: 10px;
     }
+    .status-badge {
+        padding: 8px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        display: inline-block;
+    }
+
+    /* Màu cho trạng thái (status) */
+    .status-pending { background: #ffc107; color: #000; } /* Vàng - Đang chờ */
+    .status-completed { background: #28a745; color: #fff; } /* Xanh lá - Đã hoàn thành */
+    .status-failed { background: #dc3545; color: #fff; } /* Đỏ - Không hoàn thành */
+    .status-unknown { background: #6c757d; color: #fff; } /* Xám - Không xác định */
+
+    /* Màu cho phương thức (method) */
+    .method-momo { background: #ff5e3a; color: #fff; } /* Cam - MOMO */
+    .method-vnpay { background: #007bff; color: #fff; } /* Xanh dương - VNPAY */
+    .method-cash { background: #6c757d; color: #fff; } /* Xám - Tiền mặt */
+    .method-unknown { background: #6c757d; color: #fff; } /* Xám - Không xác định */
 </style>
 
 <div class="lh-main-content">
@@ -232,7 +251,7 @@
                         </div>
                         <div class="booking-section-content">
                             <div class="text-center">
-                                <img src="{{ $booking->user->avatar ? asset('upload/avatars/' . $booking->user->avatar) : asset('assets/admin/assets/img/user/1.jpg') }}" alt="{{ $booking->user->name }}" class="user-avatar">
+                                <img src="{{ $booking->user && $booking->user->avatar ? asset('upload/avatars/' . $booking->user->avatar) : asset('assets/admin/assets/img/user/1.jpg') }}" alt="{{ $booking->user ? $booking->user->name : 'Người dùng không xác định' }}" class="user-avatar">
                                 <h6 class="mt-2">{{ $booking->user->name }}</h6>
                             </div>
                             <div class="booking-info">
@@ -255,21 +274,35 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="booking-section">
                         <div class="booking-section-header">
                             <h5>Thông tin người ở</h5>
                             <span class="toggle-icon">▼</span>
                         </div>
                         <div class="booking-section-content">
+
                             <div class="booking-info">
                                 @foreach ($booking->guests as $guest)
-                                    <div class="info-item">
-                                        <label>Tên:</label><span>{{ $guest->name ?? 'Không có' }}</span><br>
-                                        <label>Số CMND/CCCD:</label><span>{{ $guest->id_number ?? 'Không có' }}</span><br>
-                                        <label>Ngày sinh:</label><span>{{ $guest->birth_date ? \App\Helpers\FormatHelper::formatDate($guest->birth_date) : 'Không có' }}</span><br>
-                                        <label>Giới tính:</label><span>{{ $guest->gender ?? 'Không xác định' }}</span>
-                                    </div>
+                                <div class="info-item">
+                                    <label>Tên:</label>
+                                    <span>{{ $guest->name ?? 'Không có' }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Căn cước công dân:</label>
+                                    <span>{{ $guest->id_photo ?? 'Không có' }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Căn cước công dân:</label>
+                                    <span>{{ $guest->id_number ?? 'Không có' }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Ngày sinh:</label>
+                                    <span>{{ $guest->birth_date ? \App\Helpers\FormatHelper::formatDate($guest->birth_date) : 'Không có' }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Giới tính:</label>
+                                    <span>{{ $guest->gender ?? 'Không xác định' }}</span>
+                                </div>
                                 @endforeach
                             </div>
                         </div>
@@ -290,46 +323,75 @@
                                         <div class="booking-info">
                                             <div class="info-item">
                                                 <label>Số phòng:</label><span>{{ $room->room_number }}</span><br>
+                                            </div>
+                                            <div class="info-item">
                                                 <label>Loại phòng:</label><span>{{ $room->roomType->name ?? 'Chưa xác định' }}</span><br>
+                                            </div>
+                                            <div class="info-item">
+                                                <label>Loại giường:</label>
+                                                <span >
+                                                    @php
+                                                        $bedTypeMapping = [
+                                                                        'single' => 'Giường đơn',
+                                                                        'double' => 'Giường đôi',
+                                                                        'queen' => 'Giường Queen',
+                                                                        'king' => 'Giường King',
+                                                                        'bunk' => 'Giường tầng',
+                                                                        'sofa' => 'Giường sofa',
+                                                                    ];
+                                                    @endphp
+                                                    {{ $bedTypeMapping[$room->roomType->bed_type] }}
+                                                    </span><br>
+                                            </div>
+                                            <div class="info-item">
+                                                <label>Kích thước:</label><span>{{ $room->roomType->size ?? 'Chưa xác định' }}</span><br>
+                                            </div>
+                                            <div class="info-item">
+                                                <label>Số người lớn:</label><span>{{ $room->roomType->max_capacity ?? 'Chưa xác định' }}</span><br>
+                                            </div>
+                                            <div class="info-item">
+                                                <label>Số trẻ em:</label><span>{{ $room->roomType->children_free_limit ?? 'Chưa xác định' }}</span><br>
+                                            </div>
+                                            <div class="info-item">
                                                 <label>Giá:</label><span>{{ \App\Helpers\FormatHelper::formatPrice($room->roomType->price ?? 0) }}</span>
                                             </div>
-                                            @if ($room->image)
-                                                <img src="{{ asset('upload/rooms/' . $room->image) }}" alt="{{ $room->room_number }}" class="room-image">
-                                            @endif
-                                        </div>
-                                        <div class="booking-info">
                                             <div class="info-item">
-                                                <label>Tiện nghi:</label>
-                                                <ul class="amenities-list">
-                                                    @forelse ($room->roomType->amenities as $amenity)
-                                                        <li>{{ $amenity->name }}</li>
-                                                    @empty
-                                                        <li>Không có tiện nghi.</li>
-                                                    @endforelse
-                                                </ul>
-                                            </div>
-                                            <div class="info-item">
-                                                <label>Quy tắc & quy định:</label>
-                                                <ul class="amenities-list">
-                                                    @forelse ($room->roomType->rulesAndRegulations as $rule)
-                                                        <li>{{ $rule->name }}</li>
-                                                    @empty
-                                                        <li>Không có Quy tắc & quy định.</li>
-                                                    @endforelse
-                                                </ul>
-                                            </div>
-                                            <div class="info-item">
-                                                <label>Dịch vụ khách sạn:</label>
-                                                <ul class="amenities-list">
-                                                    @forelse ($room->roomType->services as $services)
-                                                        <li>{{ $services->name }}</li>
-                                                    @empty
-                                                        <li>Không có tiện nghi.</li>
-                                                    @endforelse
-                                                </ul>
+                                                <label>Mô tả:</label><span>{{ $room->roomType->description ?? 'Chưa xác định' }}</span>
                                             </div>
                                         </div>
                                     </li>
+                                    <div class="booking-info">
+                                        <div class="info-item">
+                                            <label>Tiện nghi:</label>
+                                            <ul class="amenities-list">
+                                                @forelse ($room->roomType->amenities as $amenity)
+                                                    <li>{{ $amenity->name }}</li>
+                                                @empty
+                                                    <li>Không có tiện nghi.</li>
+                                                @endforelse
+                                            </ul>
+                                        </div>
+                                        <div class="info-item">
+                                            <label>Quy tắc & quy định:</label>
+                                            <ul class="amenities-list">
+                                                @forelse ($room->roomType->rulesAndRegulations as $rule)
+                                                    <li>{{ $rule->name }}</li>
+                                                @empty
+                                                    <li>Không có Quy tắc & quy định.</li>
+                                                @endforelse
+                                            </ul>
+                                        </div>
+                                        <div class="info-item">
+                                            <label>Dịch vụ khách sạn:</label>
+                                            <ul class="amenities-list">
+                                                @forelse ($room->roomType->services as $services)
+                                                    <li>{{ $services->name }}</li>
+                                                @empty
+                                                    <li>Không có tiện nghi.</li>
+                                                @endforelse
+                                            </ul>
+                                        </div>
+                                    </div>
                                 @endforeach
                             </ul>
                         </div>
@@ -384,21 +446,49 @@
                             <span class="toggle-icon">▼</span>
                         </div>
                         <div class="booking-section-content">
-                            <ul class="payment-list">
+                            <div class="booking-info">
                                 @forelse ($booking->payments as $payment)
-                                    <li>
-                                        <div class="booking-info">
-                                            <div class="info-item">
-                                                <label>Phương thức:</label><span>{{ $payment->method }}</span><br>
-                                                <label>Số tiền:</label><span>{{ \App\Helpers\FormatHelper::formatPrice($payment->amount ?? 0) }}</span><br>
-                                                <label>Ngày thanh toán:</label><span>{{ \App\Helpers\FormatHelper::formatDate($payment->created_at) }}</span>
-                                            </div>
-                                        </div>
-                                    </li>
+                                    <div class="info-item">
+                                        <label>Phương thức:</label>
+                                        <span class="status-badge {{ 'method-' . strtolower($payment->method ?? 'unknown') }}">
+                                            @php
+                                                $methodMapping = [
+                                                    'momo' => 'MOMO',
+                                                    'vnpay' => 'VNPAY',
+                                                    'cash' => 'Tiền mặt',
+                                                ];
+                                            @endphp
+                                            {{ $methodMapping[strtolower($payment->method ?? 'unknown')] ?? 'Không xác định' }}
+                                        </span><br>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Số tiền:</label>
+                                        <span>{{ \App\Helpers\FormatHelper::formatPrice($payment->amount ?? 0) }}</span><br>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Ngày thanh toán:</label>
+                                        <span>{{ \App\Helpers\FormatHelper::formatDate($payment->created_at) }}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Trạng thái:</label>
+                                        <span class="status-badge {{ 'status-' . strtolower($payment->status ?? 'unknown') }}">
+                                            @php
+                                                $statusMapping = [
+                                                    'pending' => 'Đang chờ',
+                                                    'completed' => 'Đã hoàn thành',
+                                                    'failed' => 'Không hoàn thành',
+                                                ];
+                                            @endphp
+                                            {{ $statusMapping[strtolower($payment->status ?? 'unknown')] ?? 'Không xác định' }}
+                                        </span>
+                                    </div>
                                 @empty
-                                    <li>Chưa có thông tin thanh toán.</li>
+                                    <div class="info-item">
+                                        <span>Chưa có thông tin thanh toán.</span>
+                                    </div>
                                 @endforelse
-                            </ul>
+                            </div>
+
                         </div>
                     </div>
                 </div>
