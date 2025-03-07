@@ -37,8 +37,9 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Tên dịch vụ</th>
-                                          <th>Loại Phòng</th>
-                                            <th>Trạng Thái </th>
+                                        <th>Giá dịch vụ</th>
+                                        <th>Loại Phòng</th>
+                                        <th>Trạng Thái </th>
                                         <th>Hành động</th>
                                     </tr>
                                 </thead>
@@ -47,6 +48,7 @@
                                     <tr>
                                         <td class="text-center">{{ $index + 1 }}</td>
                                         <td>{{ $service->name }}</td>
+                                        <td>{{ $service->price }}</td>
                                         <td>
                                             @foreach ($service->roomTypes as $roomType)
                                                 <span class="badge bg-primary">{{ $roomType->name }}</span>
