@@ -23,6 +23,7 @@ class StoreServiceRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255|unique:services,name',
+            'price' => 'required|numeric|min:0',
             'roomTypes' => 'required|array|min:1',
             'roomTypes.*' => 'exists:room_types,id',
         ];
@@ -33,6 +34,7 @@ class StoreServiceRequest extends FormRequest
         return [
             'name.required'=>'Tên dịch vụ phòng không được bỏ trống',
             'name.max'=>'Tên dịch vụ phòng không được vượt quá 255 ký tự',
+            'price.required' => 'Giá không được bỏ trống'
         ];
     }
 }

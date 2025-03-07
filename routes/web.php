@@ -228,19 +228,6 @@ Route::prefix('admin')
                 Route::delete('{id}/destroy',   [BookingController::class, 'destroy'])->name('destroy');
             });
 
-        Route::prefix('services') // Quản lý dịch vụ khách sạn
-            ->as('services.')
-            ->group(function () {
-                Route::get('/', [ServiceController::class, 'index'])->name('index'); // Danh sách dịch vụ
-                Route::get('/create', [ServiceController::class, 'create'])->name('create'); // Form thêm mới
-                Route::post('/store', [ServiceController::class, 'store'])->name('store'); // Lưu dịch vụ
-                Route::get('{id}/edit', [ServiceController::class, 'edit'])->name('edit'); // Form chỉnh sửa
-                Route::put('{id}/update', [ServiceController::class, 'update'])->name('update'); // Cập nhật
-                Route::delete('{id}/destroy', [ServiceController::class, 'destroy'])->name('destroy'); // Xóa dịch vụ
-                Route::get('/trashed', [ServiceController::class, 'trashed'])->name('trashed'); // Danh sách dịch vụ đã xóa mềm
-                Route::patch('/{id}/restore', [ServiceController::class, 'restore'])->name('restore'); // Khôi phục dịch vụ đã xóa mềm
-                Route::delete('/{id}/force-delete', [ServiceController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
-            });
         Route::resource('services', ServiceController::class);
 
         Route::resource('promotions', PromotionController::class);
