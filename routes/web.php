@@ -54,11 +54,8 @@ Route::prefix('admin')
     ->as('admin.')
     // ->middleware(['auth', 'role:admin']) // Chỉ admin mới truy cập
     ->group(function () {
-        Route::get('/', function () {
-            return view('admins/dashboard');
-        })->name('dashboard');
 
-        Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
         Route::prefix('room-types')
             ->as('room_types.')
@@ -83,6 +80,8 @@ Route::prefix('admin')
                 Route::get('/create', [RoomController::class, 'create'])->name('create');
                 Route::post('/store', [RoomController::class, 'store'])->name('store');
                 Route::get('{room}/edit', [RoomController::class, 'edit'])->name('edit');
+                Route::get('/booked', [RoomController::class, 'bookedRooms'])->name('booked'); // list phòng đã đặt
+                Route::get('{id}/show', [RoomController::class, 'show'])->name('show');
                 Route::put('{room}/update', [RoomController::class, 'update'])->name('update');
                 Route::delete('{room}/destroy', [RoomController::class, 'destroy'])->name('destroy'); // Xóa
                 Route::get('/trashed', [RoomController::class, 'trashed'])->name('trashed'); // Danh sách đã xóa mềm

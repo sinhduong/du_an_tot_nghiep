@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('id_number')->nullable(); // Số CMND/CCCD
+            $table->string('id_photo')->nullable(); // Đường dẫn ảnh căn cước
             $table->date('birth_date')->nullable(); // Ngày sinh
             $table->string('gender')->nullable(); // Giới tính
             $table->string('phone')->nullable(); // Số điện thoại
