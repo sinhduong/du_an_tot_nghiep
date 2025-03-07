@@ -14,7 +14,8 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        //
+        $payments = Payment::paginate(10);
+        return view('admins.payments.index', compact('payments'));
     }
 
     /**
@@ -36,9 +37,10 @@ class PaymentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Payment $payment)
+    public function show(Payment $payment, $id)
     {
-        //
+        $payment = Payment::findOrFail($id);
+        return view('admins.payments.show', compact('payment'));
     }
 
     /**

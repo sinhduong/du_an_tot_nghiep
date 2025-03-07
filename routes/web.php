@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\RulesAndRegulationController;
 use App\Http\Controllers\Admin\AmenityController;
@@ -247,6 +248,7 @@ Route::prefix('admin')
         Route::resource('abouts', AboutController::class);
         Route::resource('introductions', IntroductionController::class);
         Route::resource('faqs', FaqController::class);
+        Route::resource('payments', PaymentController::class);
 
         Route::prefix('admin')->group(function () {
             Route::get('/contacts', [ContactsController::class, 'index'])->name('contacts.index');
