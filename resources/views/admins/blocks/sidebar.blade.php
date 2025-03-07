@@ -170,6 +170,13 @@
                 </li>
 
                 <li class="lh-sb-item">
+                    <a href="{{ route('admin.payments.index') }}" class="lh-page-link">
+                        <i class="ri-bill-line"></i><span class="condense"><span class="hover-title">Lịch sử thanh toán</span>
+                        </span>
+                    </a>
+                </li>
+
+                <li class="lh-sb-item">
                     <a href="{{ route('admin.contacts.index') }}" class="lh-page-link">
                         <i class="ri-bill-line"></i><span class="condense"><span class="hover-title">Liên hệ</span>
                         </span>
