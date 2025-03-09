@@ -14,6 +14,7 @@ use App\Http\Requests\StoreroomRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\UpdateroomRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use RealRashid\SweetAlert\Facades\Alert; // Thêm use này vào đầu file
 
 class RoomController extends Controller
 {
@@ -220,7 +221,7 @@ class RoomController extends Controller
         $title = 'Thêm phòng';
         $room_types_id = RoomType::all(); //lấy tất cả loại phòng
         $staffs_id = Staff::all(); //lấy tất cả loại phòng
-        return  view('admins.rooms.create', compact(['title', 'room_types_id', 'staffs_id']));
+        return view('admins.rooms.create', compact(['title', 'room_types_id', 'staffs_id']));
     }
 
     /**
@@ -230,13 +231,11 @@ class RoomController extends Controller
     {
         try {
             Room::create($request->validated());
-            return redirect()
-                ->route('admin.rooms.index')
-                ->with('success', 'Phòng đã được thêm thành công!');
+            alert()->success('Thành công', 'Phòng đã được thêm thành công!');
+            return redirect()->route('admin.rooms.index');
         } catch (\Throwable $th) {
-            return back()
-                ->with('success', true)
-                ->with('error', $th->getMessage());
+            alert()->error('Lỗi', $th->getMessage());
+            return back();
         }
     }
 
@@ -259,11 +258,11 @@ class RoomController extends Controller
                 if ($checkIn && $checkOut) {
                     $query->where(function ($q) use ($checkIn, $checkOut) {
                         $q->whereBetween('check_in', [$checkIn, $checkOut])
-                          ->orWhereBetween('check_out', [$checkIn, $checkOut])
-                          ->orWhere(function ($q) use ($checkIn, $checkOut) {
-                              $q->where('check_in', '<=', $checkIn)
-                                ->where('check_out', '>=', $checkOut);
-                          });
+                            ->orWhereBetween('check_out', [$checkIn, $checkOut])
+                            ->orWhere(function ($q) use ($checkIn, $checkOut) {
+                                $q->where('check_in', '<=', $checkIn)
+                                    ->where('check_out', '>=', $checkOut);
+                            });
                     });
                 }
                 $query->orderBy('created_at', 'desc');
@@ -286,7 +285,7 @@ class RoomController extends Controller
         $title = 'Sửa thông tin phòng';
         $room_types_id = RoomType::all(); //lấy tất cả loại phòng
         $staffs_id = Staff::all(); //lấy tất cả loại phòng
-        return  view('admins.rooms.edit', compact(['title', 'room', 'room_types_id', 'staffs_id']));
+        return view('admins.rooms.edit', compact(['title', 'room', 'room_types_id', 'staffs_id']));
     }
 
     /**
@@ -296,9 +295,11 @@ class RoomController extends Controller
     {
         try {
             $room->update($request->validated());
-            return back()->with('success', 'Phòng đã được cập nhật thành công!');
+            alert()->success('Thành công', 'Phòng đã được cập nhật thành công!');
+            return redirect()->route('admin.rooms.index');
         } catch (\Throwable $th) {
-            return back()->with('error', 'Có lỗi xảy ra: ' . $th->getMessage());
+            alert()->error('Lỗi', 'Có lỗi xảy ra: ' . $th->getMessage());
+            return back();
         }
     }
 
@@ -309,11 +310,11 @@ class RoomController extends Controller
     {
         try {
             $room->delete();
-            return redirect()
-                ->route('admin.rooms.index')
-                ->with('success', 'Bạn đã chuyển phòng vào thùng rác!');
+            alert()->success('Thành công', 'Bạn đã chuyển phòng vào thùng rác!');
+            return redirect()->route('admin.rooms.index');
         } catch (\Exception $e) {
-            return back()->with('error', 'Lỗi khi xóa: ' . $e->getMessage());
+            alert()->error('Lỗi', 'Lỗi khi xóa: ' . $e->getMessage());
+            return back();
         }
     }
 
@@ -332,11 +333,11 @@ class RoomController extends Controller
         try {
             $rooms = Room::onlyTrashed()->findOrFail($id);
             $rooms->restore();
-            return redirect()
-                ->route('admin.rooms.index')
-                ->with('success', 'Phòng đã được khôi phục!');
+            alert()->success('Thành công', 'Phòng đã được khôi phục!');
+            return redirect()->route('admin.rooms.index');
         } catch (ModelNotFoundException $e) {
-            return back()->with('error', 'Phòng không tồn tại trong thùng rác!');
+            alert()->error('Lỗi', 'Phòng không tồn tại trong thùng rác!');
+            return back();
         }
     }
 
@@ -346,11 +347,11 @@ class RoomController extends Controller
         try {
             $rooms = Room::onlyTrashed()->findOrFail($id);
             $rooms->forceDelete();
-            return redirect()
-                ->route('admin.rooms.trashed')
-                ->with('success', 'Phòng đã bị xóa vĩnh viễn!');
+            alert()->success('Thành công', 'Phòng đã bị xóa vĩnh viễn!');
+            return redirect()->route('admin.rooms.trashed');
         } catch (ModelNotFoundException $e) {
-            return back()->with('error', 'Phòng không tồn tại trong thùng rác!');
+            alert()->error('Lỗi', 'Phòng không tồn tại trong thùng rác!');
+            return back();
         }
     }
 }

@@ -21,7 +21,9 @@
                         </ul>
                     </div>
                 </div>
-
+                <div class="section-title mt-4 text-end mb-3">
+                    <a href="{{ route('admin.rooms.create') }}" class="btn btn-primary btn-sm">Tạo mới</a>
+                </div>
                 <!-- Bộ lọc -->
                 <div class="card mb-4">
                     <div class="card-body">
@@ -148,9 +150,7 @@
                     </div>
                 @endif
 
-                <div class="section-title mt-4">
-                    <a href="{{ route('admin.rooms.create') }}" class="btn btn-primary btn-sm">Tạo mới</a>
-                </div>
+
             </div>
         </div>
     </main>

@@ -19,9 +19,8 @@
     <meta name="keywords"
         content="hotel, booking, business, restaurant, spa, resort, landing, agency, corporate, start up, site design, new business site, business template, professional template, classic, modern">
     <meta name="author" content="ashishmaraviya">
-
+    <title>Ứng dụng của bạn</title>
     <title>Luxurious - Hotel Booking HTML Template + Admin Dashboard</title>
-
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ asset('assets/admin/assets/img/favicon/favicon.ico') }}">
 
@@ -40,10 +39,15 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 
+
+
     </style>
     <!-- Main CSS -->
 
     <link id="mainCss" href="{{ asset('assets/admin/assets/css/style.css') }}" rel="stylesheet">
+    <!-- Thêm SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 </head>
 
 <body data-lh-mode="light">
@@ -65,7 +69,7 @@
 
         <!-- main content -->
         @yield('content')
-
+        @include('sweetalert::alert') <!-- Hiển thị thông báo -->
 
 
         <!-- Footer -->
@@ -190,6 +194,9 @@
             </div>
         </div>
     </main>
+
+<!-- Thêm SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Vendor Custom -->
     <script src="{{ asset('assets/admin/assets/js/vendor/jquery-3.6.4.min.js') }}"></script>
