@@ -15,6 +15,9 @@ class PolicyController extends Controller
     public function index()
     {
         //
+        $title = 'Danh Sách Chính Sách' ; 
+        $policy = Policy::paginate(10);
+        return view('admins.policies.index', compact('title', 'policy'));
     }
 
     /**
@@ -23,6 +26,9 @@ class PolicyController extends Controller
     public function create()
     {
         //
+        $title = 'Danh Sách Chính Sách' ; 
+        // $policy = Policy::paginate(10);
+        return view('admins.policies.create', compact('title'));
     }
 
     /**
@@ -31,6 +37,10 @@ class PolicyController extends Controller
     public function store(StorePolicyRequest $request)
     {
         //
+        Policy::create($request->all());
+        return redirect()->route('admin.policies.index')->with('success', 'Thêm dịch vụ thành công');
+
+
     }
 
     /**
@@ -44,24 +54,37 @@ class PolicyController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Policy $policy)
+    public function edit(string $id)
     {
         //
+        $title = 'Sửa  Chính Sách' ; 
+        $policy = Policy::findOrFail($id);
+        return view('admins.policies.edit', compact('title','policy'));
+
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePolicyRequest $request, Policy $policy)
+    public function update(UpdatePolicyRequest $request, string $id)
     {
         //
+        $policy = Policy::findOrFail($id);
+
+        $policy->update($request->all());
+        return redirect()->route('admin.policies.index')->with('success', 'Cập nhật chính sách thành công');
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Policy $policy)
+    public function destroy(string $id)
     {
         //
+        $policy = Policy::findOrFail($id);
+        $policy->delete();
+        return redirect()->route('admin.policies.index')->with('success', 'Chính sách đã được xóa mềm thành công');
+
     }
 }

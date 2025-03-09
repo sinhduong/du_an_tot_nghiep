@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PromotionController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\ContactsController;
 use App\Http\Controllers\Admin\IntroductionController;
+use App\Http\Controllers\Admin\PolicyController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\admin\RoleController;
@@ -233,9 +235,10 @@ Route::prefix('admin')
         Route::resource('roles', RoleController::class);
         Route::resource('abouts', AboutController::class);
         Route::resource('introductions', IntroductionController::class);
+        Route::resource('policies', PolicyController::class);
+        Route::resource('banners', BannerController::class);
         Route::resource('faqs', FaqController::class);
         Route::resource('payments', PaymentController::class);
-
         Route::prefix('admin')->group(function () {
             Route::get('/contacts', [ContactsController::class, 'index'])->name('contacts.index');
             Route::get('/contacts/{contact}', [ContactsController::class, 'show'])->name('contacts.show');
