@@ -29,7 +29,8 @@
                                 sách khách hàng</a></li>
                         <li><a href="{{ route('admin.staffs.index') }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Danh sách quản trị viên</a></li>
-                        <li><a href="{{route('admin.roles.index')}}" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Phân quyền người dùng</a></li>
+                        <li><a href="{{ route('admin.roles.index') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Phân quyền người dùng</a></li>
                     </ul>
                 </li>
                 <li class="lh-sb-item-separator"></li>
@@ -135,6 +136,35 @@
                     </ul>
                 </li>
                 <li class="lh-sb-item-separator"></li>
+
+                <li class="lh-sb-item sb-drop-item">
+                    <a href="javascript:void(0)" class="lh-drop-toggle">
+                        <i class="ri-contacts-book-line"></i><span class="condense">Quản lý Chính Sách <i
+                                class="drop-arrow ri-arrow-down-s-line"></i></span></a>
+                    <ul class="lh-sb-drop condense">
+                        <li><a href="{{ route('admin.policies.index') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Danh sách chính sách</a></li>
+                        <li><a href="{{ route('admin.policies.create') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Thêm chính sách </a></li>
+                        {{-- <li><a href="{{ route('admin.policies.create') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Danh sách chính sách đã xóa  </a></li> --}}
+                    </ul>
+                </li>  <li class="lh-sb-item-separator"></li>
+
+                <li class="lh-sb-item sb-drop-item">
+                    <a href="javascript:void(0)" class="lh-drop-toggle">
+                        <i class="ri-contacts-book-line"></i><span class="condense">Quản lý Banner<i
+                                class="drop-arrow ri-arrow-down-s-line"></i></span></a>
+                    <ul class="lh-sb-drop condense">
+                        <li><a href="{{ route('admin.banners.index') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Danh sách Banner</a></li>
+                        <li><a href="{{ route('admin.banners.create') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Thêm Banner </a></li>
+                        {{-- <li><a href="{{ route('admin.policies.create') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Danh sách chính sách đã xóa  </a></li> --}}
+                    </ul>
+                </li>
+                <li class="lh-sb-item-separator"></li>
                 <li class="lh-sb-item">
                     <a href="invoice.html" class="lh-page-link">
                         <i class="ri-bill-line"></i><span class="condense"><span class="hover-title">Hóa đơn</span>
@@ -158,9 +188,11 @@
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
 
-                        <li><a href="{{route('admin.abouts.index')}}" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Trang
+                        <li><a href="{{ route('admin.abouts.index') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Trang
                                 Về chúng tôi</a></li>
-                        <li><a href="{{route('admin.introductions.index')}}" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Trang
+                        <li><a href="{{ route('admin.introductions.index') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Trang
                                 Giới thiệu</a></li>
 
                     </ul>

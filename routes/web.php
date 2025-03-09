@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\AmenityController;
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\ContactsController;
 use App\Http\Controllers\Admin\IntroductionController;
+use App\Http\Controllers\Admin\PolicyController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\ReviewController;
@@ -189,6 +191,8 @@ Route::prefix('admin')
         Route::resource('roles', RoleController::class);
         Route::resource('abouts', AboutController::class);
         Route::resource('introductions', IntroductionController::class);
+        Route::resource('policies', PolicyController::class);
+        Route::resource('banners', BannerController::class);
 
         Route::prefix('admin')->group(function () {
             Route::get('/contacts', [ContactsController::class, 'index'])->name('contacts.index');
