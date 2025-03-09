@@ -6,4 +6,4 @@
             closeOnSelect: false // Cho phép chọn nhiều phòng
         });
     });
-
+    //  Thêm CKEditor cho trường notes

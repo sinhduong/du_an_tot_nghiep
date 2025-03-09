@@ -52,9 +52,17 @@
                                         <ul>
                                             <li><strong>Tên dịch vụ *: </strong>
                                                 <div class="form-group">
-                                                    <input type="text" name="name" placeholder="Enter name" value="{{ $service->name }}">
+                                                    <input type="text" name="name" placeholder="Nhập tên" value="{{ $service->name }}">
                                                     @error('name')
                                                         <p class="text-danger">{{ $message }}</p>
+                                                    @enderror
+                                                </div>
+                                            </li>
+                                            <li><strong>Giá dịch vụ *: </strong>
+                                                <div class="form-group">
+                                                    <input type="text" name="price" placeholder="Nhập giá" value="{{ $service->price }}">
+                                                    @error('price')
+                                                    <p class="text-danger">{{ $message }}</p>
                                                     @enderror
                                                 </div>
                                             </li>

@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('blog_catalogs', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('blog_id');
-            $table->bigInteger('catalog_id');
-            $table->timestamps();
-            $table->softDeletes();//delete_at xóa mềm
-        });
+        // Schema::create('blog_catalogs', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->bigInteger('blog_id')->onDelete('cascade');
+        //     $table->bigInteger('catalog_id')->onDelete('cascade');
+        //     $table->timestamps();
+        //     $table->softDeletes();//delete_at xóa mềm
+        // });
     }
 
     /**

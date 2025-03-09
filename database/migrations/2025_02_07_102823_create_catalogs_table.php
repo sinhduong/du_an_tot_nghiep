@@ -9,16 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('catalogs', function (Blueprint $table) {
-            $table->id();
-            $table->string('name',255);
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-            $table->softDeletes();//dekete_at xóa mềm
-        });
-    }
+    public function up()
+{
+    // Schema::create('blog_catalogs', function (Blueprint $table) {
+    //     $table->id();
+    //     $table->string('name');
+    //     $table->timestamps();
+    // });
+}
+
 
     /**
      * Reverse the migrations.

@@ -58,6 +58,14 @@
                                                     @enderror
                                                 </div>
                                             </li>
+                                            <li><strong>Giá dịch vụ *: </strong>
+                                                <div class="form-group">
+                                                    <input type="text" name="price" placeholder="Giá dịch vụ" class="form-control" value="{{ old('price') }}">
+                                                    @error('price')
+                                                    <p class="text-danger">{{ $message }}</p>
+                                                    @enderror
+                                                </div>
+                                            </li>
                                             <li>
                                                 <strong>Áp dụng cho *: </strong>
                                                 <div class="form-group">
