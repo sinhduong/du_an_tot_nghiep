@@ -87,7 +87,7 @@ class BannerController extends Controller
 
         $banner = Banner::findOrFail($id);
         $banner->update($data);
-        return redirect()->route('admin.banners.index')->with('success', 'Cập nhật chính sách thành công');
+        return redirect()->route('admin.banners.index')->with('success', 'Cập nhật banner thành công');
 
     }
 
@@ -99,5 +99,7 @@ class BannerController extends Controller
         //
         $banner = Banner::findOrFail($id);
         $banner->delete();
+        return redirect()->route('admin.banners.index')->with('success', 'Xóa banner thành công');
+
     }
 }

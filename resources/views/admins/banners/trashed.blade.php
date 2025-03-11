@@ -5,7 +5,7 @@
         <!-- Page title & breadcrumb -->
         <div class="lh-page-title">
             <div class="lh-breadcrumb">
-                <h5>Loại Tiện Ích Đã Xóa</h5>
+                <h5>Loại Banner Đã Xóa</h5>
                 <ul>
                     <li><a href="index.html">Trang chủ</a></li>
                     <li>Dashboard</li>
