@@ -20,6 +20,7 @@ use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\RoomTypeController;
 use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\ServicePlusController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
@@ -98,6 +99,7 @@ Route::prefix('admin')
                 Route::get('/create',           [BookingController::class, 'create'])->name('create');
                 Route::post('/store',           [BookingController::class, 'store'])->name('store');
                 Route::get('{id}/show',         [BookingController::class, 'show'])->name('show');
+                Route::post('{id}/service-plus', [BookingController::class, 'updateServicePlus'])->name('service_plus.update');
                 Route::get('{id}/edit',         [BookingController::class, 'edit'])->name('edit');
                 Route::put('{id}/update',       [BookingController::class, 'update'])->name('update');
                 Route::delete('{id}/destroy',   [BookingController::class, 'destroy'])->name('destroy');
@@ -230,6 +232,7 @@ Route::prefix('admin')
             });
 
         Route::resource('services', ServiceController::class);
+        Route::resource('service_plus', ServicePlusController::class);
 
         Route::resource('promotions', PromotionController::class);
         Route::resource('roles', RoleController::class);

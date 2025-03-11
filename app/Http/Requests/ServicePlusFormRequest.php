@@ -6,33 +6,34 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ServicePlusFormRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
+    public function authorize()
     {
-        return true;
+        return true; // Thay bằng logic kiểm tra quyền nếu cần
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
+    public function rules()
     {
         return [
-            'name' => 'required|string|max:255|unique:services,name',
-            'price' => 'required|numeric|min:0',
+           'name' => 'required|string|max:255|unique:service_plus,name|regex:/^[a-zA-Z0-9\s_-]+$/',
+            'price' => 'required|numeric|min:0|max:999999999',
+            'is_active' => 'required|boolean',
         ];
     }
 
-    public function messages(): array
+    public function messages()
     {
         return [
-            'name.required' => 'Tên dịch vụ phòng không được bỏ trống',
-            'name.max' => 'Tên dịch vụ phòng không được vượt quá 255 ký tự',
-            'price.required' => 'Giá không được bỏ trống'
+            'name.required' => 'Tên dịch vụ là bắt buộc.',
+            'name.string' => 'Tên dịch vụ phải là chuỗi ký tự.',
+            'name.max' => 'Tên dịch vụ không được vượt quá 255 ký tự.',
+            'name.unique' => 'Tên dịch vụ đã tồn tại, vui lòng chọn tên khác.',
+            'name.regex' => 'Tên dịch vụ không được chứa ký tự đặc biệt, chỉ cho phép chữ cái, số, khoảng trắng, dấu gạch dưới (_) và dấu gạch ngang (-).',
+            'price.required' => 'Giá dịch vụ là bắt buộc.',
+            'price.numeric' => 'Giá phải là số.',
+            'price.min' => 'Giá không được nhỏ hơn 0.',
+            'price.max' => 'Giá không được vượt quá :max.',
+            'is_active.required' => 'Trạng thái là bắt buộc.',
+            'is_active.boolean' => 'Trạng thái phải là đúng hoặc sai.',
         ];
     }
 }

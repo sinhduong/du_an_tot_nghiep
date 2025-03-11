@@ -14,6 +14,8 @@ class Booking extends Model
         'booking_code',
         'check_in',
         'check_out',
+        'actual_check_in',
+        'actual_check_out',
         'total_price',
         'total_guests',
         'children_count',
@@ -21,6 +23,7 @@ class Booking extends Model
         'user_id',
         'room_id',
         'guest_id',
+        'service_plus_status', // Thêm trường này
     ];
     public function user()
     {
@@ -38,5 +41,10 @@ class Booking extends Model
     public function guests()
     {
         return $this->belongsToMany(Guest::class, 'booking_guest', 'booking_id', 'guest_id');
+    }
+    public function ServicePlus()
+    {
+        return $this->belongsToMany(ServicePlus::class, 'booking_service_plus', 'booking_id', 'service_plus_id')
+            ->withPivot('quantity');
     }
 }
