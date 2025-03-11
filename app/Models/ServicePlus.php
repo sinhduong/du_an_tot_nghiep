@@ -8,18 +8,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ServicePlus extends Model
 {
-    use HasFactory;
-
-    protected $table = 'service_plus';
-
+    protected $table = 'service_plus'; 
     protected $fillable = [
         'name',
         'price',
-        'is_active'
+        'is_active',
     ];
     public function bookings()
     {
-        return $this->belongsToMany(Booking::class, 'booking_services', 'service_plus_id', 'booking_id')
+        return $this->belongsToMany(Booking::class, 'booking_service_plus', 'service_plus_id', 'booking_id')
             ->withPivot('quantity');
     }
 }

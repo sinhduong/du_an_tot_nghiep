@@ -2,18 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\ServicePlusFormRequest;
-use App\Http\Requests\StoreServiceRequest;
-use App\Http\Requests\UpdateServiceRequest;
-use App\Models\RoomType;
-use App\Models\Service;
 use App\Models\ServicePlus;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\ServicePlusFormRequest;
 
 class ServicePlusController extends Controller
 {
-
     public function index()
     {
         $title = 'Danh sách dịch vụ';
@@ -30,19 +26,18 @@ class ServicePlusController extends Controller
     public function store(ServicePlusFormRequest $request)
     {
         try {
-            DB::beginTransaction();
-            $service = ServicePlus::create($request->all());
-            DB::commit();
-            return redirect()->route('admin.service_plus.index')->with('success', 'Thêm dịch vụ thành công');
-        } catch (\Exception $exception) {
-            DB::rollBack();
-            throw $exception;
-        }
-    }
+            $data = $request->validated();
+            // Debug dữ liệu
+            Log::info('Validated data:', $data); // Hoặc dd($data);
 
-    public function show(Service $service)
-    {
-        //
+            ServicePlus::create($data);
+
+            alert()->success('Thành công', 'Dịch vụ đã được thêm thành công!');
+            return redirect()->route('admin.service_plus.index');
+        } catch (\Exception $exception) {
+            alert()->error('Lỗi', 'Có lỗi xảy ra khi thêm dịch vụ: ' . $exception->getMessage());
+            return redirect()->back()->withInput();
+        }
     }
 
     public function edit(string $id)
@@ -57,21 +52,31 @@ class ServicePlusController extends Controller
         try {
             DB::beginTransaction();
             $service = ServicePlus::findOrFail($id);
-
-            $service->update($request->all());
+            $service->update([
+                'name' => $request->input('name'),
+                'price' => $request->input('price'),
+                'is_active' => $request->input('is_active', 1),
+            ]);
             DB::commit();
-            return redirect()->route('admin.service_plus.index')->with('success', 'Cập nhật dịch vụ thành công');
+            alert()->success('Thành công', 'Dịch vụ đã được cập nhật thành công!');
+            return redirect()->route('admin.service_plus.index');
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
+            alert()->error('Lỗi', 'Có lỗi xảy ra khi cập nhật dịch vụ: ' . $e->getMessage());
+            return redirect()->back()->withInput();
         }
     }
 
     public function destroy($id)
     {
-        $service = ServicePlus::findOrFail($id);
-        $service->delete();
-
-        return redirect()->route('admin.service_plus.index')->with('success', 'Dịch vụ đã được xóa mềm');
+        try {
+            $service = ServicePlus::findOrFail($id);
+            $service->delete();
+            alert()->success('Thành công', 'Dịch vụ đã được xóa !');
+            return redirect()->route('admin.service_plus.index');
+        } catch (\Exception $e) {
+            alert()->error('Lỗi', 'Có lỗi xảy ra khi xóa dịch vụ: ' . $e->getMessage());
+            return redirect()->back();
+        }
     }
 }

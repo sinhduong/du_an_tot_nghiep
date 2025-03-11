@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
             $table->string('booking_code')->unique()->nullable();
-            $table->date('check_in');
-            $table->date('check_out');
+            $table->dateTime('check_in'); 
+            $table->dateTime('check_out'); 
+            $table->dateTime('actual_check_in')->nullable();
+            $table->dateTime('actual_check_out')->nullable();
             $table->decimal('total_price', 10, 2);
             $table->integer('total_guests'); // Tổng số khách đặt phòng
             $table->integer('children_count')->default(0); // Số trẻ em

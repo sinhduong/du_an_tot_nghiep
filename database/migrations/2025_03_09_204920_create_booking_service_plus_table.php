@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('booking_service_plus', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('booking_id');
+            $table->bigInteger('service_plus_id');
+            $table->bigInteger('quantity');
             $table->timestamps();
         });
     }

@@ -77,7 +77,7 @@
                                             </td>
                                             <td>{{ $payment->transaction_id ?? 'N/A' }}</td>
                                             <td><a class="text-decoration-underline" href="{{ route('admin.bookings.show', $payment->booking_id) }}">Xem chi tiết</a></td>
-                                            <td>{{ $payment->created_at->diffForHumans() }}</td>
+                                            <td>{{ $payment->created_at->format('d F Y') }}</td>
                                             <td>
                                                 <div class="btn-group">
                                                     <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">

@@ -163,7 +163,6 @@
                     </ul>
                 </li>
                 <li class="lh-sb-item-separator"></li>
-
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
                         <i class="ri-contacts-book-line"></i><span class="condense">Quản lý Chính Sách <i
@@ -176,8 +175,19 @@
                         {{-- <li><a href="{{ route('admin.policies.create') }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Danh sách chính sách đã xóa  </a></li> --}}
                     </ul>
-                </li>  <li class="lh-sb-item-separator"></li>
-
+                </li>
+                <li class="lh-sb-item-separator"></li>
+                <li class="lh-sb-item sb-drop-item">
+                    <a href="javascript:void(0)" class="lh-drop-toggle">
+                        <i class="ri-contacts-book-line"></i><span class="condense">Dịch vụ phát sinh <i
+                                class="drop-arrow ri-arrow-down-s-line"></i></span></a>
+                    <ul class="lh-sb-drop condense">
+                        <li><a href="{{ route('admin.service_plus.index') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Danh sách </a></li>
+                        <li><a href="{{ route('admin.service_plus.create') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Thêm  </a></li>
+                    </ul>
+                </li>
 
                 <li class="lh-sb-item-separator"></li>
                 <li class="lh-sb-item">
