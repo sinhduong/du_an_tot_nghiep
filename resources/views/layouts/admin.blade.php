@@ -68,7 +68,7 @@
 
         <!-- main content -->
         @yield('content')
-        @include('sweetalert::alert') <!-- Hiển thị thông báo -->
+        {{-- @include('sweetalert::alert') <!-- Hiển thị thông báo --> --}}
 
 
         <!-- Footer -->
