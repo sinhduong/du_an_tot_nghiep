@@ -69,7 +69,7 @@
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td>{{ $payment->user->name ?? 'Không xác định' }}</td>
                                             <td>{{ ucfirst($payment->method) }}</td>
-                                            <td>{{ number_format($payment->amount, 2, ',', '.') }} VNĐ</td>
+                                            <td>{{ \App\Helpers\FormatHelper::formatPrice($payment->amount, 2, ',', '.') }} VNĐ</td>
                                             <td>
                                                     <span class="text-{{ $payment->status === 'completed' ? 'success' : ($payment->status === 'failed' ? 'danger' : 'warning') }}">
                                                         {{ ucfirst($payment->status === 'pending' ? 'Chờ xử lý' : ($payment->status === 'completed' ? 'Hoàn thành' : 'Thất bại')) }}
@@ -77,7 +77,7 @@
                                             </td>
                                             <td>{{ $payment->transaction_id ?? 'N/A' }}</td>
                                             <td><a class="text-decoration-underline" href="{{ route('admin.bookings.show', $payment->booking_id) }}">Xem chi tiết</a></td>
-                                            <td>{{ $payment->created_at->format('d F Y') }}</td>
+                                            <td>{{ $payment->created_at ? $payment->created_at->locale('vi')->format('d F Y') : 'Không có ngày' }}</td>
                                             <td>
                                                 <div class="btn-group">
                                                     <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">

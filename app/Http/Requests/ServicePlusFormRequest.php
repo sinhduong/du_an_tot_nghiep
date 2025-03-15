@@ -14,7 +14,7 @@ class ServicePlusFormRequest extends FormRequest
     public function rules()
     {
         return [
-           'name' => 'required|string|max:255|unique:service_plus,name|regex:/^[a-zA-Z0-9\s_-]+$/',
+            'name' => 'required|string|max:255|unique:service_plus,name|regex:/^[\p{L}0-9\s_-]+$/u',
             'price' => 'required|numeric|min:0|max:999999999',
             'is_active' => 'required|boolean',
         ];
@@ -27,7 +27,7 @@ class ServicePlusFormRequest extends FormRequest
             'name.string' => 'Tên dịch vụ phải là chuỗi ký tự.',
             'name.max' => 'Tên dịch vụ không được vượt quá 255 ký tự.',
             'name.unique' => 'Tên dịch vụ đã tồn tại, vui lòng chọn tên khác.',
-            'name.regex' => 'Tên dịch vụ không được chứa ký tự đặc biệt, chỉ cho phép chữ cái, số, khoảng trắng, dấu gạch dưới (_) và dấu gạch ngang (-).',
+            'name.regex' => 'Tên dịch vụ chỉ cho phép chữ cái , số, khoảng trắng, dấu gạch dưới (_) và dấu gạch ngang (-).',
             'price.required' => 'Giá dịch vụ là bắt buộc.',
             'price.numeric' => 'Giá phải là số.',
             'price.min' => 'Giá không được nhỏ hơn 0.',

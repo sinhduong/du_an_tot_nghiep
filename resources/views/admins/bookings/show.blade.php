@@ -207,6 +207,24 @@
     .method-vnpay { background: #007bff; color: #fff; }
     .method-cash { background: #6c757d; color: #fff; }
     .method-unknown { background: #6c757d; color: #fff; }
+
+    /* CSS cho tooltip */
+    .tooltip-inner {
+        background-color: #333;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 4px;
+    }
+
+    .tooltip .tooltip-arrow::before {
+        border-top-color: #333 !important;
+    }
+
+    /* Đảm bảo bảng không bị ảnh hưởng bởi lớp phủ */
+    .table-striped {
+        position: relative;
+        z-index: 1;
+    }
 </style>
 
 <div class="lh-main-content">
@@ -221,21 +239,41 @@
                     <li>Chi tiết</li>
                 </ul>
             </div>
-            <div class="lh-tools">
-                <a href="javascript:void(0)" title="Refresh"><i class="ri-refresh-line"></i></a>
-                <div class="lh-date-range" title="Date"><span></span></div>
-                <div class="filter">
-                    <div class="dropdown" title="Filter">
-                        <button class="btn btn-link dropdown-toggle p-0" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="ri-sound-module-line"></i>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Booking</a></li>
-                            <li><a class="dropdown-item" href="#">Revenue</a></li>
-                            <li><a class="dropdown-item" href="#">Expence</a></li>
-                        </ul>
-                    </div>
-                </div>
+            <div>
+                @php
+                    // Xác định trạng thái "Đã ở" hoặc "Đã ra" dựa trên thời gian thực tế
+                    $stayStatus = '';
+                    $stayStatusClass = '';
+                    $tooltipInfo = '';
+
+                    // Kiểm tra trạng thái không phải là "cancelled" hoặc "refunded"
+                    if (!in_array($booking->status, ['cancelled', 'refunded'])) {
+                        if ($booking->actual_check_in && !$booking->actual_check_out) {
+                            // Khách đã check-in (actual_check_in có giá trị) và chưa check-out (actual_check_out là null)
+                            $stayStatus = 'Đã ở';
+                            $stayStatusClass = 'status-check_in'; // Màu xanh lam (đang ở)
+                            $tooltipInfo = 'Check-in thực tế: ' . \App\Helpers\FormatHelper::formatDateTime($booking->actual_check_in);
+                        } elseif ($booking->actual_check_in && $booking->actual_check_out) {
+                            // Khách đã check-in và đã check-out (cả actual_check_in và actual_check_out đều có giá trị)
+                            $stayStatus = 'Đã ra';
+                            $stayStatusClass = 'status-check_out'; // Màu xám (đã ra)
+                            $tooltipInfo = 'Check-out thực tế: ' . \App\Helpers\FormatHelper::formatDateTime($booking->actual_check_out);
+                        } else {
+                            // Khách chưa check-in (actual_check_in là null) hoặc trạng thái không phù hợp
+                            $stayStatus = 'N/A';
+                            $stayStatusClass = 'status-unknown'; // Màu xám nhạt
+                        }
+                    } else {
+                        // Nếu trạng thái là "cancelled" hoặc "refunded", không hiển thị trạng thái
+                        $stayStatus = 'N/A';
+                        $stayStatusClass = 'status-unknown';
+                    }
+                @endphp
+                @if ($stayStatus !== 'N/A') <!-- Chỉ hiển thị nếu trạng thái là "Đã ở" hoặc "Đã ra" -->
+                    <span class="status-badge {{ $stayStatusClass }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $tooltipInfo }}">
+                        {{ $stayStatus }}
+                    </span>
+                @endif
             </div>
         </div>
 
@@ -243,65 +281,57 @@
             <div class="row">
                 <!-- Thông tin người đặt & người ở -->
                 <div class="col-md-6">
-                    <div class="booking-section">
-                        <div class="booking-section-header">
-                            <h5>Thông tin người đặt</h5>
-                            <span class="toggle-icon">▼</span>
-                        </div>
-                        <div class="booking-section-content">
-                            <div class="text-center">
-                                <img src="{{ $booking->user && $booking->user->avatar ? asset('upload/avatars/' . $booking->user->avatar) : asset('assets/admin/assets/img/user/1.jpg') }}" alt="{{ $booking->user ? $booking->user->name : 'Người dùng không xác định' }}" class="user-avatar">
-                                <h6 class="mt-2">{{ $booking->user->name }}</h6>
-                            </div>
-                            <div class="booking-info">
-                                <div class="info-item">
-                                    <label>Số điện thoại:</label>
-                                    <span>{{ $booking->user->phone ?? 'Không có' }}</span>
+                    <div class="row">
+                        <!-- Cột bên trái: Thông tin người đặt -->
+                        <div class="col-md-6">
+                            <div class="booking-section">
+                                <div class="booking-section-header">
+                                    <h5>Thông tin người đặt</h5>
+                                    <span class="toggle-icon">▼</span>
                                 </div>
-                                <div class="info-item">
-                                    <label>Email:</label>
-                                    <span>{{ $booking->user->email ?? 'Không có' }}</span>
-                                </div>
-                                <div class="info-item">
-                                    <label>Địa chỉ:</label>
-                                    <span>{{ $booking->user->address ?? 'Không có' }}</span>
-                                </div>
-                                <div class="info-item">
-                                    <label>Giới tính:</label>
-                                    <span>{{ $booking->user->gender ?? 'Không xác định' }}</span>
+                                <div class="booking-section-content">
+                                    <div class="text-center">
+                                        <img src="{{ $booking->user && $booking->user->avatar ? asset('upload/avatars/' . $booking->user->avatar) : asset('assets/admin/assets/img/user/1.jpg') }}" alt="{{ $booking->user ? $booking->user->name : 'Người dùng không xác định' }}" class="user-avatar">
+                                        <h6 class="mt-2">{{ $booking->user->name }}</h6>
+                                    </div>
+                                    <ul class="">
+                                        <li><strong>Số điện thoại:</strong> {{ $booking->user->phone ?? 'Không có' }}</li>
+                                        <li><strong>Email:</strong> {{ $booking->user->email ?? 'Không có' }}</li>
+                                        <li><strong>Địa chỉ:</strong> {{ $booking->user->address ?? 'Không có' }}</li>
+                                        <li><strong>Giới tính:</strong> {{ $booking->user->gender ?? 'Không xác định' }}</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="booking-section">
-                        <div class="booking-section-header">
-                            <h5>Thông tin người ở</h5>
-                            <span class="toggle-icon">▼</span>
-                        </div>
-                        <div class="booking-section-content">
-                            <div class="booking-info">
-                                @foreach ($booking->guests as $guest)
-                                <div class="info-item">
-                                    <label>Tên:</label>
-                                    <span>{{ $guest->name ?? 'Không có' }}</span>
+
+                        <!-- Cột bên phải: Thông tin người ở -->
+                        <div class="col-md-6">
+                            <div class="booking-section">
+                                <div class="booking-section-header">
+                                    <h5>Thông tin người ở</h5>
+                                    <span class="toggle-icon">▼</span>
                                 </div>
-                                <div class="info-item">
-                                    <label>Ảnh cước công dân:</label>
-                                    <span>{{ $guest->id_photo ?? 'Không có' }}</span>
+                                <div class="booking-section-content">
+                                    <ul class="">
+                                        @if ($booking->guests->isEmpty())
+                                            <!-- Nếu không có người ở, hiển thị thông tin người đặt -->
+                                            <li><strong>Tên:</strong> {{ $booking->user->name ?? 'Không có' }}</li>
+                                            <li><strong>Ảnh căn cước công dân:</strong> {{ $booking->user->id_photo ?? 'Không có' }}</li>
+                                            <li><strong>Căn cước công dân:</strong> {{ $booking->user->id_number ?? 'Không có' }}</li>
+                                            <li><strong>Ngày sinh:</strong> {{ $booking->user->birth_date ? \App\Helpers\FormatHelper::formatDate($booking->user->birth_date) : 'Không có' }}</li>
+                                            <li><strong>Giới tính:</strong> {{ $booking->user->gender ?? 'Không xác định' }}</li>
+                                        @else
+                                            <!-- Nếu có người ở, hiển thị thông tin từng người ở -->
+                                            @foreach ($booking->guests as $guest)
+                                                <li><strong>Tên:</strong> {{ $guest->name ?? 'Không có' }}</li>
+                                                <li><strong>Ảnh căn cước công dân:</strong> {{ $guest->id_photo ?? 'Không có' }}</li>
+                                                <li><strong>Căn cước công dân:</strong> {{ $guest->id_number ?? 'Không có' }}</li>
+                                                <li><strong>Ngày sinh:</strong> {{ $guest->birth_date ? \App\Helpers\FormatHelper::formatDate($guest->birth_date) : 'Không có' }}</li>
+                                                <li><strong>Giới tính:</strong> {{ $guest->gender ?? 'Không xác định' }}</li>
+                                            @endforeach
+                                        @endif
+                                    </ul>
                                 </div>
-                                <div class="info-item">
-                                    <label>Căn cước công dân:</label>
-                                    <span>{{ $guest->id_number ?? 'Không có' }}</span>
-                                </div>
-                                <div class="info-item">
-                                    <label>Ngày sinh:</label>
-                                    <span>{{ $guest->birth_date ? \App\Helpers\FormatHelper::formatDate($guest->birth_date) : 'Không có' }}</span>
-                                </div>
-                                <div class="info-item">
-                                    <label>Giới tính:</label>
-                                    <span>{{ $guest->gender ?? 'Không xác định' }}</span>
-                                </div>
-                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -453,6 +483,12 @@
                                     <label>Ngày check-out:</label><span>{{ \App\Helpers\FormatHelper::formatDate($booking->check_out) }}</span>
                                 </div>
                                 <div class="info-item">
+                                    <label>Giờ check-in thực tế:</label><span>{{ \App\Helpers\FormatHelper::formatDateTime($booking->actual_check_out) }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Giờ check-out thực tế:</label><span>{{ \App\Helpers\FormatHelper::formatDateTime($booking->actual_check_out) }}</span>
+                                </div>
+                                <div class="info-item">
                                     <label>Tổng tiền:</label><span>{{ \App\Helpers\FormatHelper::formatPrice($booking->total_price) }}</span>
                                 </div>
                                 <div class="info-item">
@@ -478,122 +514,122 @@
                             </div>
                         </div>
                     </div>
-            <!-- Thông tin thanh toán -->
-            <div class="booking-section">
-                <div class="booking-section-header">
-                    <h5>Thông tin thanh toán</h5>
-                    <span class="toggle-icon">▼</span>
-                </div>
-                <div class="booking-section-content">
-                    <div class="row">
-                        <!-- Cột 1: Thanh toán -->
-                        <div class="col-md-6 text-center">
-                            <h6>Thanh toán</h6>
-                            <div class="booking-info">
-                                @forelse ($booking->payments as $payment)
-                                    <div class="info-item">
-                                        <label>Phương thức:</label>
-                                        <span class="status-badge {{ 'method-' . strtolower($payment->method ?? 'unknown') }}">
+
+                    <!-- Thông tin thanh toán -->
+                    <div class="booking-section">
+                        <div class="booking-section-header">
+                            <h5>Thông tin thanh toán</h5>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="booking-section-content">
+                            <div class="row">
+                                <!-- Cột 1: Thanh toán -->
+                                <div class="col-md-6 text-center">
+                                    <h6>Thanh toán</h6>
+                                    <div class="booking-info">
+                                        @forelse ($booking->payments as $payment)
+                                            <div class="info-item">
+                                                <label>Phương thức:</label>
+                                                <span class="status-badge {{ 'method-' . strtolower($payment->method ?? 'unknown') }}">
+                                                    @php
+                                                        $methodMapping = [
+                                                            'momo' => 'MOMO',
+                                                            'vnpay' => 'VNPAY',
+                                                            'cash' => 'Tiền mặt',
+                                                        ];
+                                                    @endphp
+                                                    {{ $methodMapping[strtolower($payment->method ?? 'unknown')] ?? 'Không xác định' }}
+                                                </span>
+                                            </div>
+                                            <div class="info-item">
+                                                <label>Số tiền:</label>
+                                                <span>{{ \App\Helpers\FormatHelper::formatPrice($payment->amount ?? 0) }}</span>
+                                            </div>
+                                            <div class="info-item">
+                                                <label>Ngày thanh toán:</label>
+                                                <span>{{ \App\Helpers\FormatHelper::formatDate($payment->created_at) }}</span>
+                                            </div>
+                                            <div class="info-item">
+                                                <label>Trạng thái:</label>
+                                                <span class="status-badge {{ 'status-' . strtolower($payment->status ?? 'unknown') }}">
+                                                    @php
+                                                        $statusMapping = [
+                                                            'pending' => 'Đang chờ',
+                                                            'completed' => 'Đã hoàn thành',
+                                                            'failed' => 'Không hoàn thành',
+                                                        ];
+                                                    @endphp
+                                                    {{ $statusMapping[strtolower($payment->status ?? 'unknown')] ?? 'Không xác định' }}
+                                                </span>
+                                            </div>
+                                        @empty
+                                            <div class="info-item">
+                                                <span>Chưa có thông tin thanh toán.</span>
+                                            </div>
+                                        @endforelse
+                                    </div>
+                                </div>
+
+                                <!-- Cột 2: Dịch vụ phát sinh -->
+                                <div class="col-md-6 text-center">
+                                    <h6>Dịch vụ phát sinh</h6>
+                                    <div class="booking-info">
+                                        @if ($booking->servicePlus->isEmpty())
+                                            <div class="info-item">
+                                                <span>Chưa có dịch vụ phát sinh.</span>
+                                            </div>
+                                        @else
                                             @php
-                                                $methodMapping = [
-                                                    'momo' => 'MOMO',
-                                                    'vnpay' => 'VNPAY',
-                                                    'cash' => 'Tiền mặt',
-                                                ];
+                                                $totalServicePlusPrice = $booking->servicePlus->sum(function ($service) {
+                                                    return $service->price * $service->pivot->quantity;
+                                                });
                                             @endphp
-                                            {{ $methodMapping[strtolower($payment->method ?? 'unknown')] ?? 'Không xác định' }}
-                                        </span>
+                                            <div class="info-item">
+                                                <label>Danh sách dịch vụ phát sinh:</label>
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Tên dịch vụ</th>
+                                                            <th>Giá</th>
+                                                            <th>Số lượng</th>
+                                                            <th>Tổng tiền</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($booking->servicePlus as $service)
+                                                            <tr>
+                                                                <td>{{ $service->name }}</td>
+                                                                <td>{{ \App\Helpers\FormatHelper::formatPrice($service->price) }}</td>
+                                                                <td>{{ $service->pivot->quantity }}</td>
+                                                                <td>{{ \App\Helpers\FormatHelper::formatPrice($service->price * $service->pivot->quantity) }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                        <tr>
+                                                            <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
+                                                            <td><strong>{{ \App\Helpers\FormatHelper::formatPrice($totalServicePlusPrice) }}</strong></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="info-item">
+                                                <label>Trạng thái:</label>
+                                                <select class="form-control service-plus-status" data-booking-id="{{ $booking->id }}" {{ $booking->service_plus_status === 'paid' ? 'disabled' : '' }}>
+                                                    <option value="not_yet_paid" {{ $booking->service_plus_status === 'not_yet_paid' ? 'selected' : '' }}>Chưa thanh toán</option>
+                                                    <option value="paid" {{ $booking->service_plus_status === 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
+                                                </select>
+                                            </div>
+                                        @endif
                                     </div>
-                                    <div class="info-item">
-                                        <label>Số tiền:</label>
-                                        <span>{{ \App\Helpers\FormatHelper::formatPrice($payment->amount ?? 0) }}</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <label>Ngày thanh toán:</label>
-                                        <span>{{ \App\Helpers\FormatHelper::formatDate($payment->created_at) }}</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <label>Trạng thái:</label>
-                                        <span class="status-badge {{ 'status-' . strtolower($payment->status ?? 'unknown') }}">
-                                            @php
-                                                $statusMapping = [
-                                                    'pending' => 'Đang chờ',
-                                                    'completed' => 'Đã hoàn thành',
-                                                    'failed' => 'Không hoàn thành',
-                                                ];
-                                            @endphp
-                                            {{ $statusMapping[strtolower($payment->status ?? 'unknown')] ?? 'Không xác định' }}
-                                        </span>
-                                    </div>
-                                @empty
-                                    <div class="info-item">
-                                        <span>Chưa có thông tin thanh toán.</span>
-                                    </div>
-                                @endforelse
+                                </div>
                             </div>
                         </div>
-
-                <!-- Cột 2: Dịch vụ phát sinh -->
-                <div class="col-md-6 text-center">
-                    <h6>Dịch vụ phát sinh</h6>
-                    <div class="booking-info">
-                        @if ($booking->servicePlus->isEmpty())
-                            <div class="info-item">
-                                <span>Chưa có dịch vụ phát sinh.</span>
-                            </div>
-                        @else
-                            @php
-                                $totalServicePlusPrice = $booking->servicePlus->sum(function ($service) {
-                                    return $service->price * $service->pivot->quantity;
-                                });
-                            @endphp
-                            <div class="info-item">
-                                <label>Danh sách dịch vụ phát sinh:</label>
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Tên dịch vụ</th>
-                                            <th>Giá</th>
-                                            <th>Số lượng</th>
-                                            <th>Tổng tiền</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($booking->servicePlus as $service)
-                                            <tr>
-                                                <td>{{ $service->name }}</td>
-                                                <td>{{ \App\Helpers\FormatHelper::formatPrice($service->price) }}</td>
-                                                <td>{{ $service->pivot->quantity }}</td>
-                                                <td>{{ \App\Helpers\FormatHelper::formatPrice($service->price * $service->pivot->quantity) }}</td>
-                                            </tr>
-                                        @endforeach
-                                        <tr>
-                                            <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
-                                            <td><strong>{{ \App\Helpers\FormatHelper::formatPrice($totalServicePlusPrice) }}</strong></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="info-item">
-                                <label>Trạng thái:</label>
-                                <select class="form-control service-plus-status" data-booking-id="{{ $booking->id }}" {{ $booking->service_plus_status === 'paid' ? 'disabled' : '' }}>
-                                    <option value="not_yet_paid" {{ $booking->service_plus_status === 'not_yet_paid' ? 'selected' : '' }}>Chưa thanh toán</option>
-                                    <option value="paid" {{ $booking->service_plus_status === 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
-                                </select>
-                            </div>
-                        @endif
-                    </div>
-                </div>
                     </div>
                 </div>
             </div>
-            </div>
-                </div>
-            </div>
+        </div>
 
-            <div class="mt-4">
-                <a href="{{ route('admin.bookings.index') }}" class="btn btn-secondary">Quay lại</a>
-            </div>
+        <div class="mt-4">
+            <a href="{{ route('admin.bookings.index') }}" class="btn btn-secondary">Quay lại</a>
         </div>
     </div>
 </div>
@@ -704,250 +740,239 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const sectionHeaders = document.querySelectorAll('.booking-section-header');
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    document.addEventListener('DOMContentLoaded', function () {
+        const sectionHeaders = document.querySelectorAll('.booking-section-header');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    // Toggle sections
-    sectionHeaders.forEach(header => {
-        header.addEventListener('click', function () {
-            const content = this.nextElementSibling;
-            const toggleIcon = this.querySelector('.toggle-icon');
-
-            if (content.classList.contains('open')) {
-                content.classList.remove('open');
-                toggleIcon.classList.remove('open');
-                toggleIcon.textContent = '▼';
-            } else {
-                content.classList.add('open');
-                toggleIcon.classList.add('open');
-                toggleIcon.textContent = '▲';
-            }
+        // Khởi tạo tooltip
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
         });
-    });
 
-    // Thêm dịch vụ bổ sung
-    document.getElementById('addServicePlusForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-
-        // Kiểm tra dữ liệu trước khi gửi
-        const servicePlusId = formData.get('service_plus_id');
-        const quantity = formData.get('quantity');
-        const action = formData.get('action');
-
-        if (!servicePlusId || !quantity || !action) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi',
-                text: 'Vui lòng điền đầy đủ thông tin dịch vụ và số lượng!',
-                confirmButtonText: 'OK'
-            });
-            return;
+        // Hàm khôi phục trạng thái cuộn
+        function restoreScrollState() {
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = 'auto';
+            document.body.style.paddingRight = ''; // Xóa padding-right do Bootstrap thêm
+            // Xóa bất kỳ lớp phủ nào còn sót lại
+            document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
         }
 
-        console.log('Sending AJAX request to:', `{{ route('admin.bookings.service_plus.update', $booking->id) }}`);
-        console.log('Form data:', { service_plus_id: servicePlusId, quantity: quantity, action: action });
+        // Hàm đóng modal và khôi phục trạng thái
+        function closeModal(modalElement) {
+            const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+            modal.hide();
+            restoreScrollState();
+        }
 
-        fetch(`{{ route('admin.bookings.service_plus.update', $booking->id) }}`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: formData
-        })
-        .then(response => {
-            console.log('Response status:', response.status);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Response data:', data);
-            if (data.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công',
-                    text: data.message,
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    // Cập nhật bảng dịch vụ bổ sung
-                    const tableBody = document.querySelector('#servicePlusTable tbody');
-                    const noServiceMsg = document.querySelector('.booking-section-content p');
-                    if (noServiceMsg) noServiceMsg.remove();
+        // Toggle sections
+        sectionHeaders.forEach(header => {
+            header.addEventListener('click', function () {
+                const content = this.nextElementSibling;
+                const toggleIcon = this.querySelector('.toggle-icon');
 
-                    if (!tableBody) {
-                        const table = `
-                            <table class="table table-striped" id="servicePlusTable">
-                                <thead>
-                                    <tr>
-                                        <th>Tên dịch vụ</th>
-                                        <th>Giá</th>
-                                        <th>Số lượng</th>
-                                        <th>Hành động</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>`;
-                        document.querySelector('.booking-section-content').insertAdjacentHTML('beforeend', table);
-                    }
+                if (content.classList.contains('open')) {
+                    content.classList.remove('open');
+                    toggleIcon.classList.remove('open');
+                    toggleIcon.textContent = '▼';
+                } else {
+                    content.classList.add('open');
+                    toggleIcon.classList.add('open');
+                    toggleIcon.textContent = '▲';
+                }
 
-                    const newRow = `
-                        <tr>
-                            <td>${data.data.name}</td>
-                            <td>${formatPrice(data.data.price)}</td>
-                            <td>${data.data.quantity}</td>
-                            <td>
-                                <button class="btn btn-sm btn-warning edit-service-plus" data-service-plus-id="${data.data.id}" data-quantity="${data.data.quantity}">Sửa</button>
-                                <button class="btn btn-sm btn-danger remove-service-plus" data-service-plus-id="${data.data.id}">Xóa</button>
-                            </td>
-                        </tr>`;
-                    document.querySelector('#servicePlusTable tbody').insertAdjacentHTML('beforeend', newRow);
-                    bootstrap.Modal.getInstance(document.getElementById('addServicePlusModal')).hide();
-                });
-            } else {
+                // Khôi phục trạng thái cuộn sau khi mở/đóng section
+                restoreScrollState();
+            });
+        });
+
+        // Thêm dịch vụ bổ sung
+        document.getElementById('addServicePlusForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            // Kiểm tra dữ liệu trước khi gửi
+            const servicePlusId = formData.get('service_plus_id');
+            const quantity = formData.get('quantity');
+            const action = formData.get('action');
+
+            if (!servicePlusId || !quantity || !action) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Lỗi',
-                    text: data.message,
-                    confirmButtonText: 'OK'
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Fetch error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi',
-                text: 'Có lỗi xảy ra khi thêm dịch vụ bổ sung: ' + error.message,
-                confirmButtonText: 'OK'
-            });
-        });
-    });
-
-    // Sửa số lượng dịch vụ bổ sung
-    document.querySelectorAll('.edit-service-plus').forEach(button => {
-        button.addEventListener('click', function () {
-            const servicePlusId = this.getAttribute('data-service-plus-id');
-            const quantity = this.getAttribute('data-quantity');
-            document.getElementById('editServicePlusId').value = servicePlusId;
-            document.getElementById('editQuantity').value = quantity;
-            new bootstrap.Modal(document.getElementById('editServicePlusModal')).show();
-        });
-    });
-
-    document.getElementById('editServicePlusForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-
-        fetch(`{{ route('admin.bookings.service_plus.update', $booking->id) }}`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công',
-                    text: data.message,
+                    text: 'Vui lòng điền đầy đủ thông tin dịch vụ và số lượng!',
                     confirmButtonText: 'OK'
                 }).then(() => {
-                    const row = document.querySelector(`button[data-service-plus-id="${data.data.id}"]`).closest('tr');
-                    row.querySelector('td:nth-child(3)').textContent = data.data.quantity;
-                    bootstrap.Modal.getInstance(document.getElementById('editServicePlusModal')).hide();
+                    restoreScrollState(); // Khôi phục cuộn nếu có lỗi
                 });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi',
-                    text: data.message,
-                    confirmButtonText: 'OK'
-                });
+                return;
             }
-        })
-        .catch(error => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi',
-                text: 'Có lỗi xảy ra khi cập nhật dịch vụ bổ sung.',
-                confirmButtonText: 'OK'
-            });
-        });
-    });
-
-    // Xóa dịch vụ bổ sung
-    document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('remove-service-plus')) {
-            if (confirm('Bạn có muốn xóa dịch vụ bổ sung này không?')) {
-                const servicePlusId = e.target.getAttribute('data-service-plus-id');
-                const formData = new FormData();
-                formData.append('action', 'removeServicePlus');
-                formData.append('service_plus_id', servicePlusId);
-
-                fetch(`{{ route('admin.bookings.service_plus.update', $booking->id) }}`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken
-                    },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Thành công',
-                            text: data.message,
-                            confirmButtonText: 'OK'
-                        }).then(() => {
-                            e.target.closest('tr').remove();
-                            if (!document.querySelector('#servicePlusTable tbody tr')) {
-                                document.querySelector('#servicePlusTable').outerHTML = '<p>Chưa có dịch vụ bổ sung nào được chọn.</p>';
-                            }
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi',
-                            text: data.message,
-                            confirmButtonText: 'OK'
-                        });
-                    }
-                })
-                .catch(error => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi',
-                        text: 'Có lỗi xảy ra khi xóa dịch vụ bổ sung.',
-                        confirmButtonText: 'OK'
-                    });
-                });
-            }
-        }
-    });
-
-    // Cập nhật trạng thái dịch vụ phát sinh
-    document.querySelectorAll('.service-plus-status').forEach(select => {
-        select.addEventListener('change', function () {
-            const bookingId = this.getAttribute('data-booking-id');
-            const newStatus = this.value;
 
             fetch(`{{ route('admin.bookings.service_plus.update', $booking->id) }}`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'X-CSRF-TOKEN': csrfToken
                 },
-                body: JSON.stringify({
-                    action: 'updateServicePlusStatus',
-                    service_plus_status: newStatus
-                })
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: data.message,
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Cập nhật bảng dịch vụ bổ sung
+                        const tableBody = document.querySelector('#servicePlusTable tbody');
+                        const noServiceMsg = document.querySelector('.booking-section-content p');
+                        if (noServiceMsg) noServiceMsg.remove();
+
+                        if (!tableBody) {
+                            const table = `
+                                <table class="table table-striped" id="servicePlusTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Tên dịch vụ</th>
+                                            <th>Giá</th>
+                                            <th>Số lượng</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>`;
+                            document.querySelector('.booking-section-content').insertAdjacentHTML('beforeend', table);
+                        }
+
+                        const newRow = `
+                            <tr>
+                                <td>${data.data.name}</td>
+                                <td>${formatPrice(data.data.price)}</td>
+                                <td>${data.data.quantity}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning edit-service-plus" data-service-plus-id="${data.data.id}" data-quantity="${data.data.quantity}">Sửa</button>
+                                    <button class="btn btn-sm btn-danger remove-service-plus" data-service-plus-id="${data.data.id}">Xóa</button>
+                                </td>
+                            </tr>`;
+                        document.querySelector('#servicePlusTable tbody').insertAdjacentHTML('beforeend', newRow);
+
+                        // Đóng modal và khôi phục trạng thái
+                        const modalElement = document.getElementById('addServicePlusModal');
+                        closeModal(modalElement);
+                    }).catch(error => {
+                        console.error('Swal.fire error:', error);
+                        // Nếu Swal.fire gặp lỗi, vẫn đóng modal và khôi phục trạng thái
+                        const modalElement = document.getElementById('addServicePlusModal');
+                        closeModal(modalElement);
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: data.message,
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        restoreScrollState(); // Khôi phục cuộn nếu có lỗi
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Có lỗi xảy ra khi thêm dịch vụ bổ sung: ' + error.message,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    restoreScrollState(); // Khôi phục cuộn nếu có lỗi
+                });
+            });
+        });
+
+        // Sử dụng event delegation cho nút "Sửa" và "Xóa"
+        document.addEventListener('click', function (e) {
+            // Xử lý nút "Sửa"
+            if (e.target.classList.contains('edit-service-plus')) {
+                const servicePlusId = e.target.getAttribute('data-service-plus-id');
+                const quantity = e.target.getAttribute('data-quantity');
+                document.getElementById('editServicePlusId').value = servicePlusId;
+                document.getElementById('editQuantity').value = quantity;
+                new bootstrap.Modal(document.getElementById('editServicePlusModal')).show();
+            }
+
+            // Xử lý nút "Xóa"
+            if (e.target.classList.contains('remove-service-plus')) {
+                if (confirm('Bạn có muốn xóa dịch vụ bổ sung này không?')) {
+                    const servicePlusId = e.target.getAttribute('data-service-plus-id');
+                    const formData = new FormData();
+                    formData.append('action', 'removeServicePlus');
+                    formData.append('service_plus_id', servicePlusId);
+
+                    fetch(`{{ route('admin.bookings.service_plus.update', $booking->id) }}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công',
+                                text: data.message,
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                e.target.closest('tr').remove();
+                                if (!document.querySelector('#servicePlusTable tbody tr')) {
+                                    document.querySelector('#servicePlusTable').outerHTML = '<p>Chưa có dịch vụ bổ sung nào được chọn.</p>';
+                                }
+                                restoreScrollState(); // Khôi phục cuộn sau khi xóa
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: data.message,
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                restoreScrollState(); // Khôi phục cuộn nếu có lỗi
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: 'Có lỗi xảy ra khi xóa dịch vụ bổ sung.',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            restoreScrollState(); // Khôi phục cuộn nếu có lỗi
+                        });
+                    });
+                }
+            }
+        });
+
+        // Sửa số lượng dịch vụ bổ sung
+        document.getElementById('editServicePlusForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            fetch(`{{ route('admin.bookings.service_plus.update', $booking->id) }}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: formData
             })
             .then(response => response.json())
             .then(data => {
@@ -958,9 +983,14 @@ document.addEventListener('DOMContentLoaded', function () {
                         text: data.message,
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        if (newStatus === 'paid') {
-                            select.disabled = true;
-                        }
+                        const row = document.querySelector(`button[data-service-plus-id="${data.data.id}"]`).closest('tr');
+                        row.querySelector('td:nth-child(3)').textContent = data.data.quantity;
+                        const modalElement = document.getElementById('editServicePlusModal');
+                        closeModal(modalElement);
+                    }).catch(error => {
+                        console.error('Swal.fire error:', error);
+                        const modalElement = document.getElementById('editServicePlusModal');
+                        closeModal(modalElement);
                     });
                 } else {
                     Swal.fire({
@@ -969,7 +999,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         text: data.message,
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        select.value = '{{ $booking->service_plus_status }}';
+                        restoreScrollState(); // Khôi phục cuộn nếu có lỗi
                     });
                 }
             })
@@ -977,18 +1007,77 @@ document.addEventListener('DOMContentLoaded', function () {
                 Swal.fire({
                     icon: 'error',
                     title: 'Lỗi',
-                    text: 'Có lỗi xảy ra khi cập nhật trạng thái.',
+                    text: 'Có lỗi xảy ra khi cập nhật dịch vụ bổ sung.',
                     confirmButtonText: 'OK'
+                }).then(() => {
+                    restoreScrollState(); // Khôi phục cuộn nếu có lỗi
                 });
             });
         });
-    });
 
-    // Hàm định dạng giá
-    function formatPrice(price) {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
-    }
-});
+        // Cập nhật trạng thái dịch vụ phát sinh
+        document.querySelectorAll('.service-plus-status').forEach(select => {
+            select.addEventListener('change', function () {
+                const bookingId = this.getAttribute('data-booking-id');
+                const newStatus = this.value;
+
+                fetch(`{{ route('admin.bookings.service_plus.update', $booking->id) }}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'updateServicePlusStatus',
+                        service_plus_status: newStatus
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công',
+                            text: data.message,
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            if (newStatus === 'paid') {
+                                select.disabled = true;
+                            }
+                            restoreScrollState(); // Khôi phục cuộn sau khi cập nhật trạng thái
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: data.message,
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            select.value = '{{ $booking->service_plus_status }}';
+                            restoreScrollState(); // Khôi phục cuộn nếu có lỗi
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Có lỗi xảy ra khi cập nhật trạng thái.',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        restoreScrollState(); // Khôi phục cuộn nếu có lỗi
+                    });
+                });
+            });
+        });
+
+        // Hàm định dạng giá
+        function formatPrice(price) {
+            price = parseFloat(price) || 0;
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' VNĐ';
+        }
+    });
 </script>
 
 <!-- SweetAlert2 và Bootstrap -->
