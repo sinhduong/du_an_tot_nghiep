@@ -13,12 +13,14 @@
         <div class="container-fluid">
             <!-- Page title & breadcrumb -->
             <div class="lh-page-title">
-                <div class="lh-breadcrumb">
-                    <h5>Rooms</h5>
-                    <ul>
-                        <li><a href="index.html">Home</a></li>
-                        <li>Rooms</li>
-                    </ul>
+                <div class="lh-page-title">
+                    <div class="lh-breadcrumb">
+                        <h5>Thùng rác</h5>
+                        <ul>
+                            <li><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li>Thùng rác</li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="lh-tools">
                     <a href="javascript:void(0)" title="Refresh" class="refresh"><i class="ri-refresh-line"></i></a>

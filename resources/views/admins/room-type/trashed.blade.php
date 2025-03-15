@@ -3,14 +3,14 @@
 <div class="lh-main-content">
     <div class="container-fluid">
         <div class="lh-page-title d-flex justify-content-between align-items-center mb-3">
-            <div class="lh-breadcrumb">
-                <h5 class="mb-0">Phòng</h5>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb p-0 bg-transparent">
-                        <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
-                        <li class="breadcrumb-item active">Dashboard</li>
-                    </ol>
-                </nav>
+            <div class="lh-page-title">
+                <div class="lh-breadcrumb">
+                    <h5>Loại phòng</h5>
+                    <ul>
+                        <li><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                        <li>Thùng rác</li>
+                    </ul>
+                </div>
             </div>
             <div class="lh-tools d-flex gap-2">
                 <button class="btn btn-link p-0" title="Refresh"><i class="ri-refresh-line"></i></button>

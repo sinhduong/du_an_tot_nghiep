@@ -17,7 +17,7 @@
                         <h5>{{ $title }}</h5>
                         <ul>
                             <li><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
-                            <li>Phòng</li>
+                            <li>Danh sách phòng</li>
                         </ul>
                     </div>
                 </div>

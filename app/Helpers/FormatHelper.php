@@ -15,4 +15,8 @@ class FormatHelper
     {
         return Carbon::parse($date)->format('d-m-Y');
     }
+    public static function formatDateTime($date)
+    {
+        return $date ? Carbon::parse($date)->format('d-m-Y H:i') : 'Không có';
+    }
 }

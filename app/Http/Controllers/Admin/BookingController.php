@@ -58,7 +58,7 @@ class BookingController extends Controller
 
         $title = 'Chi tiết đơn đặt phòng';
         $availableServicePlus = ServicePlus::where('is_active', 1)->get();
-
+        // dd($booking);
         return view('admins.bookings.show', compact('title', 'booking', 'availableServicePlus'));
     }
 
@@ -84,14 +84,14 @@ class BookingController extends Controller
 
                         Log::info("Checking if service_plus_id {$servicePlusId} exists for booking {$id}");
 
-                       // Kiểm tra trùng lặp
-                    if ($booking->servicePlus()->where('service_plus_id', $servicePlusId)->exists()) {
-                        Log::warning("Service {$servicePlusId} already added to booking {$id}");
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Dịch vụ này đã được thêm!',
-                        ], 200); // Sử dụng status 200 thay vì 400 để tránh lỗi
-                    }
+                        // Kiểm tra trùng lặp
+                        if ($booking->servicePlus()->where('service_plus_id', $servicePlusId)->exists()) {
+                            Log::warning("Service {$servicePlusId} already added to booking {$id}");
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'Dịch vụ này đã được thêm!',
+                            ], 200); // Sử dụng status 200 thay vì 400 để tránh lỗi
+                        }
 
                         $booking->servicePlus()->attach($servicePlusId, ['quantity' => $quantity]);
                         $servicePlus = ServicePlus::find($servicePlusId);
@@ -219,7 +219,7 @@ class BookingController extends Controller
         $newStatus = $request->status;
 
         // Kiểm tra điều kiện hợp lệ để cập nhật trạng thái
-        if ($currentStatus === 'pending_confirmation' && $newStatus==='confirmed') {
+        if ($currentStatus === 'pending_confirmation' && $newStatus === 'confirmed') {
             // Nếu trạng thái hiện tại là "Chưa xác nhận", cho phép đổi sang đã sác nhận
             $booking->update(['status' => $newStatus]);
             return redirect()->route('admin.bookings.index')->with('success', 'Cập nhật trạng thái đặt phòng thành công.');
@@ -232,8 +232,11 @@ class BookingController extends Controller
             $booking->update(['status' => $newStatus]);
             return redirect()->route('admin.bookings.index')->with('success', 'Cập nhật trạng thái đặt phòng thành công.');
         } elseif ($currentStatus === 'check_in' && $newStatus === 'check_out') {
-            // Nếu trạng thái hiện tại là "Đã check in", chỉ cho phép đổi sang "Đã checkout"
-            $booking->update(['status' => $newStatus]);
+            // Nếu trạng thái hiện tại là "Đã check in", chỉ cho phép đổi sang "Đã checkout" và cập nhật actual_check_out
+            $booking->update([
+                'status' => $newStatus,
+                'actual_check_out' => now(), // Cập nhật thời gian check-out thực tế
+            ]);
             return redirect()->route('admin.bookings.index')->with('success', 'Cập nhật trạng thái đặt phòng thành công.');
         }
 

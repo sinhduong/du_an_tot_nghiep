@@ -5,39 +5,19 @@
             <!-- Page title & breadcrumb -->
             <div class="lh-page-title">
                 <div class="lh-breadcrumb">
-                    <h5>Room</h5>
+                    <h5>Phòng</h5>
                     <ul>
                         <li><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
                         <li>Chỉnh sửa phòng</li>
                     </ul>
                 </div>
             </div>
-            @if (session()->has('success') && !session()->get('success'))
-                <div class="alert alert-danger">
-                    {{ session()->get('error') }}
-                </div>
-            @endif
 
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-            <div class="row">
-                <div class="col-xxl-12 col-xl-8 col-md-12">
+            <div class="row ">
+                <div class="col-xxl-12 col-xl-8 col-md-12 ">
                     <div class="lh-card">
-                        <div class="lh-card-header">
-                            <h4 class="lh-card-title">Cập nhật phòng</h4>
+                        <div class="lh-card-header ">
+                            <h4 class="lh-card-title">Sửa phòng</h4>
                         </div>
                         <div class="lh-card-content">
                             <form action="{{ route('admin.rooms.update', $room->id) }}" method="POST"
@@ -121,7 +101,7 @@
                                     </div>
 
                                     <!-- Submit Button -->
-                                    <div class="col-md-12 text-center">
+                                    <div class="col-md-12 text-center mt-4">
                                         <button type="submit" class="btn btn-primary">Cập nhật phòng</button>
                                     </div>
 

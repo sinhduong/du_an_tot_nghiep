@@ -5,10 +5,9 @@
             <!-- Page title & breadcrumb -->
             <div class="lh-page-title">
                 <div class="lh-breadcrumb">
-                    <h5>Room</h5>
+                    <h5>Phòng</h5>
                     <ul>
-                        <li><a href="index.html">Trang chủ</a></li>
-                        <li>Dashboard</li>
+                        <li><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
                     </ul>
                 </div>
             </div>
@@ -31,7 +30,7 @@
                                         <div class="form-group">
                                             <label>Số phòng *</label>
                                             <input type="text" name="room_number" class="form-control"
-                                                value="{{ old('room_number') }}">
+                                                value="{{ old('room_number') }}" placeholder="Nhập số phòng">
                                             @error('room_number')
                                                 <p class="text-danger">{{ $message }}</p>
                                             @enderror
@@ -82,24 +81,17 @@
                                         <div class="form-group">
                                             <label>Trạng thái *</label>
                                             <select name="status" class="form-control">
-                                                <option value="available"
-                                                    {{ old('status') == 'available' ? 'selected' : '' }}>Available</option>
-                                                <option value="booked" {{ old('status') == 'booked' ? 'selected' : '' }}>
-                                                    Booked</option>
-                                                <option value="maintenance"
-                                                    {{ old('status') == 'maintenance' ? 'selected' : '' }}>Maintenance
-                                                </option>
+                                                <option value="available" {{ old('status') == 'available' ? 'selected' : '' }}>Có sẵn</option>
+                                                <option value="booked" {{ old('status') == 'booked' ? 'selected' : '' }}>Đã đặt</option>
+                                                <option value="maintenance" {{ old('status') == 'maintenance' ? 'selected' : '' }}>Bảo trì</option>
                                             </select>
                                             @error('status')
                                                 <p class="text-danger">{{ $message }}</p>
                                             @enderror
                                         </div>
                                     </div>
-
-
-
                                     <!-- Submit Button -->
-                                    <div class="col-md-12 text-center">
+                                    <div class="col-md-12 text-center mt-4">
                                         <button type="submit" class="btn btn-primary">Thêm phòng</button>
                                     </div>
 

@@ -12,13 +12,12 @@
         <div class="lh-main-content">
             <div class="container-fluid">
                 <!-- Page title & breadcrumb -->
-                <div class="lh-page-title d-flex justify-content-between align-items-center mb-4">
+                <div class="lh-page-title">
                     <div class="lh-breadcrumb">
                         <h5 class="text-primary fw-bold">{{ $title }}</h5>
-                        <ul class="breadcrumb bg-transparent p-0 m-0 small text-muted">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('admin.rooms.index') }}">Danh sách phòng</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Chi tiết phòng</li>
+                        <ul>
+                            <li><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li>Chi tiết phòng</li>
                         </ul>
                     </div>
                 </div>

@@ -3,14 +3,14 @@
 <div class="lh-main-content">
     <div class="container-fluid">
         <div class="lh-page-title d-flex justify-content-between align-items-center mb-3">
-            <div class="lh-breadcrumb">
-                <h5 class="mb-0">Loại phòng</h5>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb p-0 bg-transparent">
-                        <li class="breadcrumb-item"><a href="">Trang chủ</a></li>
-                        <li class="breadcrumb-item active">Dashboard</li>
-                    </ol>
-                </nav>
+            <div class="lh-page-title">
+                <div class="lh-breadcrumb">
+                    <h5>Loại phòng</h5>
+                    <ul>
+                        <li><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                        <li>Thêm mới loại phòng</li>
+                    </ul>
+                </div>
             </div>
             <div class="lh-tools d-flex gap-2">
                 <button class="btn btn-link p-0" title="Refresh"><i class="ri-refresh-line"></i></button>
@@ -65,12 +65,12 @@
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Loại giường <span class="text-danger">*</span></label>
                             <select name="bed_type" class="form-control form-control-sm @error('bed_type') is-invalid @enderror">
-                                <option value="single" {{ old('bed_type') == 'single' ? 'selected' : '' }}>Single</option>
-                                <option value="double" {{ old('bed_type') == 'double' ? 'selected' : '' }}>Double</option>
-                                <option value="queen" {{ old('bed_type') == 'queen' ? 'selected' : '' }}>Queen</option>
-                                <option value="king" {{ old('bed_type') == 'king' ? 'selected' : '' }}>King</option>
-                                <option value="bunk" {{ old('bed_type') == 'bunk' ? 'selected' : '' }}>Bunk</option>
-                                <option value="sofa" {{ old('bed_type') == 'sofa' ? 'selected' : '' }}>Sofa</option>
+                                <option value="single" {{ old('bed_type') == 'single' ? 'selected' : '' }}>Giường đơn</option>
+                                <option value="double" {{ old('bed_type') == 'double' ? 'selected' : '' }}>Giường đôi</option>
+                                <option value="queen" {{ old('bed_type') == 'queen' ? 'selected' : '' }}>Giường cỡ lớn(3m²)</option>
+                                <option value="king" {{ old('bed_type') == 'king' ? 'selected' : '' }}>Giường siêu lớn(4m²)</option>
+                                <option value="bunk" {{ old('bed_type') == 'bunk' ? 'selected' : '' }}>Giường tầng</option>
+                                <option value="sofa" {{ old('bed_type') == 'sofa' ? 'selected' : '' }}>Giường sofa</option>
                             </select>
                             @error('bed_type')
                                 <small class="text-danger">{{ $message }}</small>
