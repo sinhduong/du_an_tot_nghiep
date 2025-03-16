@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCatalogRequest;
 use App\Http\Requests\UpdateCatalogRequest;
-use App\Models\Catalog;
+use App\Models\Admin\Catalog;
 
 class CatalogController extends Controller
 {

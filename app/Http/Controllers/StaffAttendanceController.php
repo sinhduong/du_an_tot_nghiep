@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\StaffAttendance;
+use App\Models\Admin\StaffAttendance;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

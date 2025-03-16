@@ -5,14 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStaffRequest;
 use App\Http\Requests\UpdateStaffRequest;
-use App\Models\Room;
-use App\Models\Staff;
-use App\Models\StaffRole;
-use App\Models\StaffShift;
-use App\Models\User;
+use App\Models\Admin\Room;
+use App\Models\Admin\Staff;
+use App\Models\Admin\StaffRole;
+use App\Models\Admin\StaffShift;
+use App\Models\Admin\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 
 class StaffController extends Controller
 {

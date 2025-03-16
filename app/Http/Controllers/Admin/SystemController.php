@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoresystemRequest;
 use App\Http\Requests\UpdatesystemRequest;
-use App\Models\system;
+use App\Models\Admin\system;
 
 class SystemController extends Controller
 {

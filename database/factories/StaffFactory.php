@@ -2,12 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\Staff;
-use App\Models\StaffRole;
-use App\Models\StaffShift;
-use App\Models\User;
+use App\Models\Admin\Staff;
+use App\Models\Admin\StaffRole;
+use App\Models\Admin\StaffShift;
+use App\Models\Admin\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 class StaffFactory extends Factory
 {

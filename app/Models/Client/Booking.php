@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Client;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class System extends Model
+class Booking extends Model
 {
     use HasFactory;
+
+
 }

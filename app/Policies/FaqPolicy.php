@@ -2,9 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Faq;
-use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use App\Models\Admin\Faq;
+use App\Models\Admin\User;
 
 class FaqPolicy
 {

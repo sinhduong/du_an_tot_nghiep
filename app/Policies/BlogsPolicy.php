@@ -2,9 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Blogs;
-use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use App\Models\Admin\Blogs;
+use App\Models\Admin\User;
 
 class BlogsPolicy
 {

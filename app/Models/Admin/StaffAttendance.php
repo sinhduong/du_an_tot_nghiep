@@ -1,21 +1,23 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class StaffRole extends Model
+class StaffAttendance extends Model
 {
-
     use HasFactory;
+
     protected $fillable = [
-        'name',
-        'permissions',
+        'staff_id',
+        'check_in',
+        'check_out',
+        'date',
     ];
 
     public function staff()
     {
-        return $this->belongsTo(Staff::class, 'staff_id', 'id');
+        return $this->belongsTo(Staff::class);
     }
 }

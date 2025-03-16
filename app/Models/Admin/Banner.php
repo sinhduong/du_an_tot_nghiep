@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Policy extends Model
+class Banner extends Model
 {
-    use HasFactory,SoftDeletes;
-    protected $fillable = [
-        'policy',
+    use HasFactory, SoftDeletes;
+    protected $fillable=[
+        'name',
+        'link',
+        'image',
         'is_use',
-     
     ];
 }

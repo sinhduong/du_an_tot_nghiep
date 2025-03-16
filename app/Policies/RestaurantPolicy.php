@@ -2,9 +2,8 @@
 
 namespace App\Policies;
 
+use App\Models\Admin\User;
 use App\Models\Restaurant;
-use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class RestaurantPolicy
 {

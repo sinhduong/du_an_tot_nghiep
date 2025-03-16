@@ -1,23 +1,21 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class StaffAttendance extends Model
+class StaffShift extends Model
 {
     use HasFactory;
-
     protected $fillable = [
-        'staff_id',
-        'check_in',
-        'check_out',
-        'date',
+        'name',
+        'start_time',
+        'end_time',
     ];
 
     public function staff()
     {
-        return $this->belongsTo(Staff::class);
+        return $this->belongsTo(Staff::class, 'staff_id', 'id');
     }
 }

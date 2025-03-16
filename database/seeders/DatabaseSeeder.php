@@ -4,11 +4,8 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-use App\Models\Staff;
-use App\Models\StaffAttendance;
-use App\Models\StaffRole;
-use App\Models\StaffShift;
-use App\Models\User;
+use App\Models\Admin\StaffShift;
+use App\Models\Admin\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,7 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\Review::factory(10)->create();
+        \App\Models\Admin\Review::factory(10)->create();
         User::factory(5)->create();
         StaffShift::factory(5)->create();
         // StaffRole::factory(5)->create();

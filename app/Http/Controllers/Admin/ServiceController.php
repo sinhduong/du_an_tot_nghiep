@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
-use App\Models\RoomType;
-use App\Models\Service;
+use App\Models\Admin\RoomType;
+use App\Models\Admin\Service;
 use Illuminate\Support\Facades\DB;
 
 class ServiceController extends Controller

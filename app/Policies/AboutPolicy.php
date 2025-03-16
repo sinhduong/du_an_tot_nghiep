@@ -2,9 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\About;
-use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use App\Models\Admin\About;
+use App\Models\Admin\User;
 
 class AboutPolicy
 {

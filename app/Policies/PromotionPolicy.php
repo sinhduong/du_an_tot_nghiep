@@ -2,9 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Promotion;
-use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use App\Models\Admin\Promotion;
+use App\Models\Admin\User;
 
 class PromotionPolicy
 {

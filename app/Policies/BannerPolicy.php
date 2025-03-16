@@ -2,9 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Banner;
-use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use App\Models\Admin\Banner;
+use App\Models\Admin\User;
 
 class BannerPolicy
 {

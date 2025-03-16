@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Carbon\Carbon;
-use App\Models\Room;
-use App\Models\Staff;
-use App\Models\RoomType;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreroomRequest;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\UpdateroomRequest;
+use App\Models\Admin\Room;
+use App\Models\Admin\RoomType;
+use App\Models\Admin\Staff;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use RealRashid\SweetAlert\Facades\Alert; // Thêm use này vào đầu file
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
+// Thêm use này vào đầu file
 
 class RoomController extends Controller
 {

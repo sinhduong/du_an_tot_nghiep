@@ -2,9 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\RoomType;
-use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use App\Models\Admin\RoomType;
+use App\Models\Admin\User;
 
 class RoomTypePolicy
 {

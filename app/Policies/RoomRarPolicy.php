@@ -2,9 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
+use App\Models\Admin\User;
 use App\Models\room_rar;
-use Illuminate\Auth\Access\Response;
 
 class RoomRarPolicy
 {

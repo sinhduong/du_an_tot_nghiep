@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,5 +27,5 @@ class Room extends Model
     {
         return $this->belongsTo(Staff::class, 'manager_id', 'id');
     }
-   
+
 }

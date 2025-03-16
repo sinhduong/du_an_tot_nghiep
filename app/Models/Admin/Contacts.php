@@ -1,19 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Banner extends Model
+class Contacts extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable=[
-        'name',
-        'link',
-        'image',
-        'is_use',
-    ];
+    protected $fillable = ['title', 'phone', 'email', 'content', 'status'];
 }
- 

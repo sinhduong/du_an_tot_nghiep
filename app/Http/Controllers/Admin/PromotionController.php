@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PromotionRequest;
-use App\Models\Promotion;
+use App\Models\Admin\Promotion;
 use Illuminate\Http\Request;
 
 class PromotionController extends Controller

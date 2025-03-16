@@ -2,9 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
+use App\Models\Admin\User;
 use App\Models\rules_and_regulation;
-use Illuminate\Auth\Access\Response;
 
 class RulesAndRegulationPolicy
 {

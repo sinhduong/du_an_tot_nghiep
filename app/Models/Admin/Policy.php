@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Introduction extends Model
+class Policy extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory,SoftDeletes;
     protected $fillable = [
-        'introduction',
-        'is_use'
+        'policy',
+        'is_use',
+
     ];
 }

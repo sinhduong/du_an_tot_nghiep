@@ -2,9 +2,8 @@
 
 namespace App\Policies;
 
+use App\Models\Admin\User;
 use App\Models\Room_service;
-use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class RoomServicePolicy
 {

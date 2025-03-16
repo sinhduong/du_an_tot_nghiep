@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBlogsRequest;
 use App\Http\Requests\UpdateBlogsRequest;
-use App\Models\Blogs;
+use App\Models\Admin\Blogs;
 
 class BlogsController extends Controller
 {

@@ -6,10 +6,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Storerules_and_regulationRequest;
 use App\Http\Requests\Updaterules_and_regulationRequest;
-use App\Models\Room;
+use App\Models\Admin\Room;
+use App\Models\Admin\RoomType;
+use App\Models\Admin\RulesAndRegulation;
 use App\Models\Room_rar;
-use App\Models\RoomType;
-use App\Models\RulesAndRegulation;
 use Illuminate\Support\Facades\DB;
 
 class RulesAndRegulationController extends Controller
@@ -41,7 +41,7 @@ class RulesAndRegulationController extends Controller
     //      */
     public function store(Storerules_and_regulationRequest $request)
     {
-       
+
         try {
             DB::beginTransaction();
             $service = RulesAndRegulation::create($request->all());
@@ -84,7 +84,7 @@ class RulesAndRegulationController extends Controller
     //      */
     public function update(Updaterules_and_regulationRequest $request, string $id)
     {
-       
+
         try {
             DB::beginTransaction();
             $service = RulesAndRegulation::findOrFail($id);

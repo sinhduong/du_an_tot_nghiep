@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Booking;
-use App\Models\ServicePlus;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorebookingRequest;
 use App\Http\Requests\UpdatebookingRequest;
+use App\Models\Admin\Booking;
+use App\Models\Admin\ServicePlus;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class BookingController extends Controller
 {

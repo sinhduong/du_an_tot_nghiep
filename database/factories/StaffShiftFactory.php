@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\StaffShift;
+use App\Models\Admin\StaffShift;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\StaffShift>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Admin\StaffShift>
  */
 class StaffShiftFactory extends Factory
 {

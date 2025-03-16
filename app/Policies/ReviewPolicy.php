@@ -2,9 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Review;
-use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use App\Models\Admin\Review;
+use App\Models\Admin\User;
 
 class ReviewPolicy
 {

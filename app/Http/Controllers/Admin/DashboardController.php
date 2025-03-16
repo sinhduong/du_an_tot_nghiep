@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Booking;
-use App\Models\Room;
-use App\Models\User;
+use App\Models\Admin\Booking;
+use App\Models\Admin\Room;
+use App\Models\Admin\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 

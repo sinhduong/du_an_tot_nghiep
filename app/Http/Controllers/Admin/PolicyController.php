@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePolicyRequest;
 use App\Http\Requests\UpdatePolicyRequest;
-use App\Models\Policy;
+use App\Models\Admin\Policy;
 
 class PolicyController extends Controller
 {
@@ -15,7 +15,7 @@ class PolicyController extends Controller
     public function index()
     {
         //
-        $title = 'Danh Sách Chính Sách' ; 
+        $title = 'Danh Sách Chính Sách' ;
         $policy = Policy::paginate(10);
         return view('admins.policies.index', compact('title', 'policy'));
     }
@@ -26,7 +26,7 @@ class PolicyController extends Controller
     public function create()
     {
         //
-        $title = 'Danh Sách Chính Sách' ; 
+        $title = 'Danh Sách Chính Sách' ;
         // $policy = Policy::paginate(10);
         return view('admins.policies.create', compact('title'));
     }
@@ -57,7 +57,7 @@ class PolicyController extends Controller
     public function edit(string $id)
     {
         //
-        $title = 'Sửa  Chính Sách' ; 
+        $title = 'Sửa  Chính Sách' ;
         $policy = Policy::findOrFail($id);
         return view('admins.policies.edit', compact('title','policy'));
 

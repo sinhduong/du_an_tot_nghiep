@@ -2,9 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Catalog;
-use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use App\Models\Admin\Catalog;
+use App\Models\Admin\User;
 
 class CatalogPolicy
 {
