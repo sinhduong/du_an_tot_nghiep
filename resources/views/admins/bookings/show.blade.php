@@ -277,10 +277,9 @@
             </div>
         </div>
 
-        <div class="booking-details-container">
             <div class="row">
                 <!-- Thông tin người đặt & người ở -->
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="row">
                         <!-- Cột bên trái: Thông tin người đặt -->
                         <div class="col-md-6">
@@ -291,7 +290,7 @@
                                 </div>
                                 <div class="booking-section-content">
                                     <div class="text-center">
-                                        <img src="{{ $booking->user && $booking->user->avatar ? asset('upload/avatars/' . $booking->user->avatar) : asset('assets/admin/assets/img/user/1.jpg') }}" alt="{{ $booking->user ? $booking->user->name : 'Người dùng không xác định' }}" class="user-avatar">
+                                        <img src="{{ $booking->user && $booking->user->avatar ? Storage::url('avatars/' . $booking->user->avatar) : asset('assets/admin/assets/img/user/1.jpg') }}" alt="{{ $booking->user ? $booking->user->name : 'Người dùng không xác định' }}" class="user-avatar">
                                         <h6 class="mt-2">{{ $booking->user->name }}</h6>
                                     </div>
                                     <ul class="">
@@ -299,6 +298,16 @@
                                         <li><strong>Email:</strong> {{ $booking->user->email ?? 'Không có' }}</li>
                                         <li><strong>Địa chỉ:</strong> {{ $booking->user->address ?? 'Không có' }}</li>
                                         <li><strong>Giới tính:</strong> {{ $booking->user->gender ?? 'Không xác định' }}</li>
+                                        <li>
+                                            <strong>Ảnh căn cước công dân:</strong>
+                                            @if ($booking->user->id_photo)
+                                                <img src="{{ Storage::url('id_photos/' . $booking->user->id_photo) }}" alt="Ảnh CCCD" style="max-width: 200px; height: auto;" class="img-fluid">
+                                            @else
+                                                Không có
+                                            @endif
+                                        </li>
+                                        <li><strong>Căn cước công dân:</strong> {{ $booking->user->id_number ?? 'Không có' }}</li>
+                                        <li><strong>Ngày sinh:</strong> {{ $booking->user->birth_date ? \App\Helpers\FormatHelper::formatDate($booking->user->birth_date) : 'Không có' }}</li>
                                     </ul>
                                 </div>
                             </div>
@@ -316,18 +325,38 @@
                                         @if ($booking->guests->isEmpty())
                                             <!-- Nếu không có người ở, hiển thị thông tin người đặt -->
                                             <li><strong>Tên:</strong> {{ $booking->user->name ?? 'Không có' }}</li>
-                                            <li><strong>Ảnh căn cước công dân:</strong> {{ $booking->user->id_photo ?? 'Không có' }}</li>
+                                            <li>
+                                                <strong>Ảnh căn cước công dân:</strong>
+                                                @if ($booking->user->id_photo)
+                                                    <img src="{{ Storage::url('id_photos/' . $booking->user->id_photo) }}" alt="Ảnh CCCD" style="max-width: 200px; height: auto;" class="img-fluid">
+                                                @else
+                                                    Không có
+                                                @endif
+                                            </li>
                                             <li><strong>Căn cước công dân:</strong> {{ $booking->user->id_number ?? 'Không có' }}</li>
                                             <li><strong>Ngày sinh:</strong> {{ $booking->user->birth_date ? \App\Helpers\FormatHelper::formatDate($booking->user->birth_date) : 'Không có' }}</li>
                                             <li><strong>Giới tính:</strong> {{ $booking->user->gender ?? 'Không xác định' }}</li>
+                                            <li><strong>Số điện thoại:</strong> {{ $booking->user->phone ?? 'Không có' }}</li>
+                                            <li><strong>Email:</strong> {{ $booking->user->email ?? 'Không có' }}</li>
+                                            <li><strong>Mối quan hệ:</strong> {{ $booking->user->relationship ?? 'Không có' }}</li>
                                         @else
                                             <!-- Nếu có người ở, hiển thị thông tin từng người ở -->
                                             @foreach ($booking->guests as $guest)
                                                 <li><strong>Tên:</strong> {{ $guest->name ?? 'Không có' }}</li>
-                                                <li><strong>Ảnh căn cước công dân:</strong> {{ $guest->id_photo ?? 'Không có' }}</li>
+                                                <li>
+                                                    <strong>Ảnh căn cước công dân:</strong>
+                                                    @if ($guest->id_photo)
+                                                        <img src="{{ Storage::url('id_photos/' . $guest->id_photo) }}" alt="Ảnh CCCD" style="max-width: 200px; height: auto;" class="img-fluid">
+                                                    @else
+                                                        Không có
+                                                    @endif
+                                                </li>
                                                 <li><strong>Căn cước công dân:</strong> {{ $guest->id_number ?? 'Không có' }}</li>
                                                 <li><strong>Ngày sinh:</strong> {{ $guest->birth_date ? \App\Helpers\FormatHelper::formatDate($guest->birth_date) : 'Không có' }}</li>
                                                 <li><strong>Giới tính:</strong> {{ $guest->gender ?? 'Không xác định' }}</li>
+                                                <li><strong>Số điện thoại:</strong> {{ $guest->phone ?? 'Không có' }}</li>
+                                                <li><strong>Email:</strong> {{ $guest->email ?? 'Không có' }}</li>
+                                                <li><strong>Mối quan hệ:</strong> {{ $guest->relationship ?? 'Không có' }}</li>
                                             @endforeach
                                         @endif
                                     </ul>
@@ -336,62 +365,38 @@
                         </div>
                     </div>
                 </div>
+                </div>
 
-                <!-- Thông tin phòng & đơn đặt phòng -->
-                <div class="col-md-6">
-                    <div class="booking-section">
-                        <div class="booking-section-header">
-                            <h5>Thông tin phòng</h5>
-                            <span class="toggle-icon">▼</span>
-                        </div>
-                        <div class="booking-section-content">
-                            <ul class="room-list">
-                                @foreach ($booking->rooms as $room)
-                                    <li>
-                                        <div class="booking-info">
-                                            <div class="info-item">
-                                                <label>Số phòng:</label><span>{{ $room->room_number }}</span><br>
-                                            </div>
-                                            <div class="info-item">
-                                                <label>Loại phòng:</label><span>{{ $room->roomType->name ?? 'Chưa xác định' }}</span><br>
-                                            </div>
-                                            <div class="info-item">
-                                                <label>Loại giường:</label>
-                                                <span>
-                                                    @php
-                                                        $bedTypeMapping = [
-                                                            'single' => 'Giường đơn',
-                                                            'double' => 'Giường đôi',
-                                                            'queen' => 'Giường Queen',
-                                                            'king' => 'Giường King',
-                                                            'bunk' => 'Giường tầng',
-                                                            'sofa' => 'Giường sofa',
-                                                        ];
-                                                    @endphp
-                                                    {{ $bedTypeMapping[$room->roomType->bed_type] ?? 'Chưa xác định' }}
-                                                </span><br>
-                                            </div>
-                                            <div class="info-item">
-                                                <label>Kích thước:</label><span>{{ $room->roomType->size ?? 'Chưa xác định' }}</span><br>
-                                            </div>
-                                            <div class="info-item">
-                                                <label>Số người lớn:</label><span>{{ $room->roomType->max_capacity ?? 'Chưa xác định' }}</span><br>
-                                            </div>
-                                            <div class="info-item">
-                                                <label>Số trẻ em:</label><span>{{ $room->roomType->children_free_limit ?? 'Chưa xác định' }}</span><br>
-                                            </div>
-                                            <div class="info-item">
-                                                <label>Giá:</label><span>{{ \App\Helpers\FormatHelper::formatPrice($room->roomType->price ?? 0) }}</span>
-                                            </div>
-                                            <div class="info-item">
-                                                <label>Mô tả:</label><span>{{ $room->roomType->description ?? 'Chưa xác định' }}</span>
-                                            </div>
+        <div class="row">
+            <!-- Thông tin phòng -->
+            <div class="col-md-6">
+                <div class="booking-section">
+                    <div class="booking-section-header">
+                        <h5>Thông tin phòng</h5>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="booking-section-content">
+                        <ul class="room-list">
+                            @foreach ($booking->rooms as $room)
+                                <li class="mb-3">
+                                    <div class="row row-cols-2 g-2">
+                                        <div class="col"><strong>Số phòng:</strong> {{ $room->room_number }}</div>
+                                        <div class="col"><strong>Loại phòng:</strong> {{ $room->roomType->name ?? 'Chưa xác định' }}</div>
+                                        <div class="col"><strong>Loại giường:</strong>
+                                            @php
+                                                $bedTypeMapping = ['single' => 'Giường đơn', 'double' => 'Giường đôi', 'queen' => 'Giường Queen', 'king' => 'Giường King', 'bunk' => 'Giường tầng', 'sofa' => 'Giường sofa'];
+                                            @endphp
+                                            {{ $bedTypeMapping[$room->roomType->bed_type] ?? 'Chưa xác định' }}
                                         </div>
-                                    </li>
-                                    <div class="booking-info">
-                                        <div class="info-item">
-                                            <label>Tiện nghi:</label>
-                                            <ul class="amenities-list">
+                                        <div class="col"><strong>Kích thước:</strong> {{ $room->roomType->size ?? 'Chưa xác định' }} m²</div>
+                                        <div class="col"><strong>Số người lớn:</strong> {{ $room->roomType->max_capacity ?? 'Chưa xác định' }}</div>
+                                        <div class="col"><strong>Số trẻ em:</strong> {{ $room->roomType->children_free_limit ?? 'Chưa xác định' }}</div>
+                                        <div class="col"><strong>Giá:</strong> {{ \App\Helpers\FormatHelper::formatPrice($room->roomType->price ?? 0) }}</div>
+                                        <div class="col"><strong>Mô tả:</strong> {{ $room->roomType->description ?? 'Chưa xác định' }}</div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col"><strong>Tiện nghi:</strong>
+                                            <ul class="list-unstyled">
                                                 @forelse ($room->roomType->amenities as $amenity)
                                                     <li>{{ $amenity->name }}</li>
                                                 @empty
@@ -399,19 +404,17 @@
                                                 @endforelse
                                             </ul>
                                         </div>
-                                        <div class="info-item">
-                                            <label>Quy tắc & quy định:</label>
-                                            <ul class="amenities-list">
+                                        <div class="col"><strong>Quy tắc & quy định:</strong>
+                                            <ul class="list-unstyled">
                                                 @forelse ($room->roomType->rulesAndRegulations as $rule)
                                                     <li>{{ $rule->name }}</li>
                                                 @empty
-                                                    <li>Không có Quy tắc & quy định.</li>
+                                                    <li>Không có quy tắc.</li>
                                                 @endforelse
                                             </ul>
                                         </div>
-                                        <div class="info-item">
-                                            <label>Dịch vụ khách sạn:</label>
-                                            <ul class="amenities-list">
+                                        <div class="col"><strong>Dịch vụ:</strong>
+                                            <ul class="list-unstyled">
                                                 @forelse ($room->roomType->services as $service)
                                                     <li>{{ $service->name }}</li>
                                                 @empty
@@ -420,83 +423,88 @@
                                             </ul>
                                         </div>
                                     </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dịch vụ bổ sung -->
+            <div class="col-md-6">
+                <div class="booking-section">
+                    <div class="booking-section-header">
+                        <h5>Dịch vụ bổ sung</h5>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="booking-section-content">
+                        <button class="btn btn-primary ms-2 text-end" data-bs-toggle="modal" data-bs-target="#addServicePlusModal">
+                            Thêm dịch vụ bổ sung
+                        </button>
+                        @if ($booking->servicePlus->isEmpty())
+                            <p>Chưa có dịch vụ bổ sung nào được chọn.</p>
+                        @else
+                            <table class="table table-striped" id="servicePlusTable">
+                                <thead>
+                                <tr>
+                                    <th>Tên dịch vụ</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Hành động</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach ($booking->servicePlus as $servicePlus)
+                                    <tr>
+                                        <td>{{ $servicePlus->name }}</td>
+                                        <td>{{ \App\Helpers\FormatHelper::formatPrice($servicePlus->price) }}</td>
+                                        <td>{{ $servicePlus->pivot->quantity }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-warning edit-service-plus" data-service-plus-id="{{ $servicePlus->id }}" data-quantity="{{ $servicePlus->pivot->quantity }}">Sửa</button>
+                                            <button class="btn btn-sm btn-danger remove-service-plus" data-service-plus-id="{{ $servicePlus->id }}">Xóa</button>
+                                        </td>
+                                    </tr>
                                 @endforeach
-                            </ul>
-                        </div>
+                                </tbody>
+                            </table>
+                        @endif
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Dịch vụ bổ sung đã chọn (ServicePlus) -->
-                    <div class="booking-section">
-                        <div class="booking-section-header">
-                            <h5>Dịch vụ bổ sung</h5>
-                            <span class="toggle-icon">▼</span>
-                            <!-- Nút thêm dịch vụ bổ sung -->
-                        </div>
-                        <div class="booking-section-content">
-                            <button class="btn btn-primary ms-2 text-end" data-bs-toggle="modal" data-bs-target="#addServicePlusModal">
-                                Thêm dịch vụ bổ sung
-                            </button>
-                            @if ($booking->servicePlus->isEmpty())
-                                <p>Chưa có dịch vụ bổ sung nào được chọn.</p>
-                            @else
-                                <table class="table table-striped" id="servicePlusTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Tên dịch vụ</th>
-                                            <th>Giá</th>
-                                            <th>Số lượng</th>
-                                            <th>Hành động</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($booking->servicePlus as $servicePlus)
-                                        <tr>
-                                            <td>{{ $servicePlus->name }}</td>
-                                            <td>{{ \App\Helpers\FormatHelper::formatPrice($servicePlus->price) }}</td>
-                                            <td>{{ $servicePlus->pivot->quantity }}</td>
-                                            <td>
-                                                <button class="btn btn-sm btn-warning edit-service-plus" data-service-plus-id="{{ $servicePlus->id }}" data-quantity="{{ $servicePlus->pivot->quantity }}">Sửa</button>
-                                                <button class="btn btn-sm btn-danger remove-service-plus" data-service-plus-id="{{ $servicePlus->id }}">Xóa</button>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            @endif
-                        </div>
+                <!-- Thông tin đơn đặt phòng -->
+                <div class="booking-section">
+                    <div class="booking-section-header">
+                        <h5>Thông tin đơn đặt phòng</h5>
+                        <span class="toggle-icon">▼</span>
                     </div>
-
-                    <div class="booking-section">
-                        <div class="booking-section-header">
-                            <h5>Thông tin đơn đặt phòng</h5>
-                            <span class="toggle-icon">▼</span>
-                        </div>
-                        <div class="booking-section-content">
-                            <div class="booking-info">
-                                <div class="info-item">
-                                    <label>Mã đặt phòng:</label><span>{{ $booking->booking_code }}</span>
-                                </div>
-                                <div class="info-item">
-                                    <label>Ngày check-in:</label><span>{{ \App\Helpers\FormatHelper::formatDate($booking->check_in) }}</span>
-                                </div>
-                                <div class="info-item">
-                                    <label>Ngày check-out:</label><span>{{ \App\Helpers\FormatHelper::formatDate($booking->check_out) }}</span>
-                                </div>
-                                <div class="info-item">
-                                    <label>Giờ check-in thực tế:</label><span>{{ \App\Helpers\FormatHelper::formatDateTime($booking->actual_check_out) }}</span>
-                                </div>
-                                <div class="info-item">
-                                    <label>Giờ check-out thực tế:</label><span>{{ \App\Helpers\FormatHelper::formatDateTime($booking->actual_check_out) }}</span>
-                                </div>
-                                <div class="info-item">
-                                    <label>Tổng tiền:</label><span>{{ \App\Helpers\FormatHelper::formatPrice($booking->total_price) }}</span>
-                                </div>
-                                <div class="info-item">
-                                    <label>Số người:</label><span>Người lớn: {{ $booking->total_guests }} | Trẻ em: {{ $booking->children_count }}</span>
-                                </div>
-                                <div class="info-item">
-                                    <label>Trạng thái:</label>
-                                    <span class="status-badge {{ 'status-' . $booking->status }}">
+                    <div class="booking-section-content">
+                        <ul class="">
+                            <li>
+                                <strong>Mã đặt phòng:</strong> {{ $booking->booking_code }}
+                            </li>
+                            <li>
+                                <strong>Ngày check-in:</strong> {{ \App\Helpers\FormatHelper::formatDate($booking->check_in) }}
+                            </li>
+                            <li>
+                                <strong>Ngày check-out:</strong> {{ \App\Helpers\FormatHelper::formatDate($booking->check_out) }}
+                            </li>
+                            <li>
+                                <strong>Giờ check-in thực tế:</strong> {{ $booking->actual_check_in ? \App\Helpers\FormatHelper::formatDateTime($booking->actual_check_in) : 'Chưa check-in' }}
+                            </li>
+                            <li>
+                                <strong>Giờ check-out thực tế:</strong> {{ $booking->actual_check_out ? \App\Helpers\FormatHelper::formatDateTime($booking->actual_check_out) : 'Chưa check-out' }}
+                            </li>
+                            <li>
+                                <strong>Tổng tiền:</strong> {{ \App\Helpers\FormatHelper::formatPrice($booking->total_price) }}
+                            </li>
+                            <li>
+                                <strong>Số người:</strong> Người lớn: {{ $booking->total_guests }} | Trẻ em: {{ $booking->children_count }}
+                            </li>
+                            <li>
+                                <strong>Trạng thái:</strong>
+                                <span class="status-badge {{ 'status-' . $booking->status }}">
                                         @php
                                             $statusMapping = [
                                                 'pending_confirmation' => 'Chưa xác nhận',
@@ -508,29 +516,29 @@
                                                 'refunded' => 'Đã hoàn tiền',
                                             ];
                                         @endphp
-                                        {{ $statusMapping[$booking->status] ?? 'Không xác định' }}
+                                    {{ $statusMapping[$booking->status] ?? 'Không xác định' }}
                                     </span>
-                                </div>
-                            </div>
-                        </div>
+                            </li>
+                        </ul>
                     </div>
+                </div>
 
-                    <!-- Thông tin thanh toán -->
-                    <div class="booking-section">
-                        <div class="booking-section-header">
-                            <h5>Thông tin thanh toán</h5>
-                            <span class="toggle-icon">▼</span>
-                        </div>
-                        <div class="booking-section-content">
-                            <div class="row">
-                                <!-- Cột 1: Thanh toán -->
-                                <div class="col-md-6 text-center">
-                                    <h6>Thanh toán</h6>
-                                    <div class="booking-info">
-                                        @forelse ($booking->payments as $payment)
-                                            <div class="info-item">
-                                                <label>Phương thức:</label>
-                                                <span class="status-badge {{ 'method-' . strtolower($payment->method ?? 'unknown') }}">
+                <!-- Thông tin thanh toán -->
+                <div class="booking-section">
+                    <div class="booking-section-header">
+                        <h5>Thông tin thanh toán</h5>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="booking-section-content">
+                        <div class="row">
+                            <!-- Cột 1: Thanh toán -->
+                            <div class="col-md-6 text-center">
+                                <h6>Thanh toán</h6>
+                                <div class="booking-info">
+                                    @forelse ($booking->payments as $payment)
+                                        <div class="info-item">
+                                            <label>Phương thức:</label>
+                                            <span class="status-badge {{ 'method-' . strtolower($payment->method ?? 'unknown') }}">
                                                     @php
                                                         $methodMapping = [
                                                             'momo' => 'MOMO',
@@ -538,20 +546,20 @@
                                                             'cash' => 'Tiền mặt',
                                                         ];
                                                     @endphp
-                                                    {{ $methodMapping[strtolower($payment->method ?? 'unknown')] ?? 'Không xác định' }}
+                                                {{ $methodMapping[strtolower($payment->method ?? 'unknown')] ?? 'Không xác định' }}
                                                 </span>
-                                            </div>
-                                            <div class="info-item">
-                                                <label>Số tiền:</label>
-                                                <span>{{ \App\Helpers\FormatHelper::formatPrice($payment->amount ?? 0) }}</span>
-                                            </div>
-                                            <div class="info-item">
-                                                <label>Ngày thanh toán:</label>
-                                                <span>{{ \App\Helpers\FormatHelper::formatDate($payment->created_at) }}</span>
-                                            </div>
-                                            <div class="info-item">
-                                                <label>Trạng thái:</label>
-                                                <span class="status-badge {{ 'status-' . strtolower($payment->status ?? 'unknown') }}">
+                                        </div>
+                                        <div class="info-item">
+                                            <label>Số tiền:</label>
+                                            <span>{{ \App\Helpers\FormatHelper::formatPrice($payment->amount ?? 0) }}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <label>Ngày thanh toán:</label>
+                                            <span>{{ \App\Helpers\FormatHelper::formatDate($payment->created_at) }}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <label>Trạng thái:</label>
+                                            <span class="status-badge {{ 'status-' . strtolower($payment->status ?? 'unknown') }}">
                                                     @php
                                                         $statusMapping = [
                                                             'pending' => 'Đang chờ',
@@ -559,74 +567,72 @@
                                                             'failed' => 'Không hoàn thành',
                                                         ];
                                                     @endphp
-                                                    {{ $statusMapping[strtolower($payment->status ?? 'unknown')] ?? 'Không xác định' }}
+                                                {{ $statusMapping[strtolower($payment->status ?? 'unknown')] ?? 'Không xác định' }}
                                                 </span>
-                                            </div>
-                                        @empty
-                                            <div class="info-item">
-                                                <span>Chưa có thông tin thanh toán.</span>
-                                            </div>
-                                        @endforelse
-                                    </div>
+                                        </div>
+                                    @empty
+                                        <div class="info-item">
+                                            <span>Chưa có thông tin thanh toán.</span>
+                                        </div>
+                                    @endforelse
                                 </div>
+                            </div>
 
-                                <!-- Cột 2: Dịch vụ phát sinh -->
-                                <div class="col-md-6 text-center">
-                                    <h6>Dịch vụ phát sinh</h6>
-                                    <div class="booking-info">
-                                        @if ($booking->servicePlus->isEmpty())
-                                            <div class="info-item">
-                                                <span>Chưa có dịch vụ phát sinh.</span>
-                                            </div>
-                                        @else
-                                            @php
-                                                $totalServicePlusPrice = $booking->servicePlus->sum(function ($service) {
-                                                    return $service->price * $service->pivot->quantity;
-                                                });
-                                            @endphp
-                                            <div class="info-item">
-                                                <label>Danh sách dịch vụ phát sinh:</label>
-                                                <table class="table table-striped">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Tên dịch vụ</th>
-                                                            <th>Giá</th>
-                                                            <th>Số lượng</th>
-                                                            <th>Tổng tiền</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach ($booking->servicePlus as $service)
-                                                            <tr>
-                                                                <td>{{ $service->name }}</td>
-                                                                <td>{{ \App\Helpers\FormatHelper::formatPrice($service->price) }}</td>
-                                                                <td>{{ $service->pivot->quantity }}</td>
-                                                                <td>{{ \App\Helpers\FormatHelper::formatPrice($service->price * $service->pivot->quantity) }}</td>
-                                                            </tr>
-                                                        @endforeach
-                                                        <tr>
-                                                            <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
-                                                            <td><strong>{{ \App\Helpers\FormatHelper::formatPrice($totalServicePlusPrice) }}</strong></td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <div class="info-item">
-                                                <label>Trạng thái:</label>
-                                                <select class="form-control service-plus-status" data-booking-id="{{ $booking->id }}" {{ $booking->service_plus_status === 'paid' ? 'disabled' : '' }}>
-                                                    <option value="not_yet_paid" {{ $booking->service_plus_status === 'not_yet_paid' ? 'selected' : '' }}>Chưa thanh toán</option>
-                                                    <option value="paid" {{ $booking->service_plus_status === 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
-                                                </select>
-                                            </div>
-                                        @endif
-                                    </div>
+                            <!-- Cột 2: Dịch vụ phát sinh -->
+                            <div class="col-md-6 text-center">
+                                <h6>Dịch vụ phát sinh</h6>
+                                <div class="booking-info">
+                                    @if ($booking->servicePlus->isEmpty())
+                                        <div class="info-item">
+                                            <span>Chưa có dịch vụ phát sinh.</span>
+                                        </div>
+                                    @else
+                                        @php
+                                            $totalServicePlusPrice = $booking->servicePlus->sum(function ($service) {
+                                                return $service->price * $service->pivot->quantity;
+                                            });
+                                        @endphp
+                                        <div class="info-item">
+                                            <label>Danh sách dịch vụ phát sinh:</label>
+                                            <table class="table table-striped">
+                                                <thead>
+                                                <tr>
+                                                    <th>Tên dịch vụ</th>
+                                                    <th>Giá</th>
+                                                    <th>Số lượng</th>
+                                                    <th>Tổng tiền</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                @foreach ($booking->servicePlus as $service)
+                                                    <tr>
+                                                        <td>{{ $service->name }}</td>
+                                                        <td>{{ \App\Helpers\FormatHelper::formatPrice($service->price) }}</td>
+                                                        <td>{{ $service->pivot->quantity }}</td>
+                                                        <td>{{ \App\Helpers\FormatHelper::formatPrice($service->price * $service->pivot->quantity) }}</td>
+                                                    </tr>
+                                                @endforeach
+                                                <tr>
+                                                    <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
+                                                    <td><strong>{{ \App\Helpers\FormatHelper::formatPrice($totalServicePlusPrice) }}</strong></td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="info-item">
+                                            <label>Trạng thái:</label>
+                                            <select class="form-control service-plus-status" data-booking-id="{{ $booking->id }}" {{ $booking->service_plus_status === 'paid' ? 'disabled' : '' }}>
+                                                <option value="not_yet_paid" {{ $booking->service_plus_status === 'not_yet_paid' ? 'selected' : '' }}>Chưa thanh toán</option>
+                                                <option value="paid" {{ $booking->service_plus_status === 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
+                                            </select>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
         <div class="mt-4">
             <a href="{{ route('admin.bookings.index') }}" class="btn btn-secondary">Quay lại</a>

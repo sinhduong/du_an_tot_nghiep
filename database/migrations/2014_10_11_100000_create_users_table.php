@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('avatar')->nullable();
             $table->string('address')->nullable();
+            $table->string('id_number')->nullable(); // Số CMND/CCCD
+            $table->string('id_photo')->nullable(); // Đường dẫn ảnh căn cước
+            $table->date('birth_date')->nullable(); // Ngày sinh
             $table->string('gender')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();

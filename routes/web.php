@@ -1,28 +1,28 @@
 <?php
 
-use App\Http\Controllers\Admin\BannerController;
-use App\Http\Controllers\Admin\FaqController;
-use App\Http\Controllers\Admin\PaymentController;
-use App\Http\Controllers\Admin\PromotionController;
-use App\Http\Controllers\Admin\RulesAndRegulationController;
-use App\Http\Controllers\Admin\AmenityController;
-use App\Http\Controllers\StaffAttendanceController;
-use App\Http\Controllers\StaffRoleController;
-use App\Http\Controllers\StaffShiftController;
 use App\Http\Controllers\Admin\AboutController;
+use App\Http\Controllers\Admin\AmenityController;
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\ContactsController;
+use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\IntroductionController;
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PolicyController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\RoomTypeController;
+use App\Http\Controllers\Admin\RulesAndRegulationController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\ServicePlusController;
 use App\Http\Controllers\Admin\StaffController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\StaffAttendanceController;
+use App\Http\Controllers\StaffRoleController;
+use App\Http\Controllers\StaffShiftController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -254,4 +254,5 @@ Route::prefix('admin')
 
 // client
 
+Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/', [HomeController::class, 'index'])->name('home');
