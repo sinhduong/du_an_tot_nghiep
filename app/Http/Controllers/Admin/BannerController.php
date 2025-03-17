@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBannerRequest;
 use App\Http\Requests\UpdateBannerRequest;
-use App\Models\Admin\Banner;
+use App\Models\Banner;
 use Illuminate\Support\Facades\Storage;
 
 class BannerController extends Controller

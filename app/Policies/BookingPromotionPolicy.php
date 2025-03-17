@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Admin\User;
 use App\Models\Booking_promotion;
+use App\Models\User;
 
 class BookingPromotionPolicy
 {

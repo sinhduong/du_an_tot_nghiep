@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Admin\Staff;
-use App\Models\Admin\User;
+use App\Models\Staff;
+use App\Models\User;
 
 class StaffsPolicy
 {

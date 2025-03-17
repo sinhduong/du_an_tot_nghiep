@@ -4,6 +4,6 @@
 @include('clients.layout.blocks.slider')
 @include('clients.layout.search')
 
-ffff
+concac
 
 @endsection

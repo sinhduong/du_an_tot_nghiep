@@ -5,7 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Admin\Review>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Review>
  */
 class ReviewFactory extends Factory
 {
@@ -17,8 +17,8 @@ class ReviewFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => \App\Models\Admin\User::factory(),
-            'room_id' => \App\Models\Admin\Room::factory(),
+            'user_id' => \App\Models\User::factory(),
+            'room_id' => \App\Models\Room::factory(),
             'rating' => $this->faker->numberBetween(1, 5),
             'comment' => $this->faker->sentence,
             'response' => null, // Không có phản hồi

@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Admin\Service;
-use App\Models\Admin\User;
+use App\Models\Service;
+use App\Models\User;
 
 class ServicePolicy
 {

@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\Admin\StaffRole;
+use App\Models\StaffRole;
 use Illuminate\Http\Request;
 
 class StaffRoleController extends Controller

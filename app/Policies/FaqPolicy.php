@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Admin\Faq;
-use App\Models\Admin\User;
+use App\Models\Faq;
+use App\Models\User;
 
 class FaqPolicy
 {

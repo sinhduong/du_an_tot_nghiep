@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Admin\About;
-use App\Models\Admin\User;
+use App\Models\About;
+use App\Models\User;
 
 class AboutPolicy
 {

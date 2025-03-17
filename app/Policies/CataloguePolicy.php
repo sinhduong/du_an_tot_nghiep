@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Admin\User;
 use App\Models\Catalogue;
+use App\Models\User;
 
 class CataloguePolicy
 {

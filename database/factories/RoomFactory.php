@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Admin\RoomType;
-use App\Models\Admin\User;
+use App\Models\RoomType;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

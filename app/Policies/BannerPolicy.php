@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Admin\Banner;
-use App\Models\Admin\User;
+use App\Models\Banner;
+use App\Models\User;
 
 class BannerPolicy
 {

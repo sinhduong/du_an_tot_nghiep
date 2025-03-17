@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Admin\Blogs;
-use App\Models\Admin\User;
+use App\Models\Blogs;
+use App\Models\User;
 
 class BlogsPolicy
 {

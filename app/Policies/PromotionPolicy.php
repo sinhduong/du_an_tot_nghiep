@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Admin\Promotion;
-use App\Models\Admin\User;
+use App\Models\Promotion;
+use App\Models\User;
 
 class PromotionPolicy
 {

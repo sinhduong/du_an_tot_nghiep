@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Admin\Payment;
-use App\Models\Admin\User;
+use App\Models\Payment;
+use App\Models\User;
 
 class PaymentPolicy
 {

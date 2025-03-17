@@ -6,10 +6,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Storerules_and_regulationRequest;
 use App\Http\Requests\Updaterules_and_regulationRequest;
-use App\Models\Admin\Room;
-use App\Models\Admin\RoomType;
-use App\Models\Admin\RulesAndRegulation;
+use App\Models\Room;
 use App\Models\Room_rar;
+use App\Models\RoomType;
+use App\Models\RulesAndRegulation;
 use Illuminate\Support\Facades\DB;
 
 class RulesAndRegulationController extends Controller

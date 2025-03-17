@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Admin\User;
 use App\Models\rules_and_regulation;
+use App\Models\User;
 
 class RulesAndRegulationPolicy
 {

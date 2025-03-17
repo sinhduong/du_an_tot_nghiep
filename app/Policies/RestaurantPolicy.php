@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Admin\User;
 use App\Models\Restaurant;
+use App\Models\User;
 
 class RestaurantPolicy
 {

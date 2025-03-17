@@ -17,7 +17,7 @@
                     <x-input-error :messages="$errors->get('password')" class="mt-2" />
             </span>
         <div class="login-btns">
-            <button type="submit">Confirm</button>
+            <button type="submit">Xác nhận</button>
         </div>
     </div>
 </form>

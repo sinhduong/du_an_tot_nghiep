@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\Contacts;
+use App\Models\Contacts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 

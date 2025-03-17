@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Admin\RoomType;
+use App\Models\RoomType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class RoomTypeFactory extends Factory

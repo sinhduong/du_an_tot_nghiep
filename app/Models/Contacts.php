@@ -1,16 +1,13 @@
 <?php
 
-namespace App\Models\Admin;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Introduction extends Model
+class Contacts extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = [
-        'introduction',
-        'is_use'
-    ];
+    protected $fillable = ['title', 'phone', 'email', 'content', 'status'];
 }

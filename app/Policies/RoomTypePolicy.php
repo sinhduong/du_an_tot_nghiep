@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Admin\RoomType;
-use App\Models\Admin\User;
+use App\Models\RoomType;
+use App\Models\User;
 
 class RoomTypePolicy
 {

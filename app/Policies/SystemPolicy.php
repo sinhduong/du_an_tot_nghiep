@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Admin\system;
-use App\Models\Admin\User;
+use App\Models\system;
+use App\Models\User;
 
 class SystemPolicy
 {

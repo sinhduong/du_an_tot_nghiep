@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Models\Admin;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class StaffRole extends Model
+class StaffShift extends Model
 {
-
     use HasFactory;
     protected $fillable = [
         'name',
-        'permissions',
+        'start_time',
+        'end_time',
     ];
 
     public function staff()

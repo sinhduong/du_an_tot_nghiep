@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAmenityRequest;
 use App\Http\Requests\UpdateAmenityRequest;
-use App\Models\Admin\Amenity;
-use App\Models\Admin\RoomType;
+use App\Models\Amenity;
+use App\Models\RoomType;
 use Illuminate\Support\Facades\DB;
 
 class AmenityController extends Controller

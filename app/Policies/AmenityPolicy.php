@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Admin\amenity;
-use App\Models\Admin\User;
+use App\Models\amenity;
+use App\Models\User;
 
 class AmenityPolicy
 {

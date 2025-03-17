@@ -8,13 +8,13 @@
     </div>
     <div class="input-control">
         <p>Nhập email của bạn, chúng tôi sẽ gửi liên kết để đặt lại mật khẩu của bạn.</p>
-        <input type="email" id="email" placeholder="Enter your email" name="email" required value="{{ old('email') }}">
+        <input type="email" id="email" placeholder="Nhập email của bạn" name="email" required value="{{ old('email') }}">
         <x-input-error :messages="$errors->get('email')" class="mt-2" />
         <div class="login-btns">
-            <button type="submit">Reset</button>
+            <button type="submit">Đặt lại</button>
         </div>
         <div class="login-with-btns">
-            <span class="already-acc">Return to<a href="{{ route('login') }}" class="login-btn">Login</a></span>
+            <span class="already-acc">Quay lại <a href="{{ route('login') }}" class="login-btn">Đăng nhập</a></span>
         </div>
     </div>
 </form>

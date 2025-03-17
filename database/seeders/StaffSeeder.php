@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Admin\Staff;
+use App\Models\Staff;
 use Illuminate\Database\Seeder;
 
 class StaffSeeder extends Seeder

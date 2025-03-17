@@ -1,18 +1,13 @@
 <?php
 
-namespace App\Models\Admin;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Banner extends Model
+class About extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable=[
-        'name',
-        'link',
-        'image',
-        'is_use',
-    ];
+    protected $fillable = ['about', 'is_use'];
 }
