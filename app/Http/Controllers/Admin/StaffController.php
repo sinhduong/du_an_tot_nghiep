@@ -11,8 +11,6 @@ use App\Models\StaffRole;
 use App\Models\StaffShift;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 
 class StaffController extends Controller
 {

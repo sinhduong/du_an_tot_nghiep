@@ -1,28 +1,31 @@
 <?php
 
-use App\Http\Controllers\Admin\BannerController;
-use App\Http\Controllers\Admin\FaqController;
-use App\Http\Controllers\Admin\PaymentController;
-use App\Http\Controllers\Admin\PromotionController;
-use App\Http\Controllers\Admin\RulesAndRegulationController;
-use App\Http\Controllers\Admin\AmenityController;
-use App\Http\Controllers\StaffAttendanceController;
-use App\Http\Controllers\StaffRoleController;
-use App\Http\Controllers\StaffShiftController;
 use App\Http\Controllers\Admin\AboutController;
+use App\Http\Controllers\Admin\AmenityController;
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\ContactsController;
+use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\IntroductionController;
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PolicyController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\RoomTypeController;
+use App\Http\Controllers\Admin\RulesAndRegulationController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\ServicePlusController;
 use App\Http\Controllers\Admin\StaffController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\StaffAttendanceController;
+use App\Http\Controllers\StaffRoleController;
+use App\Http\Controllers\StaffShiftController;
+
+// client
+use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\BookingController as ClientBookingController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -121,7 +124,7 @@ Route::prefix('admin')
 
             });
 
-            Route::prefix('staff_roles') // Đặt tên theo số nhiều chuẩn RESTful
+        Route::prefix('staff_roles') // Đặt tên theo số nhiều chuẩn RESTful
             ->as('staff_roles.') // Tên route để sử dụng dễ dàng trong view/controller
             ->group(function () {
                 Route::get('/', [StaffRoleController::class, 'index'])->name('index');
@@ -137,7 +140,7 @@ Route::prefix('admin')
 
             });
 
-            Route::prefix('staff_shifts') // Đặt tên theo số nhiều chuẩn RESTful
+        Route::prefix('staff_shifts') // Đặt tên theo số nhiều chuẩn RESTful
             ->as('staff_shifts.') // Tên route để sử dụng dễ dàng trong view/controller
             ->group(function () {
                 Route::get('/', [StaffShiftController::class, 'index'])->name('index');
@@ -255,3 +258,17 @@ Route::prefix('admin')
 // client
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+
+Route::prefix('bookings')
+    ->as('bookings.')
+    // ->middleware('auth') // Nếu client cần đăng nhập
+    ->group(function () {
+        Route::get('/', [ClientBookingController::class, 'index'])->name('index');
+        Route::get('/create', [ClientBookingController::class, 'create'])->name('create');
+        Route::post('/store', [ClientBookingController::class, 'store'])->name('store');
+        Route::get('{id}/show', [ClientBookingController::class, 'show'])->name('show');
+        Route::get('{id}/edit', [ClientBookingController::class, 'edit'])->name('edit');
+        Route::put('{id}/update', [ClientBookingController::class, 'update'])->name('update');
+        Route::delete('{id}/destroy', [ClientBookingController::class, 'destroy'])->name('destroy');
+    });

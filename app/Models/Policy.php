@@ -12,6 +12,6 @@ class Policy extends Model
     protected $fillable = [
         'policy',
         'is_use',
-     
+
     ];
 }

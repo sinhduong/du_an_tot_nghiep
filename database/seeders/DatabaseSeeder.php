@@ -4,9 +4,6 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-use App\Models\Staff;
-use App\Models\StaffAttendance;
-use App\Models\StaffRole;
 use App\Models\StaffShift;
 use App\Models\User;
 use Illuminate\Database\Seeder;

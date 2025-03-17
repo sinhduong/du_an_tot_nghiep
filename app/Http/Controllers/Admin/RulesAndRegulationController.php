@@ -41,7 +41,7 @@ class RulesAndRegulationController extends Controller
     //      */
     public function store(Storerules_and_regulationRequest $request)
     {
-       
+
         try {
             DB::beginTransaction();
             $service = RulesAndRegulation::create($request->all());
@@ -84,7 +84,7 @@ class RulesAndRegulationController extends Controller
     //      */
     public function update(Updaterules_and_regulationRequest $request, string $id)
     {
-       
+
         try {
             DB::beginTransaction();
             $service = RulesAndRegulation::findOrFail($id);

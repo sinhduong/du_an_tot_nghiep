@@ -2,9 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\system;
-use Illuminate\Auth\Access\Response;
+use App\Models\User;
 
 class SystemPolicy
 {

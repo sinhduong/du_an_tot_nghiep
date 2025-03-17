@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Room;
-use App\Models\Amenity;
 use App\Http\Requests\StoreAmenityRequest;
 use App\Http\Requests\UpdateAmenityRequest;
+use App\Models\Amenity;
 use App\Models\RoomType;
 use Illuminate\Support\Facades\DB;
 
@@ -59,7 +58,7 @@ class AmenityController extends Controller
 
     public function update(UpdateAmenityRequest $request, string $id)
     {
-       
+
         try {
             DB::beginTransaction();
             $service = Amenity::findOrFail($id);

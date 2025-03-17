@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ServicePlus extends Model
 {
-    protected $table = 'service_plus'; 
+    protected $table = 'service_plus';
     protected $fillable = [
         'name',
         'price',

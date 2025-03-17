@@ -39,10 +39,12 @@
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                 <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="mdi mdi-account"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ route('bookings.index') }}"><i class="ri-contacts-book-line"></i>Đơn đặt phòng</a></li>
                                 <li>
+
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="dropdown-item">Đăng xuất</button>
+                                        <button type="submit" class="dropdown-item text-center">Đăng xuất</button>
                                     </form>
                                 </li>
                             </ul>

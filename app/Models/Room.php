@@ -27,5 +27,5 @@ class Room extends Model
     {
         return $this->belongsTo(Staff::class, 'manager_id', 'id');
     }
-   
+
 }

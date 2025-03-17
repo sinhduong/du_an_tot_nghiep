@@ -11,28 +11,28 @@
     </div>
     <div class="input-control">
         {{-- email  --}}
-        <input type="text" id="email" placeholder="Enter Email" name="email" value="{{ old('email', $request->email) }}"
+        <input type="text" id="email" placeholder="Nhập Email" name="email" value="{{ old('email', $request->email) }}"
             required>
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 {{-- pass  --}}
         <span class="password-field-show">
-            <input type="password" id="password" placeholder="Enter Password" name="password" autocomplete="new-password"
+            <input type="password" id="password" placeholder="Nhập mật khẩu" name="password" autocomplete="new-password"
             class="input-checkmark" required autocomplete="new-password">
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
                 <span class="password-field-show">
                     <input class="password-field input-checkmark"
                         id="password_confirmation"
-                        type="password" placeholder="confirm Password"
+                        type="password" placeholder="Xác nhận mật khẩu"
                         name="password_confirmation" required autocomplete="new-password">
                         <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                 </span>
         </span>
-        <label class="label-container">Remember me
+        <label class="label-container">Ghi nhớ tôi
             <input type="checkbox">
             <span class="checkmark"></span>
         </label>
         <div class="login-btns">
-            <button type="submit">Reset Password</button>
+            <button type="submit">Đặt lại mật khẩu</button>
         </div>
     </div>
 </form>

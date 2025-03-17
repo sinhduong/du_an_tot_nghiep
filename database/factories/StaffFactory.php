@@ -7,7 +7,6 @@ use App\Models\StaffRole;
 use App\Models\StaffShift;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 class StaffFactory extends Factory
 {

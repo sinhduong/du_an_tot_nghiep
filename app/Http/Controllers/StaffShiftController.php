@@ -1,8 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\StaffShift;
 use App\Models\Staff;
+use App\Models\StaffShift;
 use Illuminate\Http\Request;
 
 class StaffShiftController extends Controller
