@@ -63,7 +63,7 @@
                                     <table id="booking_table" class="table table-striped table-hover">
                                         <thead class="table-dark">
                                             <tr>
-                                                <th>ID</th>
+                                                <th>STT</th>
                                                 <th>Tên Benner </th>
                                                 <th>Hình Anh</th>
                                                 <th>Link </th>
@@ -125,7 +125,7 @@
                                                                     <form
                                                                         action="{{ route('admin.banners.destroy', $item->id) }}"
                                                                         method="POST"
-                                                                        onsubmit="return confirm('Bạn có muốn xóa mềm không?');">
+                                                                        onsubmit="return confirm('Bạn có muốn xóa banner không?');">
                                                                         @csrf
                                                                         @method('DELETE')
                                                                         <button type="submit"
