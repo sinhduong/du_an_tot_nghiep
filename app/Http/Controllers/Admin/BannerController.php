@@ -17,7 +17,7 @@ class BannerController extends Controller
     {
         //
         $title = 'Danh Sách Banner ';
-        $banners = Banner::all();
+        $banners = Banner::orderBy('id', 'desc')->get();
 // dd($banners->pluck('image'));
 
         return view('admins.banners.index', compact('title', 'banners'));
@@ -69,7 +69,7 @@ class BannerController extends Controller
         //
         $title = 'Danh Sách Banner ';
         $banners = Banner::findOrFail($id);
-        return view('admins.banners.index', compact('title', 'banners'));
+        return view('admins.banners.edit', compact('title', 'banners'));
 
     }
 
@@ -82,7 +82,7 @@ class BannerController extends Controller
         $data = $request->all();
 
         if ($request->hasFile('image')) {
-            $data['image'] = Storage::put('banners', $request->file('image'));
+            $data['image'] = $request->file('image')->store('banners', 'public');
         }
 
         $banner = Banner::findOrFail($id);

@@ -236,7 +236,6 @@ Route::prefix('admin')
 
         Route::resource('services', ServiceController::class);
         Route::resource('service_plus', ServicePlusController::class);
-
         Route::resource('promotions', PromotionController::class);
         Route::resource('roles', RoleController::class);
         Route::resource('abouts', AboutController::class);

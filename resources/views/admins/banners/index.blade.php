@@ -63,7 +63,7 @@
                                     <table id="booking_table" class="table table-striped table-hover">
                                         <thead class="table-dark">
                                             <tr>
-                                                <th>ID</th>
+                                                <th>STT</th>
                                                 <th>Tên Benner </th>
                                                 <th>Hình Anh</th>
                                                 <th>Link </th>
@@ -74,7 +74,7 @@
                                         <tbody>
                                             @foreach ($banners as $index => $item)
                                                 <tr>
-                                                    <td class="text-center">{{ $index + 1 }}</td>
+                                                    <td class="text-center">{{ $index + 1}}</td>
                                                     <td>{{ $item->name }}</td>
                                                     <td>
                                                         @php
@@ -99,9 +99,7 @@
                                                     </td>
                                                     
                                                     <td>
-                                                        <span class="badge {{ $item->link ? 'bg-success' : 'bg-danger' }}">
-                                                            {{ $item->link ? 'Hoạt động' : 'Không hoạt động' }}
-                                                        </span>
+                                                        {{$item->link}}
                                                     </td>
                                                     <td>
                                                         <span
@@ -127,7 +125,7 @@
                                                                     <form
                                                                         action="{{ route('admin.banners.destroy', $item->id) }}"
                                                                         method="POST"
-                                                                        onsubmit="return confirm('Bạn có muốn xóa mềm không?');">
+                                                                        onsubmit="return confirm('Bạn có muốn xóa banner không?');">
                                                                         @csrf
                                                                         @method('DELETE')
                                                                         <button type="submit"

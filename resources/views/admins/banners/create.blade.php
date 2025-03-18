@@ -73,13 +73,14 @@
                                             </li>
                                             <li><strong>Link *: </strong>
                                                 <div class="form-group">
-                                                    <select name="link" class="form-control">
-                                                        <option value="1" {{ old('link') == 1 ? 'selected' : '' }}>Hoạt động</option>
-                                                        <option value="0" {{ old('link') == 0 ? 'selected' : '' }}>Không hoạt động</option>
-                                                    </select>
+                                                   
+                                                    <input type="text" name="link" placeholder="Link Banner"
+                                                    class="form-control" value="{{ old('link') }}">
+                                               
                                                     @error('link')
                                                         <p class="text-danger">{{ $message }}</p>
                                                     @enderror
+                                                    
                                                 </div>
                                             </li>
                                             <li>
