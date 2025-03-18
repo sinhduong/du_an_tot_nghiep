@@ -133,31 +133,16 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a class="dropdown-item" href="about.html">About Us</a>
+                                        <a class="dropdown-item" href="about.html">Về chúng tôi</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="contact.html">Contact</a>
+                                        <a class="dropdown-item" href="contact.html">Liên hệ</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="facilities.html">Facilities</a>
+                                        <a class="dropdown-item" href="{{ route('faqs') }}">Câu hỏi thường gặp</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="faq.html">Faq</a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="prices.html">Prices</a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="services.html">Services</a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="spa.html">Spa</a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="team.html">Team</a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="checkout.html">Checkout</a>
+                                        <a class="dropdown-item" href="prices.html">Dịch vụ</a>
                                     </li>
                                 </ul>
                             </li>

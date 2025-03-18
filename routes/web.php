@@ -258,6 +258,8 @@ Route::prefix('admin')
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+Route::get('/cau-hoi-thuong-gap', [HomeController::class, 'faqs'])->name('faqs');
+
 
 Route::prefix('bookings')
     ->as('bookings.')

@@ -71,7 +71,7 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
         </div>
-
+        restaurant.html
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
             <div class="px-4">
