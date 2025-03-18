@@ -47,7 +47,7 @@
                                         </ul>
                                     </div>
                                 </div>
-                                {{-- <div class="col-md-6 col-sm-12">
+                                <div class="col-md-6 col-sm-12">
                                     <div class="lh-user-detail">
                                         <ul>
                                             <li><strong>City : </strong>
@@ -84,7 +84,7 @@
                                             </li>
                                         </ul>
                                     </div>
-                                </div> --}}
+                                </div>
                                 <div class="col-md-6 col-sm-12">
                                     <div class="lh-user-detail">
                                         <ul>

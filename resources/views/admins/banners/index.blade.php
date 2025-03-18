@@ -74,7 +74,7 @@
                                         <tbody>
                                             @foreach ($banners as $index => $item)
                                                 <tr>
-                                                    <td class="text-center">{{ $index + 1 }}</td>
+                                                    <td class="text-center">{{ $index + 1}}</td>
                                                     <td>{{ $item->name }}</td>
                                                     <td>
                                                         @php
@@ -99,9 +99,7 @@
                                                     </td>
                                                     
                                                     <td>
-                                                        <span class="badge {{ $item->link ? 'bg-success' : 'bg-danger' }}">
-                                                            {{ $item->link ? 'Hoạt động' : 'Không hoạt động' }}
-                                                        </span>
+                                                        {{$item->link}}
                                                     </td>
                                                     <td>
                                                         <span

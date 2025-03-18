@@ -19,7 +19,7 @@ class RulesAndRegulationController extends Controller
      */
     public function index()
     {
-        $title = 'Các Quy Định ';
+        $title = 'Danh Sách Quy Định ';
         $room_rule = RulesAndRegulation::orderBy('id', 'desc')->get();
         return view('admins.rule-regulation.index', compact('title', 'room_rule'));
     }
@@ -30,7 +30,7 @@ class RulesAndRegulationController extends Controller
      */
     public function create()
     {
-        $title = 'Thêm Quy Tắc ';
+        $title = 'Thêm Quy Định  ';
         $roomTypes = RoomType::all();
 
         return  view('admins.rule-regulation.create', compact('title','roomTypes'));
@@ -72,7 +72,7 @@ class RulesAndRegulationController extends Controller
     //      */
     public function edit(string $id)
     {
-        $title = 'Sửa loại phòng';
+        $title = 'Sửa Quy Định ';
         $roomTypes = RoomType::all();
         $rules = RulesAndRegulation::findOrfail($id);
         $selectedRoomTypes = $rules->roomTypes->pluck('id')->toArray();
@@ -120,7 +120,7 @@ class RulesAndRegulationController extends Controller
 
     public function trashed()
     {
-        $title = 'Loại phòng đã xóa';
+        $title = 'Loại quy định  đã xóa';
         $room_types = RulesAndRegulation::onlyTrashed()->get();
         return view('admins.rule-regulation.trashed', compact('title', 'room_types'));
     }
@@ -143,7 +143,7 @@ class RulesAndRegulationController extends Controller
 
     public function room_index()
     {
-        $title = 'Danh Sách PHòng  ';
+        $title = 'Danh Sách Quy Định  ';
         // $room = Room::pluck('name','id')->all();
         $room = Room::orderBy('id', 'desc')->get();
         $room_rule = RulesAndRegulation::orderBy('id', 'desc')->get();

@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up()
 {
-    // Schema::create('banners', function (Blueprint $table) {
-    //     $table->id();
-    //     $table->string('image');
-    //     $table->string('link')->nullable();
-    //     $table->boolean('is_active')->default(1);
-    //     $table->timestamps();
-    // });f
+    Schema::create('banners', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('image');
+        $table->string('link');
+        $table->boolean('is_use')->default(1);
+        $table->softDeletes();//dekete_at xóa mềm
+        $table->timestamps();
+    });
 }
 
 

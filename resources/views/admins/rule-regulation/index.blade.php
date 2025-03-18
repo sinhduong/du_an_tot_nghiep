@@ -5,7 +5,7 @@
         <!-- Page title & breadcrumb -->
         <div class="lh-page-title">
             <div class="lh-breadcrumb">
-                <h5>Phòng</h5>
+                {{-- <h5>Phòng</h5> --}}
                 <ul>
                     <li><a href="index.html">Trang chủ</a></li>
                     <li>Dashboard</li>
@@ -14,9 +14,9 @@
             <div class="lh-tools">
                 <a href="javascript:void(0)" title="Refresh" class="refresh"><i class="ri-refresh-line"></i></a>
                 <div id="pagedate">
-                    <div class="lh-date-range" title="Date">
+                    {{-- <div class="lh-date-range" title="Date">
                         <span></span>
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="filter">
                     <div class="dropdown" title="Filter">
@@ -47,9 +47,9 @@
                                 <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create') }}'">
                                     Tạo mới Quy Định
                                 </button>
-                                <button class="btn btn-success ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create_room') }}'">
+                                {{-- <button class="btn btn-success ms-2" onclick="window.location.href='{{ route('admin.rule-regulations.create_room') }}'">
                                    Thêm Quy Tắc Vào Phòng
-                                </button>
+                                </button> --}}
 
                         </div>
                     </div>
