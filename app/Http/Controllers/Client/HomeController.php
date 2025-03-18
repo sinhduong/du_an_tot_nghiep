@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Faq;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -18,9 +19,11 @@ class HomeController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function faqs()
     {
-        //
+        $faqs = Faq::where('is_active', 1)->get();
+        return view('clients.faq', compact('faqs'));
+
     }
 
     /**
