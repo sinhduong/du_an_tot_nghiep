@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AmenityController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\ContactsController;
+use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\IntroductionController;
 use App\Http\Controllers\Admin\PaymentController;
@@ -244,6 +245,7 @@ Route::prefix('admin')
         Route::resource('banners', BannerController::class);
         Route::resource('faqs', FaqController::class);
         Route::resource('payments', PaymentController::class);
+        Route::resource('customers', CustomerController::class);
         Route::prefix('admin')->group(function () {
             Route::get('/contacts', [ContactsController::class, 'index'])->name('contacts.index');
             Route::get('/contacts/{contact}', [ContactsController::class, 'show'])->name('contacts.show');
@@ -259,6 +261,9 @@ Route::prefix('admin')
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/cau-hoi-thuong-gap', [HomeController::class, 'faqs'])->name('faqs');
+Route::get('/dich-vu', [HomeController::class, 'services'])->name('services');
+Route::get('/ve-chung-toi', [HomeController::class, 'abouts'])->name('abouts');
+Route::get('/gioi-thieu', [HomeController::class, 'introductions'])->name('introductions');
 
 
 Route::prefix('bookings')

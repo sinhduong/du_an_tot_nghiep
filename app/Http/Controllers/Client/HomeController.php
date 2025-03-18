@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\About;
 use App\Models\Faq;
+use App\Models\Introduction;
+use App\Models\Service;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -29,25 +32,36 @@ class HomeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function services()
     {
-        //
+        $services = Service::where('is_active', 1)->get();
+        return view('clients.service', compact('services'));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function abouts()
     {
-        //
+        $about = About::where('is_use', 1)->first();
+        if (!$about) {
+            $about = new About();
+            $about->about = 'Chưa có nội dung nào được thiết lập.';
+        }
+        return view('clients.about', compact('about'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function introductions()
     {
-        //
+        $introduction = Introduction::where('is_use', 1)->first();
+        if (!$introduction) {
+            $introduction = new About();
+            $introduction->introduction = 'Chưa có nội dung nào được thiết lập.';
+        }
+        return view('clients.introduction', compact('introduction'));
     }
 
     /**
