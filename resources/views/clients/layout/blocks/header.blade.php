@@ -133,7 +133,10 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a class="dropdown-item" href="about.html">Về chúng tôi</a>
+                                        <a class="dropdown-item" href="{{ route('introductions') }}">Giới thiệu</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('abouts') }}">Về chúng tôi</a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item" href="contact.html">Liên hệ</a>
@@ -142,7 +145,7 @@
                                         <a class="dropdown-item" href="{{ route('faqs') }}">Câu hỏi thường gặp</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="prices.html">Dịch vụ</a>
+                                        <a class="dropdown-item" href="{{ route('services') }}">Dịch vụ</a>
                                     </li>
                                 </ul>
                             </li>

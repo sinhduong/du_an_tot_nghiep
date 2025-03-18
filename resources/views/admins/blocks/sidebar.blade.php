@@ -23,7 +23,7 @@
                         <i class="ri-shield-user-line"></i><span class="condense">Quản lý tài khoản<i
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
-                        <li><a href="team-add.html" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Danh
+                        <li><a href="{{ route('admin.customers.index') }}" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Danh
                                 sách khách hàng</a></li>
                         <li><a href="{{ route('admin.staffs.index') }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Danh sách quản trị viên</a></li>
