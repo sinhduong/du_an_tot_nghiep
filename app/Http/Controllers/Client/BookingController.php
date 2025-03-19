@@ -162,7 +162,6 @@ class BookingController extends Controller
             'total_price' => $request->total_price,
             'total_guests' => $validated['total_guests'],
             'children_count' => $validated['children_count'],
-            'status' => 'pending',
             'user_id' => $user->id,
             'room_type_id' => $validated['room_type_id'],
             'special_request' => $request->special_request, // Sử dụng special_request từ textarea
