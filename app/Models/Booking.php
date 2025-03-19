@@ -22,7 +22,9 @@ class Booking extends Model
         'user_id',
         'room_id',
         'guest_id',
+        'special_request',
         'service_plus_status', // Thêm trường này
+
     ];
     public function user()
     {

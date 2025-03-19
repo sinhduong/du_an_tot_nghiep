@@ -229,7 +229,10 @@ class BookingController extends Controller
             return redirect()->route('admin.bookings.index')->with('success', 'Cập nhật trạng thái đặt phòng thành công.');
         } elseif ($currentStatus === 'paid' && in_array($newStatus, ['check_in', 'refunded'])) {
             // Nếu trạng thái hiện tại là "Đã thanh toán", chỉ cho phép đổi sang "Đã check in", "Đã hủy", hoặc "Đã hoàn tiền"
-            $booking->update(['status' => $newStatus]);
+            $booking->update([
+                'status' => $newStatus,
+                'actual_check_in' => now(), // Cập nhật thời gian check-in thực tế
+            ]);
             return redirect()->route('admin.bookings.index')->with('success', 'Cập nhật trạng thái đặt phòng thành công.');
         } elseif ($currentStatus === 'check_in' && $newStatus === 'check_out') {
             // Nếu trạng thái hiện tại là "Đã check in", chỉ cho phép đổi sang "Đã checkout" và cập nhật actual_check_out

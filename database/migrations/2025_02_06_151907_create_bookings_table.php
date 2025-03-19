@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
             $table->string('booking_code')->unique()->nullable();
-            $table->dateTime('check_in'); 
-            $table->dateTime('check_out'); 
+            $table->dateTime('check_in');
+            $table->dateTime('check_out');
             $table->dateTime('actual_check_in')->nullable();
             $table->dateTime('actual_check_out')->nullable();
             $table->decimal('total_price', 10, 2);
@@ -32,6 +32,7 @@ return new class extends Migration
                 'refunded' //được hoàn tiền
             ])->default('pending_confirmation');
             $table->bigInteger('user_id');
+            $table->text('special_request')->nullable(); // Thêm trường yêu cầu đặc biệt
             $table->timestamps();
             $table->softDeletes(); //dekete_at xóa mềm
         });

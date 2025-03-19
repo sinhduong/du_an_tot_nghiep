@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes; // Thêm trait SoftDeletes
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -11,7 +11,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes; // Thêm SoftDeletes
 
     /**
      * The attributes that are mass assignable.
@@ -20,8 +20,16 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'phone',
+        'avatar',
+        'address',
+        'id_number',
+        'id_photo',
+        'birth_date',
+        'gender',
         'email',
         'password',
+        'is_active',
     ];
 
     /**
@@ -41,9 +49,16 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'birth_date' => 'date', // Cast birth_date thành kiểu date
+        'is_active' => 'boolean', // Cast is_active thành kiểu boolean
         'password' => 'hashed',
     ];
-    public function bookings(){
-        return $this->hasMany(Booking::class,'user_id');
+
+    /**
+     * Quan hệ: Một User có nhiều Booking
+     */
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'user_id');
     }
 }
