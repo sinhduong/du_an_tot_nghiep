@@ -77,31 +77,45 @@ class BookingController extends Controller
         ]);
 
         // Chuẩn hóa định dạng ngày tháng
-        $checkIn = Carbon::parse($checkIn)->format('Y-m-d');
-        $checkOut = Carbon::parse($checkOut)->format('Y-m-d');
+        $checkIn = Carbon::parse($checkIn);
+        $checkOut = Carbon::parse($checkOut);
 
         // Lấy thông tin loại phòng
-        $selectedRoomType = RoomType::with(['amenities', 'services', 'roomTypeImages'])->findOrFail($roomTypeId);
+        $selectedRoomType = RoomType::with(['amenities', 'services', 'roomTypeImages', 'rooms'])->findOrFail($roomTypeId);
 
-        // Kiểm tra số phòng còn trống
-        $totalRooms = $selectedRoomType->rooms->count();
-        $bookedRooms = Booking::whereHas('rooms', function ($query) use ($selectedRoomType) {
+        // Lấy danh sách các phòng thuộc loại phòng này
+        $allRooms = $selectedRoomType->rooms;
+
+        // Tìm các phòng đã được đặt trong khoảng thời gian yêu cầu
+        $bookedRoomIds = Booking::whereHas('rooms', function ($query) use ($selectedRoomType) {
             $query->where('room_type_id', $selectedRoomType->id);
         })
-        ->where(function ($query) use ($checkIn, $checkOut) {
-            $query->whereBetween('check_in', [$checkIn, $checkOut])
-                  ->orWhereBetween('check_out', [$checkIn, $checkOut])
-                  ->orWhere(function ($q) use ($checkIn, $checkOut) {
-                      $q->where('check_in', '<=', $checkIn)
-                        ->where('check_out', '>=', $checkOut);
-                  });
-        })
-        ->count();
+            ->where(function ($query) use ($checkIn, $checkOut) {
+                $query->whereBetween('check_in', [$checkIn, $checkOut])
+                    ->orWhereBetween('check_out', [$checkIn, $checkOut])
+                    ->orWhere(function ($q) use ($checkIn, $checkOut) {
+                        $q->where('check_in', '<=', $checkIn)
+                            ->where('check_out', '>=', $checkOut);
+                    });
+            })
+            ->with('rooms')
+            ->get()
+            ->flatMap(function ($booking) {
+                return $booking->rooms->pluck('id');
+            })
+            ->unique()
+            ->toArray();
 
-        $availableRooms = max(0, $totalRooms - $bookedRooms);
-        if ($roomQuantity > $availableRooms) {
-            return redirect()->route('home')->with('error', 'Số lượng phòng yêu cầu vượt quá số phòng còn trống.');
+        // Lấy danh sách các phòng còn trống
+        $availableRooms = $allRooms->whereNotIn('id', $bookedRoomIds);
+        $availableRoomCount = $availableRooms->count();
+
+        if ($roomQuantity > $availableRoomCount) {
+            return redirect()->route('home')->with('error', "Số lượng phòng yêu cầu ($roomQuantity) vượt quá số phòng còn trống ($availableRoomCount).");
         }
+
+        // Lấy danh sách các phòng sẽ được gán (lấy số lượng phòng yêu cầu từ danh sách phòng còn trống)
+        $selectedRooms = $availableRooms->take($roomQuantity);
 
         // Truyền dữ liệu vào view checkout
         return view('clients.bookings.create', compact(
@@ -111,7 +125,9 @@ class BookingController extends Controller
             'totalGuests',
             'childrenCount',
             'roomQuantity',
-            'services'
+            'services',
+            'selectedRooms',
+            'availableRoomCount'
         ));
     }
 
@@ -127,8 +143,9 @@ class BookingController extends Controller
             'total_guests' => 'required|integer|min:1',
             'children_count' => 'required|integer|min:0',
             'room_type_id' => 'required|exists:room_types,id',
+            'room_quantity' => 'required|integer|min:1',
             'special_request' => 'nullable|string',
-            'guests' => 'required|array|min:1', // Danh sách người ở
+            'guests' => 'required|array|min:1',
             'guests.*.name' => 'required|string|max:255',
             'guests.*.id_number' => 'nullable|string|regex:/^[0-9]{9,12}$/',
             'guests.*.birth_date' => 'nullable|date|before:today',
@@ -136,37 +153,105 @@ class BookingController extends Controller
             'guests.*.phone' => 'nullable|string|regex:/^[0-9]{10,15}$/',
             'guests.*.email' => 'nullable|email',
             'guests.*.relationship' => 'nullable|string|max:50',
+            'services' => 'nullable|array',
+            'service_quantity_*' => 'nullable|integer|min:1',
+            'discount_amount' => 'nullable|numeric|min:0',
         ]);
 
         // Lấy thông tin người đặt (User)
         $user = Auth::user();
         if (!$user) {
-            // Nếu chưa đăng nhập, tạo User mới (giả định)
-            $user = User::create([
-                'name' => $request->input('user_name'), // Giả định có trường này trong form
-                'email' => $request->input('user_email'),
-                'password' => bcrypt($request->input('user_password')),
-                'phone' => $request->input('user_phone'),
-            ]);
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để đặt phòng.');
         }
 
         // Chuẩn hóa định dạng DATETIME cho check_in và check_out
         $checkIn = Carbon::parse($validated['check_in'])->setTime(14, 0, 0); // Nhận phòng lúc 14:00
         $checkOut = Carbon::parse($validated['check_out'])->setTime(12, 0, 0); // Trả phòng lúc 12:00
 
+        // Lấy thông tin loại phòng
+        $roomType = RoomType::findOrFail($validated['room_type_id']);
+
+        // Tính toán lại tổng giá
+        $days = $checkOut->diffInDays($checkIn);
+        $basePrice = $roomType->price * $validated['room_quantity'] * $days;
+        $serviceTotal = 0;
+
+        $services = $request->input('services', []);
+        if (!empty($services)) {
+            $serviceQuantities = [];
+            foreach ($services as $serviceId) {
+                $quantity = $request->input("service_quantity_{$serviceId}", 1);
+                $serviceQuantities[$serviceId] = $quantity;
+                $service = ServicePlus::find($serviceId);
+                if ($service) {
+                    $serviceTotal += $service->price * $quantity;
+                }
+            }
+        }
+
+        $subTotal = $basePrice + $serviceTotal;
+        $taxFee = $subTotal * 0.08;
+        $discountAmount = $request->input('discount_amount', 0);
+        $totalPrice = $subTotal - $discountAmount + $taxFee;
+
         // Tạo Booking
         $booking = Booking::create([
             'booking_code' => 'BOOK' . time(),
             'check_in' => $checkIn,
             'check_out' => $checkOut,
-            'total_price' => $request->total_price,
+            'total_price' => $totalPrice,
             'total_guests' => $validated['total_guests'],
             'children_count' => $validated['children_count'],
             'user_id' => $user->id,
             'room_type_id' => $validated['room_type_id'],
-            'special_request' => $request->special_request, // Sử dụng special_request từ textarea
-            'service_plus_status' => $request->service_plus_status,
+            'special_request' => $request->input('special_request'),
+            'service_plus_status' => !empty($services) ? 'not_yet_paid' : 'none',
+            'discount_amount' => $discountAmount,
         ]);
+
+        // Lấy danh sách các phòng còn trống để gán
+        $allRooms = $roomType->rooms;
+        $bookedRoomIds = Booking::whereHas('rooms', function ($query) use ($roomType) {
+            $query->where('room_type_id', $roomType->id);
+        })
+            ->where('id', '!=', $booking->id) // Loại trừ chính booking hiện tại
+            ->where(function ($query) use ($checkIn, $checkOut) {
+                $query->whereBetween('check_in', [$checkIn, $checkOut])
+                    ->orWhereBetween('check_out', [$checkIn, $checkOut])
+                    ->orWhere(function ($q) use ($checkIn, $checkOut) {
+                        $q->where('check_in', '<=', $checkIn)
+                            ->where('check_out', '>=', $checkOut);
+                    });
+            })
+            ->with('rooms')
+            ->get()
+            ->flatMap(function ($booking) {
+                return $booking->rooms->pluck('id');
+            })
+            ->unique()
+            ->toArray();
+
+        $availableRooms = $allRooms->whereNotIn('id', $bookedRoomIds);
+        $roomQuantity = $validated['room_quantity'];
+
+        if ($roomQuantity > $availableRooms->count()) {
+            $booking->delete(); // Xóa booking vừa tạo nếu không đủ phòng
+            return redirect()->route('home')->with('error', 'Không đủ phòng trống để đặt.');
+        }
+
+        // Gán các phòng cho booking
+        $selectedRooms = $availableRooms->take($roomQuantity);
+        $booking->rooms()->attach($selectedRooms->pluck('id'));
+
+        // Lưu dịch vụ bổ sung
+        if (!empty($services)) {
+            $serviceData = [];
+            foreach ($services as $serviceId) {
+                $quantity = $request->input("service_quantity_{$serviceId}", 1);
+                $serviceData[$serviceId] = ['quantity' => $quantity];
+            }
+            $booking->servicePlus()->attach($serviceData);
+        }
 
         // Tạo danh sách Guest và liên kết với Booking
         $guestIds = [];
@@ -197,7 +282,7 @@ class BookingController extends Controller
         $booking = Booking::with([
             'user',
             'rooms.roomType' => function ($query) {
-                $query->with(['amenities', 'rulesAndRegulations', 'services']);
+                $query->with(['amenities', 'rulesAndRegulations', 'services', 'roomTypeImages']);
             },
             'rooms' => function ($query) {
                 $query->withTrashed();
@@ -229,9 +314,9 @@ class BookingController extends Controller
         $currentStatus = $booking->status;
         $newStatus = $request->input('status');
 
-        if ($currentStatus === 'confirmed' && $newStatus === 'cancelled') {
+        if ($currentStatus === 'pending_confirmation' && $newStatus === 'cancelled') {
             $booking->update(['status' => $newStatus]);
-            return redirect()->route('client.bookings.index')->with('success', 'Hủy đặt phòng thành công!');
+            return redirect()->route('bookings.index')->with('success', 'Hủy đặt phòng thành công!');
         }
 
         return redirect()->back()->with('error', 'Không thể thay đổi trạng thái từ ' . $currentStatus . ' sang ' . $newStatus . '.');
