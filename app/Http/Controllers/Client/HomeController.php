@@ -7,6 +7,7 @@ use App\Models\About;
 use App\Models\Faq;
 use App\Models\Introduction;
 use App\Models\Service;
+use App\Models\System;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -16,7 +17,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('clients.home');
+        $system =  System::where('is_use',1)->get();
+        // dd($system);
+        return view('clients.home',compact('system'));
     }
 
     /**

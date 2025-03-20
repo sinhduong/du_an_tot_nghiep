@@ -88,7 +88,7 @@
                                                                 class="img-thumbnail">
                                                         @else --}}
                                                         @if (!empty($item->image))
-                                                        <img src="{{ asset('storage/' . $item->image) }}" width="120px" alt="Product Image">
+                                                        <img src="{{ asset('storage/' . $item->logo) }}" width="120px" alt="Product Image">
 
                                                         {{-- <img src="{{ Storage::url($item->image) }}"
                                                              width="100" height="100" alt="{{ $item->name }}"
