@@ -20,6 +20,7 @@ class HomeController extends Controller
      */
     private function calculateAvailableRooms(RoomType $roomType, $checkIn, $checkOut)
     {
+
         // Tổng số phòng của loại phòng này
         $totalRooms = $roomType->rooms->count();
 
@@ -76,6 +77,7 @@ class HomeController extends Controller
             ->where('is_active', true)
             ->where('max_capacity', '>=', $totalPeople)
            ->paginate(4);
+        // $roomTypes = collect($roomTypes);
 
         // Tính số phòng còn trống cho từng loại phòng
         $roomTypes = $roomTypes->map(function ($roomType) use ($checkIn, $checkOut) {
