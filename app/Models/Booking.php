@@ -22,8 +22,29 @@ class Booking extends Model
         'user_id',
         'room_id',
         'guest_id',
+        'special_request',
         'service_plus_status', // Thêm trường này
+
     ];
+    protected $casts = [
+        'check_in' => 'datetime',
+        'check_out' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
+    // Accessor để lấy thời gian nhận phòng
+    public function getCheckInTimeAttribute()
+    {
+        return $this->check_in->format('H:i');
+    }
+
+    // Accessor để lấy thời gian trả phòng
+    public function getCheckOutTimeAttribute()
+    {
+        return $this->check_out->format('H:i');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

@@ -503,6 +503,9 @@
                                 <strong>Số người:</strong> Người lớn: {{ $booking->total_guests }} | Trẻ em: {{ $booking->children_count }}
                             </li>
                             <li>
+                                <strong>Yêu cầu đặc biệt:</strong> {{ $booking->special_request }}
+                            </li>
+                            <li>
                                 <strong>Trạng thái:</strong>
                                 <span class="status-badge {{ 'status-' . $booking->status }}">
                                         @php
@@ -517,7 +520,7 @@
                                             ];
                                         @endphp
                                     {{ $statusMapping[$booking->status] ?? 'Không xác định' }}
-                                    </span>
+                                </span>
                             </li>
                         </ul>
                     </div>

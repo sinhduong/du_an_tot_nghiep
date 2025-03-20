@@ -1,11 +1,30 @@
 @extends('layouts.client')
 
 @section('content')
+<section class="section-banner">
+    <div class="row banner-image">
+        <div class="banner-overlay"></div>
+        <div class="banner-section">
+            <div class="lh-banner-contain">
+                <h2>Câu hỏi thường gặp</h2>
+                <div class="lh-breadcrumb">
+                    <h5>
+                        <span class="lh-inner-breadcrumb">
+                            <a href="{{ route('home') }}">Trang chủ</a>
+                        </span>
+                        <span> / </span>
+                        <span>
+                            <a href="javascript:void(0)">câu hỏi thường gặp</a>
+                        </span>
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
     <section class="section-room padding-tb-100" data-aos="fade-up" data-aos-duration="2000" id="rooms">
         <div class="container">
-            <div class="banner">
-                <h2>Câu hỏi <span>thường gặp</span></h2>
-            </div>
+           
 
             <div class="accordion" id="faqAccordion">
                 @foreach($faqs as $index => $faq)
