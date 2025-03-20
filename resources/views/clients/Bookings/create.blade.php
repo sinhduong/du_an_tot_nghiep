@@ -26,7 +26,6 @@
 
 <section class="checkout-page padding-tb-20">
     <div class="container">
-        <!-- Thanh tiến trình -->
         <div class="progress-bar-custom mt-4">
             <div class="progress-step active" data-step="1">
                 <span class="step-circle">✔</span>
@@ -43,12 +42,11 @@
                 <span class="step-label">Hoàn tất đặt</span>
             </div>
         </div>
+
         <div class="row">
-            <!-- Phần thông tin đặt phòng (bên trái) -->
             <div class="col-lg-4 check-sidebar" data-aos="fade-up" data-aos-duration="3000">
                 <div class="lh-side-room">
                     <div class="lh-side-reservation">
-                        <!-- Chi tiết đặt phòng -->
                         <div class="lh-check-block-content mb-3">
                             <h4 class="lh-room-inner-heading">Chi tiết đặt phòng của bạn</h4>
                             <div class="row">
@@ -61,18 +59,9 @@
                                     <p>06:00 - 12:00</p>
                                 </div>
                             </div>
-                            <p><strong>Tổng thời gian lưu trú:</strong>
-                                @php
-                                    $checkInDate = Carbon\Carbon::parse($checkIn);
-                                    $checkOutDate = Carbon\Carbon::parse($checkOut);
-                                    $days = $checkOutDate->diffInDays($checkInDate);
-                                @endphp
-                                {{ $days }} đêm
-                            </p>
-                            <p><strong>Phương thức thanh toán:</strong> <span id="payment-method-display">Thanh toán tại chỗ</span></p>
+                            <p><strong>Tổng thời gian lưu trú:</strong> {{ $days }} đêm</p>
                         </div>
 
-                        <!-- Bạn đã chọn -->
                         <div class="lh-check-block-content mb-3">
                             <h4 class="lh-room-inner-heading">Bạn đã chọn</h4>
                             <p>{{ $roomQuantity }} phòng cho {{ $totalGuests + $childrenCount }} người</p>
@@ -85,26 +74,16 @@
                             @endif
                         </div>
 
-                        <!-- Tổng giá -->
                         <div class="lh-check-block-content mb-3">
                             <h4 class="lh-room-inner-heading">Tổng giá</h4>
                             <div class="d-flex justify-content-between">
                                 <p>Giá gốc</p>
-                                <p>VND {{ number_format($selectedRoomType->price * $roomQuantity * $days, 0, ',', '.') }}</p>
+                                <p>VND {{ number_format($basePrice, 0, ',', '.') }}</p>
                             </div>
                             @if (!empty($services))
                                 <div class="d-flex justify-content-between">
                                     <p>Dịch vụ bổ sung</p>
-                                    <p>
-                                        @php
-                                            $serviceTotal = 0;
-                                            foreach ($selectedRoomType->services->whereIn('id', $services) as $service) {
-                                                $quantity = request()->input("service_quantity_{$service->id}", 1);
-                                                $serviceTotal += $service->price * $quantity;
-                                            }
-                                        @endphp
-                                        VND {{ number_format($serviceTotal, 0, ',', '.') }}
-                                    </p>
+                                    <p>VND {{ number_format($serviceTotal, 0, ',', '.') }}</p>
                                 </div>
                             @endif
                             <div class="d-flex justify-content-between">
@@ -114,37 +93,26 @@
                             <hr>
                             <div class="d-flex justify-content-between">
                                 <h5 class="lh-room-inner-heading">Tổng cộng</h5>
-                                <h5 class="lh-room-inner-heading text-danger" id="total_price_display">
-                                    @php
-                                        $basePrice = $selectedRoomType->price * $roomQuantity * $days;
-                                        $subTotal = $basePrice + ($serviceTotal ?? 0);
-                                        $taxFee = $subTotal * 0.08;
-                                        $totalPrice = $subTotal + $taxFee;
-                                    @endphp
-                                    VND {{ number_format($totalPrice, 0, ',', '.') }}
-                                </h5>
+                                <h5 class="lh-room-inner-heading text-danger" id="total_price_display">VND {{ number_format($totalPrice, 0, ',', '.') }}</h5>
                             </div>
                             <p class="text-muted">Đã bao gồm thuế và phí</p>
                         </div>
 
-                        <!-- Thông tin bổ sung -->
                         <div class="lh-check-block-content">
                             <h4 class="lh-room-inner-heading">Thông tin thêm</h4>
                             <p><i class="fas fa-check-circle text-success"></i> Đã bao gồm thuế VAT</p>
                             <p><i class="fas fa-check-circle text-success"></i> 8% Thuế GTGT</p>
-                            <p>VND {{ number_format($subTotal * 0.08, 0, ',', '.') }}</p>
+                            <p>VND {{ number_format($taxFee, 0, ',', '.') }}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Phần thông tin loại phòng (bên phải) -->
             <div class="col-lg-8 check-dash" data-aos="fade-up" data-aos-duration="2000">
                 <div class="lh-checkout">
                     <div class="lh-checkout-content">
                         <div class="lh-checkout-inner">
                             <div class="lh-checkout-wrap mb-24">
-                                <!-- Tiêu đề và ảnh chính -->
                                 <div class="d-flex align-items-center mb-4">
                                     <div class="me-3">
                                         @php
@@ -213,15 +181,12 @@
                                     </div>
                                 @endif
                                 </div>
-                        </div>
 
-                            <!-- Thông tin người đặt -->
-                            <!-- Thông tin người đặt -->
-                            <div class="lh-checkout-wrap mb-24">
                                 <h3 class="lh-checkout-title">Nhập thông tin chi tiết của bạn</h3>
                                 <div class="lh-check-block-content">
-                                    <p>Vui lòng nhập thông tin của bạn để ký tự tin để nghỉ có thể hiệu quả</p>
-                                    <form action="{{ route('bookings.store') }}" method="POST" id="booking-form" enctype="multipart/form-data">
+                                    <div class="lh-checkout-wrap mb-24">
+                                        <h3 class="lh-checkout-title">Thông tin người đặt</h3>
+                                    <form action="{{ route('bookings.confirm') }}" method="POST" id="booking-form" enctype="multipart/form-data">
                                         @csrf
                                         <div class="row">
                                             <div class="col-md-6">
@@ -300,115 +265,61 @@
                                                     @enderror
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Số CMND/CCCD</label>
-                                                    <input type="text" name="id_number" class="form-control" value="{{ Auth::user()->id_number ?? old('id_number') }}" placeholder="Nhập số CMND/CCCD" />
-                                                    @error('id_number')
-                                                        <small class="text-danger">{{ $message }}</small>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Ảnh CMND/CCCD</label>
-                                                    <input type="file" name="id_photo" class="form-control" accept="image/*" />
-                                                    @if (Auth::user()->id_photo)
-                                                        <small class="form-text text-muted">Ảnh hiện tại: <a href="{{ Storage::url(Auth::user()->id_photo) }}" target="_blank">Xem ảnh</a></small>
-                                                    @endif
-                                                    @error('id_photo')
-                                                        <small class="text-danger">{{ $message }}</small>
-                                                    @enderror
-                                                </div>
-                                            </div>
+                                        </div>
                                         </div>
 
                                         <!-- Thông tin người ở -->
                                         <div class="lh-checkout-wrap mb-24">
                                             <h3 class="lh-checkout-title">Thông tin người ở</h3>
                                             <div class="lh-check-block-content" id="guest-list">
-                                                <div class="guest-form" data-index="0">
-                                                    <h5>Người ở 1</h5>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Họ và tên *</label>
-                                                                <input type="text" name="guests[0][name]" class="form-control" placeholder="Nhập họ và tên" required />
-                                                                @error('guests.0.name')
-                                                                    <small class="text-danger">{{ $message }}</small>
-                                                                @enderror
+                                                @for ($i = 0; $i < $totalGuests + $childrenCount; $i++)
+                                                    <div class="guest-form" data-index="{{ $i }}">
+                                                        <h5>Người ở {{ $i + 1 }}</h5>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Họ và tên *</label>
+                                                                    <input type="text" name="guests[{{$i}}][name]" class="form-control" placeholder="Nhập họ và tên" required />
+                                                                    @error("guests.{$i}.name")
+                                                                        <small class="text-danger">{{ $message }}</small>
+                                                                    @enderror
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Số CMND/CCCD</label>
-                                                                <input type="text" name="guests[0][id_number]" class="form-control" placeholder="Nhập số CMND/CCCD" />
-                                                                @error('guests.0.id_number')
-                                                                    <small class="text-danger">{{ $message }}</small>
-                                                                @enderror
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Số CMND/CCCD</label>
+                                                                    <input type="text" name="guests[{{$i}}][id_number]" class="form-control" placeholder="Nhập số CMND/CCCD" />
+                                                                    @error("guests.{$i}.id_number")
+                                                                        <small class="text-danger">{{ $message }}</small>
+                                                                    @enderror
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Ngày sinh</label>
-                                                                <input type="date" name="guests[0][birth_date]" class="form-control" />
-                                                                @error('guests.0.birth_date')
-                                                                    <small class="text-danger">{{ $message }}</small>
-                                                                @enderror
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Ngày sinh</label>
+                                                                    <input type="date" name="guests[{{$i}}][birth_date]" class="form-control" />
+                                                                    @error("guests.{$i}.birth_date")
+                                                                        <small class="text-danger">{{ $message }}</small>
+                                                                    @enderror
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Giới tính</label>
-                                                                <select name="guests[0][gender]" class="form-control">
-                                                                    <option value="" disabled selected>Chọn giới tính</option>
-                                                                    <option value="male">Nam</option>
-                                                                    <option value="female">Nữ</option>
-                                                                    <option value="other">Khác</option>
-                                                                </select>
-                                                                @error('guests.0.gender')
-                                                                    <small class="text-danger">{{ $message }}</small>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Số điện thoại</label>
-                                                                <input type="text" name="guests[0][phone]" class="form-control" placeholder="Nhập số điện thoại" />
-                                                                @error('guests.0.phone')
-                                                                    <small class="text-danger">{{ $message }}</small>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Email</label>
-                                                                <input type="email" name="guests[0][email]" class="form-control" placeholder="Nhập email" />
-                                                                @error('guests.0.email')
-                                                                    <small class="text-danger">{{ $message }}</small>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Quan hệ với người đặt</label>
-                                                                <input type="text" name="guests[0][relationship]" class="form-control" placeholder="Ví dụ: bạn, gia đình" />
-                                                                @error('guests.0.relationship')
-                                                                    <small class="text-danger">{{ $message }}</small>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Ảnh CMND/CCCD</label>
-                                                                <input type="file" name="guests[0][id_photo]" class="form-control" accept="image/*" />
-                                                                @error('guests.0.id_photo')
-                                                                    <small class="text-danger">{{ $message }}</small>
-                                                                @enderror
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Giới tính</label>
+                                                                    <select name="guests[{{$i}}][gender]" class="form-control">
+                                                                        <option value="" disabled selected>Chọn giới tính</option>
+                                                                        <option value="male">Nam</option>
+                                                                        <option value="female">Nữ</option>
+                                                                        <option value="other">Khác</option>
+                                                                    </select>
+                                                                    @error("guests.{$i}.gender")
+                                                                        <small class="text-danger">{{ $message }}</small>
+                                                                    @enderror
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                @endfor
                                             </div>
                                         </div>
 
@@ -428,72 +339,43 @@
                                             </div>
                                         </div>
 
-
-
                                         <!-- Thông tin đặt phòng (ẩn) -->
-                                        <input type="hidden" name="check_in" id="check_in" value="{{ $checkIn }}">
-                                        <input type="hidden" name="check_out" id="check_out" value="{{ $checkOut }}">
-                                        <input type="hidden" name="total_guests" id="total_guests" value="{{ $totalGuests }}">
-                                        <input type="hidden" name="children_count" id="children_count" value="{{ $childrenCount }}">
-                                        <input type="hidden" name="room_quantity" id="room_quantity" value="{{ $roomQuantity }}">
-                                        <input type="hidden" name="room_type_id" id="room_type_id" value="{{ $selectedRoomType->id }}">
+                                        <input type="hidden" name="check_in" value="{{ $checkIn }}">
+                                        <input type="hidden" name="check_out" value="{{ $checkOut }}">
+                                        <input type="hidden" name="total_guests" value="{{ $totalGuests }}">
+                                        <input type="hidden" name="children_count" value="{{ $childrenCount }}">
+                                        <input type="hidden" name="room_quantity" value="{{ $roomQuantity }}">
+                                        <input type="hidden" name="room_type_id" value="{{ $selectedRoomType->id }}">
                                         <input type="hidden" name="total_price" id="total_price" value="{{ $totalPrice }}">
-                                        <input type="hidden" name="service_plus_status" id="service_plus_status" value="{{ !empty($services) ? 'not_yet_paid' : 'none' }}">
                                         <input type="hidden" name="discount_amount" id="discount_amount" value="0">
+                                        <input type="hidden" name="base_price" value="{{ $basePrice }}">
+                                        <input type="hidden" name="service_total" value="{{ $serviceTotal }}">
                                         @foreach ($services as $serviceId)
                                             <input type="hidden" name="services[]" value="{{ $serviceId }}">
                                             <input type="hidden" name="service_quantity_{{ $serviceId }}" value="{{ request()->input("service_quantity_{$serviceId}", 1) }}">
                                         @endforeach
 
-                                        <!-- Thanh toán -->
-                                        <div class="lh-checkout-wrap mb-24">
-                                            <h3 class="lh-checkout-title">Phương thức thanh toán</h3>
-                                            <div class="lh-check-block-content">
-                                                <div class="form-check">
-                                                    <input class="form-check-input payment-method" type="radio" name="payment_method" id="payment1" value="on_site" checked>
-                                                    <label class="form-check-label" for="payment1">
-                                                        Thanh toán tại chỗ (Tiền mặt)
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input payment-method" type="radio" name="payment_method" id="payment2" value="online">
-                                                    <label class="form-check-label" for="payment2">
-                                                        Thanh toán trực tuyến
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Lịch thanh toán -->
-                                        <div class="lh-checkout-wrap mb-24">
-                                            <h3 class="lh-checkout-title">Thời gian ở của bạn</h3>
-                                            <div class="lh-check-block-content">
-                                                <p><i class="fas fa-check-circle text-success"></i> Phòng sẽ sẵn sàng từ 14:00 cho đến 21:00</p>
-                                                <p><i class="fas fa-users"></i> Lễ tân 24 giờ - Luôn có trợ giúp mỗi khi bạn cần!</p>
-                                            </div>
-                                        </div>
-
                                         <!-- Yêu cầu đặc biệt -->
                                         <div class="lh-checkout-wrap mb-24">
-                                            <h3 class="lh-checkout-title">Thêm yêu cầu đặc biệt (không bắt buộc)</h3>
+                                            <h3 class="lh-checkout-title">Yêu cầu đặc biệt (không bắt buộc)</h3>
                                             <div class="lh-check-block-content">
-                                                <p>Vui lòng ghi chú yêu cầu của bạn tại đây.</p>
                                                 <textarea class="form-control" name="special_request" rows="3" placeholder="Nhập yêu cầu của bạn"></textarea>
                                             </div>
                                         </div>
-                                    <!-- Tùy chọn đặc biệt -->
-                                    <div class="lh-checkout-wrap mb-24">
-                                        <h3 class="lh-checkout-title">Điều khoản và điều kiện</h3>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="terms" id="terms" required>
-                                            <label class="form-check-label" for="terms">
-                                                Tôi đa đọc và đồng ý với các điều khoản và điều kiện.
-                                            </label>
+
+                                        <!-- Điều khoản và điều kiện -->
+                                        <div class="lh-checkout-wrap mb-24">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="terms" id="terms" required>
+                                                <label class="form-check-label" for="terms">
+                                                    Tôi đã đọc và đồng ý với các điều khoản và điều kiện.
+                                                </label>
+                                            </div>
                                         </div>
-                                    </div>
+
                                         <!-- Nút tiếp theo -->
                                         <div class="text-end">
-                                            <button type="submit" class="btn btn-primary">Tiếp theo: Chi tiết cuối cùng</button>
+                                            <button type="submit" class="btn btn-primary">Tiếp theo: Hoàn tất đặt phòng</button>
                                         </div>
                                     </form>
                                 </div>
@@ -509,14 +391,13 @@
 <!-- Thêm jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- Script xử lý mã giảm giá và hiển thị phương thức thanh toán -->
+<!-- Script xử lý mã giảm giá -->
 <script>
     $(document).ready(function () {
-        // Xử lý mã giảm giá
         $('#apply-promotion').on('click', function () {
             const promotionCode = $('#promotion_code').val();
-            const basePrice = {{ $selectedRoomType->price * $roomQuantity * $days }};
-            const serviceTotal = {{ $serviceTotal ?? 0 }};
+            const basePrice = {{ $basePrice }};
+            const serviceTotal = {{ $serviceTotal }};
             const subTotal = basePrice + serviceTotal;
             const taxFee = subTotal * 0.08;
             let totalPrice = subTotal + taxFee;
@@ -563,23 +444,13 @@
                 $('#promotion-message').text('Vui lòng nhập mã giảm giá.').css('color', 'red');
             }
         });
-
-        // Hiển thị phương thức thanh toán được chọn
-        $('.payment-method').on('change', function () {
-            const method = $(this).val();
-            if (method === 'on_site') {
-                $('#payment-method-display').text('Thanh toán tại chỗ (Tiền mặt)');
-            } else {
-                $('#payment-method-display').text('Thanh toán trực tuyến');
-            }
-        });
     });
 </script>
 
-<!-- Thêm Font Awesome cho các biểu tượng -->
+<!-- Thêm Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-<!-- CSS tùy chỉnh cho thanh tiến trình -->
+<!-- CSS tùy chỉnh -->
 <style>
     .progress-bar-custom {
         display: flex;
@@ -587,7 +458,6 @@
         justify-content: center;
         margin-bottom: 30px;
     }
-
     .progress-step {
         display: flex;
         flex-direction: column;
@@ -595,7 +465,6 @@
         position: relative;
         width: 120px;
     }
-
     .progress-step .step-circle {
         width: 30px;
         height: 30px;
@@ -608,21 +477,17 @@
         font-size: 16px;
         margin-bottom: 5px;
     }
-
     .progress-step.active .step-circle {
         background-color: #007bff;
     }
-
     .progress-step:not(.active) .step-circle {
         background-color: #ccc;
     }
-
     .progress-step .step-label {
         font-size: 14px;
         color: #333;
         text-align: center;
     }
-
     .progress-line {
         flex: 1;
         height: 2px;

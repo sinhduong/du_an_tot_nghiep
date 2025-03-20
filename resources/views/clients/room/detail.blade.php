@@ -77,7 +77,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="lh-room-details-review">
+                        {{-- <div class="lh-room-details-review">
                             <div class="lh-room-review">
                                 <h4 class="lh-room-inner-heading">Thêm Đánh Giá</h4>
                                 <p>Vui lòng chia sẻ trải nghiệm của bạn về phòng này.</p>
@@ -111,7 +111,7 @@
                                     </button>
                                 </div>
                             </form>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
