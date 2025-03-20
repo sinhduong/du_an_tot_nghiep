@@ -144,74 +144,75 @@
                     <div class="lh-checkout-content">
                         <div class="lh-checkout-inner">
                             <div class="lh-checkout-wrap mb-24">
+                                <!-- Tiêu đề và ảnh chính -->
+                                <div class="d-flex align-items-center mb-4">
+                                    <div class="me-3">
+                                        @php
+                                            $mainImage = $selectedRoomType->roomTypeImages->where('is_main', true)->first();
+                                        @endphp
+                                        @if ($mainImage)
+                                            <img src="{{ Storage::url($mainImage->image) }}" alt="{{ $selectedRoomType->name }}" class="rounded" style="width: 150px; height: 100px; object-fit: cover; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                                        @else
+                                            <img src="{{ asset('images/default-room.jpg') }}" alt="Default Room Image" class="rounded" style="width: 150px; height: 100px; object-fit: cover; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <h3 class="lh-checkout-title mb-1">{{ $selectedRoomType->name }}</h3>
+                                        <p class="text-muted mb-0">
+                                            <i class="fas fa-ruler-combined me-1"></i> {{ $selectedRoomType->size }} m² |
+                                            <i class="fas fa-bed me-1"></i>
+                                            @php
+                                                $bedTypeMapping = [
+                                                    'single' => 'Giường đơn',
+                                                    'double' => 'Giường đôi',
+                                                    'queen' => 'Giường Queen',
+                                                    'king' => 'Giường King',
+                                                    'bunk' => 'Giường tầng',
+                                                    'sofa' => 'Giường sofa',
+                                                ];
+                                            @endphp
+                                            {{ $bedTypeMapping[$selectedRoomType->bed_type] ?? 'Không xác định' }} |
+                                            <i class="fas fa-users me-1"></i> Tối đa {{ $selectedRoomType->max_capacity }} người
+                                        </p>
+                                    </div>
+                                </div>
 
-                               <!-- Tiêu đề và ảnh chính -->
-                               <div class="d-flex align-items-center mb-4">
-                                <div class="me-3">
-                                    @php
-                                        $mainImage = $selectedRoomType->roomTypeImages->where('is_main', true)->first();
-                                    @endphp
-                                    @if ($mainImage)
-                                        <img src="{{ Storage::url($mainImage->image) }}" alt="{{ $selectedRoomType->name }}" class="rounded" style="width: 150px; height: 100px; object-fit: cover; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                                <!-- Mô tả loại phòng -->
+                                @if ($selectedRoomType->description)
+                                    <div class="lh-check-block-content mb-4">
+                                        <h5 class="lh-room-inner-heading">Mô tả</h5>
+                                        <p class="text-muted">{{ $selectedRoomType->description }}</p>
+                                    </div>
+                                @endif
+
+                                <!-- Tiện nghi -->
+                                <div class="lh-check-block-content mb-4">
+                                    <h5 class="lh-room-inner-heading">Tiện nghi</h5>
+                                    @if ($selectedRoomType->amenities->isNotEmpty())
+                                        <div class="row">
+                                            @foreach ($selectedRoomType->amenities as $amenity)
+                                                <div class="col-md-6 mb-2">
+                                                    <p class="mb-0"><i class="fas fa-check-circle text-success me-2"></i> {{ $amenity->name }}</p>
+                                                </div>
+                                            @endforeach
+                                        </div>
                                     @else
-                                        <img src="{{ asset('images/default-room.jpg') }}" alt="Default Room Image" class="rounded" style="width: 150px; height: 100px; object-fit: cover; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                                        <p class="text-muted"><i class="fas fa-info-circle me-2"></i> Chưa có tiện nghi</p>
                                     @endif
                                 </div>
-                                <div>
-                                    <h3 class="lh-checkout-title mb-1">{{ $selectedRoomType->name }}</h3>
-                                    <p class="text-muted mb-0">
-                                        <i class="fas fa-ruler-combined me-1"></i> {{ $selectedRoomType->size }} m² |
-                                        <i class="fas fa-bed me-1"></i> @php
-                                        $bedTypeMapping = [
-                                            'single' => 'Giường đơn',
-                                            'double' => 'Giường đôi',
-                                            'queen' => 'Giường Queen',
-                                            'king' => 'Giường King',
-                                            'bunk' => 'Giường tầng',
-                                            'sofa' => 'Giường sofa',
-                                        ];
-                                    @endphp
-                                    {{ $bedTypeMapping[$selectedRoomType->bed_type] ?? 'Không xác định' }} |
-                                        <i class="fas fa-users me-1"></i> Tối đa {{ $selectedRoomType->max_capacity }} người
-                                    </p>
-                                </div>
-                            </div>
 
-                            <!-- Mô tả loại phòng -->
-                            @if ($selectedRoomType->description)
-                                <div class="lh-check-block-content mb-4">
-                                    <h5 class="lh-room-inner-heading">Mô tả</h5>
-                                    <p class="text-muted">{{ $selectedRoomType->description }}</p>
-                                </div>
-                            @endif
-
-                            <!-- Tiện nghi -->
-                            <div class="lh-check-block-content mb-4">
-                                <h5 class="lh-room-inner-heading">Tiện nghi</h5>
-                                @if ($selectedRoomType->amenities->isNotEmpty())
-                                    <div class="row">
-                                        @foreach ($selectedRoomType->amenities as $amenity)
-                                            <div class="col-md-6 mb-2">
-                                                <p class="mb-0"><i class="fas fa-check-circle text-success me-2"></i> {{ $amenity->name }}</p>
-                                            </div>
-                                        @endforeach
+                                <!-- Quy định -->
+                                @if ($selectedRoomType->rulesAndRegulations->isNotEmpty())
+                                    <div class="lh-check-block-content mb-4">
+                                        <h5 class="lh-room-inner-heading">Quy định</h5>
+                                        <ul class="list-unstyled">
+                                            @foreach ($selectedRoomType->rulesAndRegulations as $rule)
+                                                <li class="mb-2"><i class="fas fa-exclamation-circle text-warning me-2"></i> {{ $rule->name }}</li>
+                                            @endforeach
+                                        </ul>
                                     </div>
-                                @else
-                                    <p class="text-muted"><i class="fas fa-info-circle me-2"></i> Chưa có tiện nghi</p>
                                 @endif
-                            </div>
-
-                            <!-- Quy định -->
-                            @if ($selectedRoomType->rulesAndRegulations->isNotEmpty())
-                                <div class="lh-check-block-content mb-4">
-                                    <h5 class="lh-room-inner-heading">Quy định</h5>
-                                    <ul class="list-unstyled">
-                                        @foreach ($selectedRoomType->rulesAndRegulations as $rule)
-                                            <li class="mb-2"><i class="fas fa-exclamation-circle text-warning me-2"></i> {{ $rule->name }}</li>
-                                        @endforeach
-                                    </ul>
                                 </div>
-                            @endif
                         </div>
 
                             <!-- Thông tin người đặt -->
@@ -225,7 +226,7 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Họ (tiếng Anh) *</label>
+                                                    <label class="form-label">Họ *</label>
                                                     <input type="text" name="first_name" class="form-control" value="{{ Auth::user()->first_name ?? old('first_name') }}" placeholder="Nhập họ của bạn" required />
                                                     @error('first_name')
                                                         <small class="text-danger">{{ $message }}</small>
@@ -234,7 +235,7 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Tên (tiếng Anh) *</label>
+                                                    <label class="form-label">Tên *</label>
                                                     <input type="text" name="last_name" class="form-control" value="{{ Auth::user()->last_name ?? old('last_name') }}" placeholder="Nhập tên của bạn" required />
                                                     @error('last_name')
                                                         <small class="text-danger">{{ $message }}</small>
@@ -427,21 +428,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- Tùy chọn đặc biệt -->
-                                        <div class="mb-3">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="special_request" id="special_request">
-                                                <label class="form-check-label" for="special_request">
-                                                    Có, bạn muốn nhận được chương trình điểm để tích lũy điểm thưởng
-                                                </label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="terms" id="terms" required>
-                                                <label class="form-check-label" for="terms">
-                                                    Chúng tôi sẽ sử dụng thông tin của bạn để đặt vé và đảm bảo đặt phòng của bạn có thể được xác nhận.
-                                                </label>
-                                            </div>
-                                        </div>
+
 
                                         <!-- Thông tin đặt phòng (ẩn) -->
                                         <input type="hidden" name="check_in" id="check_in" value="{{ $checkIn }}">
@@ -481,8 +468,8 @@
                                         <div class="lh-checkout-wrap mb-24">
                                             <h3 class="lh-checkout-title">Thời gian ở của bạn</h3>
                                             <div class="lh-check-block-content">
-                                                <p><i class="fas fa-check-circle text-success"></i> Phòng sẽ sẵn sàng từ 14:00</p>
-                                                <p><i class="fas fa-users"></i> Lên tàu 24 giờ - Lưu trữ có giới hạn khiến bạn cần!</p>
+                                                <p><i class="fas fa-check-circle text-success"></i> Phòng sẽ sẵn sàng từ 14:00 cho đến 21:00</p>
+                                                <p><i class="fas fa-users"></i> Lễ tân 24 giờ - Luôn có trợ giúp mỗi khi bạn cần!</p>
                                             </div>
                                         </div>
 
@@ -494,7 +481,16 @@
                                                 <textarea class="form-control" name="special_request" rows="3" placeholder="Nhập yêu cầu của bạn"></textarea>
                                             </div>
                                         </div>
-
+                                    <!-- Tùy chọn đặc biệt -->
+                                    <div class="lh-checkout-wrap mb-24">
+                                        <h3 class="lh-checkout-title">Điều khoản và điều kiện</h3>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="terms" id="terms" required>
+                                            <label class="form-check-label" for="terms">
+                                                Tôi đa đọc và đồng ý với các điều khoản và điều kiện.
+                                            </label>
+                                        </div>
+                                    </div>
                                         <!-- Nút tiếp theo -->
                                         <div class="text-end">
                                             <button type="submit" class="btn btn-primary">Tiếp theo: Chi tiết cuối cùng</button>
