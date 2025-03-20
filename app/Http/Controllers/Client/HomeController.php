@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Models\Promotion;
 use Carbon\Carbon;
 use App\Models\Faq;
 use App\Models\About;
@@ -85,7 +86,11 @@ class HomeController extends Controller
             return $roomType->available_rooms > 0;
         });
 
-        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount'));
+        $promotions = Promotion::where('status', 'active')
+            ->where('end_date', '>=', now())
+            ->get();
+
+        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'promotions'));
     }
 
     /**
