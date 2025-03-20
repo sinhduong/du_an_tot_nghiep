@@ -275,11 +275,11 @@ Route::prefix('bookings')
     ->group(function () {
         Route::get('/', [ClientBookingController::class, 'index'])->name('index');
         Route::get('/create', [ClientBookingController::class, 'create'])->name('create');
-        Route::post('/store', [ClientBookingController::class, 'store'])->name('store');
+        Route::post('/confirm', [ClientBookingController::class, 'confirm'])->name('confirm'); // Chuyển từ create sang confirm
+        Route::post('/store', [ClientBookingController::class, 'store'])->name('store'); // Lưu dữ liệu từ confirm
         Route::get('{id}/show', [ClientBookingController::class, 'show'])->name('show');
         Route::get('{id}/edit', [ClientBookingController::class, 'edit'])->name('edit');
         Route::put('{id}/update', [ClientBookingController::class, 'update'])->name('update');
         Route::delete('{id}/destroy', [ClientBookingController::class, 'destroy'])->name('destroy');
-
-        Route::post('/check-promotion', [BookingController::class, 'checkPromotion'])->name('check-promotion');
+        Route::post('/check-promotion', [ClientBookingController::class, 'checkPromotion'])->name('check-promotion');
     });

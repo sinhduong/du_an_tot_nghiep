@@ -26,7 +26,7 @@
     </div>
 </section>
 
-<section class="booking-details padding-tb-20">
+<section class="booking-details padding-tb-20 mt-5">
     <div class="container">
         <div class="row">
             <!-- Phần thông tin đặt phòng (bên trái) -->
@@ -49,11 +49,9 @@
                             </div>
                             <p><strong>Tổng thời gian lưu trú:</strong>
                                 @php
-                                    // Lấy ngày (bỏ qua giờ) để tính số ngày
                                     $checkInDate = $booking->check_in->startOfDay();
                                     $checkOutDate = $booking->check_out->startOfDay();
                                     $days = $checkOutDate->diffInDays($checkInDate);
-                                    // Nếu cùng ngày, tính là 1 đêm (theo chính sách)
                                     $nights = $days == 0 ? 1 : $days;
                                 @endphp
                                 {{ $nights }} đêm
@@ -118,9 +116,9 @@
                             @else
                                 <p>Không có thông tin loại phòng.</p>
                             @endif
-                            @if ($booking->servicePlus->isNotEmpty())
-                                <p><strong>Dịch vụ bổ sung:</strong></p>
-                                @foreach ($booking->servicePlus as $service)
+                            @if ($booking->rooms->first()->roomType->services->isNotEmpty())
+                                <p><strong>Dịch vụ bổ sung :</strong></p>
+                                @foreach ($booking->rooms->first()->roomType->services as $service)
                                     <p>{{ $service->name }} ({{ \App\Helpers\FormatHelper::FormatPrice($service->price) }})</p>
                                 @endforeach
                             @endif
@@ -132,31 +130,48 @@
                             <div class="d-flex justify-content-between">
                                 <p>Giá gốc</p>
                                 @php
-                                    $days = $booking->check_out->diffInDays($booking->check_in);
+                                    $checkInDate = $booking->check_in->startOfDay();
+                                    $checkOutDate = $booking->check_out->startOfDay();
+                                    $days = $checkOutDate->diffInDays($checkInDate);
+                                    $days = $days == 0 ? 1 : $days; // Nếu cùng ngày, tính là 1 đêm
                                     $basePrice = ($booking->rooms->isNotEmpty() && $booking->rooms->first() && $booking->rooms->first()->roomType)
                                         ? $booking->rooms->first()->roomType->price * $booking->rooms->count() * $days
                                         : 0;
                                 @endphp
-                                <p>VND {{ number_format($basePrice, 0, ',', '.') }}</p>
+                                <p>{{ \App\Helpers\FormatHelper::FormatPrice($basePrice) }}</p>
                             </div>
-                            @if ($booking->servicePlus->isNotEmpty())
+                            @if ($booking->rooms->isNotEmpty() && $booking->rooms->first() && $booking->rooms->first()->roomType && $booking->rooms->first()->roomType->services->isNotEmpty())
                                 <div class="d-flex justify-content-between">
                                     <p>Dịch vụ bổ sung</p>
-                                    @php
-                                        $serviceTotal = $booking->servicePlus->sum('price');
-                                    @endphp
-                                    <p>VND {{ number_format($serviceTotal, 0, ',', '.') }}</p>
+                                    <div>
+                                        @php
+                                            $serviceTotal = 0;
+                                        @endphp
+                                        @foreach ($booking->rooms->first()->roomType->services as $service)
+                                            @php
+                                                $servicePrice = $service->price; // Giá dịch vụ không nhân với số lượng vì đây là dịch vụ đi kèm với loại phòng
+                                                $serviceTotal += $servicePrice;
+                                            @endphp
+
+                                        @endforeach
+                                        <p class="font-weight-bold"> {{ \App\Helpers\FormatHelper::FormatPrice($serviceTotal) }}</p>
+                                    </div>
                                 </div>
                             @endif
                             <div class="d-flex justify-content-between">
                                 <p>Giảm giá (Mã khuyến mãi)</p>
-                                <p>VND {{ number_format($booking->discount_amount ?? 0, 0, ',', '.') }}</p>
+                                <p>VND {{ \App\Helpers\FormatHelper::FormatPrice($booking->discount_amount) }}</p>
                             </div>
                             <hr>
                             <div class="d-flex justify-content-between">
                                 <h5 class="lh-room-inner-heading">Tổng cộng</h5>
+                                @php
+                                    $subTotal = $basePrice + ($serviceTotal ?? 0);
+                                    $taxFee = $subTotal * 0.08; // Thuế 8%
+                                    $totalPrice = $subTotal - ($booking->discount_amount ?? 0) + $taxFee;
+                                @endphp
                                 <h5 class="lh-room-inner-heading text-danger">
-                                    VND {{ number_format($booking->total_price, 0, ',', '.') }}
+                                     {{ \App\Helpers\FormatHelper::FormatPrice($totalPrice) }}
                                 </h5>
                             </div>
                             <p class="text-muted">Đã bao gồm thuế và phí</p>
@@ -170,7 +185,7 @@
                             @php
                                 $subTotal = $basePrice + ($serviceTotal ?? 0);
                             @endphp
-                            <p>VND {{ number_format($subTotal * 0.08, 0, ',', '.') }}</p>
+                            <p> {{ \App\Helpers\FormatHelper::FormatPrice($subTotal * 0.08) }}</p>
                         </div>
                     </div>
                 </div>
@@ -190,7 +205,7 @@
                                             $roomType = $booking->rooms->first()->roomType;
                                             $mainImage = $roomType->roomTypeImages->where('is_main', true)->first();
                                         @endphp
-                                        <div class="d-flex align-items-center mb-4">
+                                        <div class="d-flex align-items-center mb-3">
                                             <div class="me-3">
                                                 @if ($mainImage)
                                                     <img src="{{ Storage::url($mainImage->image) }}" alt="{{ $roomType->name }}" class="rounded" style="width: 150px; height: 100px; object-fit: cover; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
@@ -381,7 +396,7 @@
                                 </div>
                             @endif
 
-                           <!-- Hành động -->
+                            <!-- Hành động -->
                             <div class="lh-checkout-wrap mb-24">
                                 <h3 class="lh-checkout-title">Hành động</h3>
                                 <div class="lh-check-block-content">
