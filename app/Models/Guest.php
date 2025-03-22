@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Guest extends Model
 {
@@ -24,5 +25,16 @@ class Guest extends Model
     public function bookings()
     {
         return $this->belongsToMany(Booking::class, 'booking_guest', 'guest_id', 'booking_id');
+    }
+    // Xóa file ảnh khi xóa guest
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($guest) {
+            if ($guest->id_photo) {
+                Storage::disk('public')->delete($guest->id_photo);
+            }
+        });
     }
 }

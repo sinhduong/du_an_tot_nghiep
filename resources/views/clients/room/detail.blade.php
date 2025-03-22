@@ -53,10 +53,8 @@
                                     <div class="col-lg-4 lh-cols-room">
                                         <ul>
                                             <li><code>*</code>Chưa có tiện nghi</li>
-
                                         </ul>
                                     </div>
-
                                 @endif
                             </div>
                         </div>
@@ -70,104 +68,80 @@
                                                 <li><code>*</code>{{ $rule->name }}</li>
                                             @endforeach
                                         @else
-
                                             <li><code>*</code>Chưa có quy tắc & quy định</li>
                                         @endif
                                     </ul>
                                 </div>
                             </div>
                         </div>
-                        {{-- <div class="lh-room-details-review">
-                            <div class="lh-room-review">
-                                <h4 class="lh-room-inner-heading">Thêm Đánh Giá</h4>
-                                <p>Vui lòng chia sẻ trải nghiệm của bạn về phòng này.</p>
-                            </div>
-                            <form action="#">
-                                <div class="lh-room-review-form">
-                                    <label>Tên của bạn</label>
-                                    <input type="text" name="firstname" class="review-form-control" required>
-                                </div>
-                                <div class="lh-room-review-form">
-                                    <label>Email của bạn</label>
-                                    <input type="email" name="email" class="review-form-control" required>
-                                </div>
-                                <div class="lh-room-review-form">
-                                    <label>Bình luận</label>
-                                    <textarea class="review-form-control"></textarea>
-                                </div>
-                                <div class="lh-room-review-form">
-                                    <label>Đánh giá</label>
-                                    <div class="lh-review-form-rating">
-                                        <i class="ri-star-fill"></i>
-                                        <i class="ri-star-fill"></i>
-                                        <i class="ri-star-fill"></i>
-                                        <i class="ri-star-fill"></i>
-                                        <i class="ri-star-fill"></i>
-                                    </div>
-                                </div>
-                                <div class="lh-room-review-buttons">
-                                    <button class="lh-buttons result-placeholder" type="submit">
-                                        Gửi Đánh Giá
-                                    </button>
-                                </div>
-                            </form>
-                        </div> --}}
                     </div>
                 </div>
             </div>
+
             <div class="col-lg-4" data-aos="fade-up" data-aos-duration="3000">
                 <div class="lh-side-room">
                     <h4 class="lh-room-inner-heading">Đặt Phòng</h4>
                     <div class="lh-side-reservation">
+                        @if (session('warning'))
+                            <div class="alert alert-warning">
+                                {{ session('warning') }}
+                            </div>
+                        @endif
                         <form action="{{ route('bookings.create') }}" method="GET" id="booking-form">
+                            <!-- Date Range Picker -->
                             <div class="lh-side-reservation-from">
-                                <label>Nhận Phòng</label>
-                                <div class="calendar" id="date_1">
-                                    <input type="text" name="check_in" class="reservation-form-control datepicker" value="{{ $checkIn }}" readonly>
+                                <label>Ngày nhận phòng - trả phòng</label>
+                                <div class="calendar">
+                                    <input type="text" id="booking_date_range" class="reservation-form-control" value="{{ $checkIn }} - {{ $checkOut }}" readonly>
                                     <i class="ri-calendar-line"></i>
+                                    <input type="hidden" name="check_in" id="booking_check_in" value="{{ $checkIn }}">
+                                    <input type="hidden" name="check_out" id="booking_check_out" value="{{ $checkOut }}">
                                 </div>
                             </div>
+
+                            <!-- Counter for Rooms, Adults, and Children -->
                             <div class="lh-side-reservation-from">
-                                <label>Trả Phòng</label>
-                                <div class="calendar" id="date_2">
-                                    <input type="text" name="check_out" class="reservation-form-control datepicker" value="{{ $checkOut }}" readonly>
-                                    <i class="ri-calendar-line"></i>
-                                </div>
-                            </div>
-                            <div class="lh-side-reservation-from">
-                                <label>Số Phòng</label>
-                                <div class="custom-select reservation-form-control">
-                                    <select name="room_quantity" required>
-                                        @for ($i = 1; $i <= $roomType->available_rooms; $i++)
-                                            <option value="{{ $i }}">{{ $i }}</option>
-                                        @endfor
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="lh-side-reservation-from">
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <label>Người Lớn</label>
-                                        <div class="custom-select reservation-form-control">
-                                            <select name="total_guests" required>
-                                                @for ($i = 1; $i <= $roomType->max_capacity; $i++)
-                                                    <option value="{{ $i }}" {{ $i == $totalGuests ? 'selected' : '' }}>{{ $i }}</option>
-                                                @endfor
-                                            </select>
+                                <label>Số lượng</label>
+                                <div class="counter-box">
+
+                                    <!-- Adults -->
+                                    <div class="counter-item">
+                                        <label>Người lớn</label>
+                                        <div class="counter-controls">
+                                            <button type="button" class="counter-btn minus" data-target="total_guests">-</button>
+                                            <input type="text" name="total_guests" class="counter-input" value="{{ $totalGuests }}" readonly>
+                                            <button type="button" class="counter-btn plus" data-target="total_guests">+</button>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6">
-                                        <label>Trẻ Em</label>
-                                        <div class="custom-select reservation-form-control">
-                                            <select name="children_count" required>
-                                                @for ($i = 0; $i <= $roomType->max_capacity - $totalGuests; $i++)
-                                                    <option value="{{ $i }}" {{ $i == $childrenCount ? 'selected' : '' }}>{{ $i }}</option>
-                                                @endfor
-                                            </select>
+                                    <!-- Children -->
+                                    <div class="counter-item">
+                                        <label>Trẻ em</label>
+                                        <div class="counter-controls">
+                                            <button type="button" class="counter-btn minus" data-target="children_count">-</button>
+                                            <input type="text" name="children_count" class="counter-input" value="{{ $childrenCount }}" readonly>
+                                            <button type="button" class="counter-btn plus" data-target="children_count">+</button>
+                                        </div>
+                                    </div>
+                                     <!-- Rooms -->
+                                     <div class="counter-item">
+                                        <label>Phòng</label>
+                                        <div class="counter-controls">
+                                            <button type="button" class="counter-btn minus" data-target="room_quantity">-</button>
+                                            <input type="text" name="room_quantity" class="counter-input" value="{{ $roomCount }}" readonly>
+                                            <button type="button" class="counter-btn plus" data-target="room_quantity">+</button>
                                         </div>
                                     </div>
                                 </div>
+                                @if ($childrenCount > $roomType->children_free_limit)
+                                    <small class="note text-danger">Số trẻ em vượt quá giới hạn miễn phí ({{ $roomType->children_free_limit }}). Phí bổ sung có thể được áp dụng.</small>
+                                @endif
+                                <small class="note">Mang theo động vật được xem là người lớn</small>
+                                <small class="note">
+                                    <a href="#">Đọc thêm về chính sách đặt vé và lịch cùng với trẻ em</a>
+                                </small>
                             </div>
+
+                            <!-- Dịch vụ bổ sung -->
                             <div class="lh-side-reservation-from ex-service">
                                 <h4>Dịch Vụ Bổ Sung</h4>
                                 @foreach ($roomType->services as $service)
@@ -181,11 +155,15 @@
                                 @endforeach
                             </div>
 
+                            <!-- Giá phòng -->
                             <div class="lh-side-reservation-from">
                                 <h4>Giá Phòng</h4>
                                 <span>{{ \App\Helpers\FormatHelper::FormatPrice($roomType->price) }} / mỗi phòng</span>
                             </div>
+
                             <input type="hidden" name="room_type_id" value="{{ $roomType->id }}">
+
+                            <!-- Nút đặt phòng -->
                             <div class="lh-side-reservation-from">
                                 <div class="lh-side-reservation-from-buttons d-flex">
                                     <button type="submit" class="lh-buttons result-placeholder">
@@ -201,24 +179,77 @@
     </div>
 </section>
 
-<!-- Thêm jQuery và Slick Slider -->
+<!-- Flatpickr CSS and JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<!-- Slick Slider CSS and JS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+
+<!-- Custom CSS for Counter -->
+<style>
+    .counter-box {
+        margin-top: 10px;
+    }
+    .counter-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .counter-item label {
+        font-weight: 500;
+    }
+    .counter-controls {
+        display: flex;
+        align-items: center;
+    }
+    .counter-btn {
+        width: 30px;
+        height: 30px;
+        border: 1px solid #ccc;
+        background: #f5f5f5;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .counter-input {
+        width: 40px;
+        text-align: center;
+        border: 1px solid #ccc;
+        margin: 0 5px;
+        padding: 5px;
+    }
+    .note {
+        display: block;
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+    }
+</style>
+
+<!-- JavaScript -->
 <script>
     $(document).ready(function () {
-        // Kiểm tra xem jQuery và Slick có được tải không
-        if (typeof jQuery === 'undefined') {
-            console.error('jQuery không được tải!');
-            return;
-        }
-        if (typeof $.fn.slick === 'undefined') {
-            console.error('Slick Slider không được tải!');
-            return;
-        }
+        // Initialize Flatpickr for date range
+        flatpickr("#booking_date_range", {
+            mode: "range",
+            dateFormat: "Y-m-d",
+            minDate: "today",
+            defaultDate: ["{{ $checkIn }}", "{{ $checkOut }}"],
+            onChange: function(selectedDates) {
+                if (selectedDates.length === 2) {
+                    document.getElementById('booking_check_in').value = selectedDates[0].toISOString().split('T')[0];
+                    document.getElementById('booking_check_out').value = selectedDates[1].toISOString().split('T')[0];
+                }
+            }
+        });
 
-        // Khởi tạo Slick Slider
+        // Initialize Slick Slider
         $('.slider-for').slick({
             slidesToShow: 1,
             slidesToScroll: 1,
@@ -236,7 +267,55 @@
             focusOnSelect: true
         });
 
-        // Kiểm tra đăng nhập trước khi đặt phòng
+        // Counter logic
+        const childrenFreeLimit = {{ $roomType->children_free_limit }};
+        document.querySelectorAll('.counter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const target = this.getAttribute('data-target');
+                const input = document.querySelector(`input[name="${target}"]`);
+                let value = parseInt(input.value);
+
+                const totalGuestsInput = document.querySelector('input[name="total_guests"]');
+                const childrenCountInput = document.querySelector('input[name="children_count"]');
+                const totalGuests = parseInt(totalGuestsInput.value);
+                const childrenCount = parseInt(childrenCountInput.value);
+                const maxCapacity = {{ $roomType->max_capacity }};
+                const totalPeople = totalGuests + childrenCount;
+
+                if (this.classList.contains('plus')) {
+                    if (target === 'total_guests' || target === 'children_count') {
+                        if (totalPeople < maxCapacity) {
+                            value++;
+                        } else {
+                            alert('Tổng số người vượt quá sức chứa tối đa của loại phòng này.');
+                        }
+                    } else if (target === 'room_quantity') {
+                        const maxRooms = {{ $roomType->available_rooms }};
+                        if (value < maxRooms) {
+                            value++;
+                        } else {
+                            alert('Không đủ số phòng còn trống. Hiện tại chỉ còn ' + maxRooms + ' phòng.');
+                        }
+                    }
+                } else if (this.classList.contains('minus')) {
+                    if (target === 'children_count' && value > 0) {
+                        value--;
+                    } else if ((target === 'total_guests' || target === 'room_quantity') && value > 1) {
+                        value--;
+                    }
+                }
+
+                input.value = value;
+
+                // Check children_free_limit and show warning
+                const newChildrenCount = parseInt(document.querySelector('input[name="children_count"]').value);
+                if (newChildrenCount > childrenFreeLimit) {
+                    alert(`Số trẻ em vượt quá giới hạn miễn phí (${childrenFreeLimit}). Phí bổ sung có thể được áp dụng.`);
+                }
+            });
+        });
+
+        // Check login before booking
         $('#booking-form').on('submit', function (e) {
             @if (!Auth::check())
                 e.preventDefault();

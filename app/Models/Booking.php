@@ -16,6 +16,7 @@ class Booking extends Model
         'actual_check_in',
         'actual_check_out',
         'total_price',
+        'tax_fee',
         'total_guests',
         'children_count',
         'status',

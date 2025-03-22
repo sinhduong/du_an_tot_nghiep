@@ -8,11 +8,13 @@ use App\Models\Guest;
 use App\Models\Booking;
 use App\Models\RoomType;
 use App\Models\Promotion;
+use App\Models\Payment;
 use App\Models\ServicePlus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 class BookingController extends Controller
@@ -121,10 +123,23 @@ class BookingController extends Controller
             'totalPrice'
         ));
     }
+
     public function confirm(Request $request)
     {
         if ($request->isMethod('post')) {
-            // Validate dữ liệu từ create.blade.php
+            // Chuyển đổi birth_date nếu có
+            if ($request->filled('birth_date')) {
+                try {
+                    $birthDate = $request->input('birth_date');
+                    if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $birthDate)) {
+                        $birthDate = \Carbon\Carbon::createFromFormat('d/m/Y', $birthDate)->format('Y-m-d');
+                        $request->merge(['birth_date' => $birthDate]);
+                    }
+                } catch (\Exception $e) {
+                    // Nếu không parse được, giữ nguyên giá trị và để validation xử lý
+                }
+            }
+
             $validated = $request->validate([
                 'check_in' => 'required|date|after_or_equal:today',
                 'check_out' => 'required|date|after:check_in',
@@ -136,6 +151,7 @@ class BookingController extends Controller
                 'guests' => 'required|array|min:1',
                 'guests.*.name' => 'required|string|max:255',
                 'guests.*.id_number' => 'nullable|string|regex:/^[0-9]{9,12}$/',
+                'guests.*.id_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validation cho id_photo
                 'guests.*.birth_date' => 'nullable|date|before:today',
                 'guests.*.gender' => 'nullable|in:male,female,other',
                 'guests.*.phone' => 'nullable|string|regex:/^[0-9]{10,15}$/',
@@ -149,27 +165,33 @@ class BookingController extends Controller
                 'service_total' => 'required|numeric|min:0',
             ]);
 
-            // Lấy thông tin từ request
+            // Lưu file id_photo tạm thời và thêm đường dẫn vào dữ liệu guests
+            $guests = $request->input('guests');
+            foreach ($guests as $index => &$guest) {
+                if ($request->hasFile("guests.$index.id_photo")) {
+                    $path = $request->file("guests.$index.id_photo")->store('temp_id_photos', 'public');
+                    $guest['id_photo_path'] = $path;
+                }
+            }
+            $request->merge(['guests' => $guests]);
+
             $roomType = RoomType::with('services')->findOrFail($request->room_type_id);
             $checkIn = Carbon::parse($request->check_in);
             $checkOut = Carbon::parse($request->check_out);
             $days = $checkOut->diffInDays($checkIn);
-            $basePrice = $request->base_price; // Lấy từ hidden input trong create
-            $serviceTotal = $request->service_total; // Lấy từ hidden input trong create
-            $discountAmount = $request->discount_amount;
+            $basePrice = $request->base_price;
+            $serviceTotal = $request->service_total;
+            $discountAmount = $request->discount_amount ?? 0;
 
-            // Tính toán lại để đảm bảo chính xác
             $subTotal = $basePrice + $serviceTotal;
-            $taxFee = $subTotal * 0.08; // Thuế 8%
+            $taxFee = $subTotal * 0.08;
             $totalPrice = $subTotal - $discountAmount + $taxFee;
 
-            // Lấy danh sách dịch vụ bổ sung từ request
             $selectedServices = [];
             if (!empty($request->services)) {
                 $selectedServices = $roomType->services->whereIn('id', $request->services)->all();
             }
 
-            // Truyền dữ liệu sang confirm.blade.php
             return view('clients.bookings.confirm', compact(
                 'roomType',
                 'checkIn',
@@ -201,6 +223,7 @@ class BookingController extends Controller
             'guests' => 'required|array|min:1',
             'guests.*.name' => 'required|string|max:255',
             'guests.*.id_number' => 'nullable|string|regex:/^[0-9]{9,12}$/',
+            'guests.*.id_photo_path' => 'nullable|string', // Đường dẫn file tạm
             'guests.*.birth_date' => 'nullable|date|before:today',
             'guests.*.gender' => 'nullable|in:male,female,other',
             'guests.*.phone' => 'nullable|string|regex:/^[0-9]{10,15}$/',
@@ -210,7 +233,8 @@ class BookingController extends Controller
             'service_quantity_*' => 'nullable|integer|min:1',
             'discount_amount' => 'nullable|numeric|min:0',
             'total_price' => 'required|numeric|min:0',
-            'payment_method' => 'required|in:on_site,online',
+            'payment_method' => 'required|in:cash,online',
+            'online_payment_method' => 'required_if:payment_method,online|in:momo,vnpay',
             'base_price' => 'required|numeric|min:0',
             'service_total' => 'required|numeric|min:0',
         ]);
@@ -220,40 +244,40 @@ class BookingController extends Controller
             return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để đặt phòng.');
         }
 
+        $paymentMethod = $request->input('payment_method');
+        $onlinePaymentMethod = $request->input('online_payment_method', null);
+        if ($paymentMethod === 'online' && !$onlinePaymentMethod) {
+            return redirect()->back()->with('error', 'Vui lòng chọn một cổng thanh toán (MoMo hoặc VNPay).');
+        }
+
         $checkIn = Carbon::parse($validated['check_in'])->setTime(14, 0, 0);
         $checkOut = Carbon::parse($validated['check_out'])->setTime(12, 0, 0);
 
         $roomType = RoomType::findOrFail($validated['room_type_id']);
         $days = $checkOut->diffInDays($checkIn);
 
-        // Lấy giá trị từ request
         $basePrice = $request->input('base_price');
         $serviceTotal = $request->input('service_total');
         $discountAmount = $request->input('discount_amount', 0);
+        $totalPrice = $request->input('total_price');
 
-        // Tính lại để đảm bảo chính xác
-        $subTotal = $basePrice + $serviceTotal;
-        $taxFee = $subTotal * 0.08; // Thuế 8%
-        $totalPrice = $subTotal - $discountAmount + $taxFee;
-
-        // Tạo booking
         $booking = Booking::create([
             'booking_code' => 'BOOK' . time(),
             'check_in' => $checkIn,
             'check_out' => $checkOut,
-            'total_price' => $totalPrice, // Sử dụng totalPrice đã tính lại
+            'total_price' => $totalPrice,
             'total_guests' => $validated['total_guests'],
             'children_count' => $validated['children_count'],
             'user_id' => $user->id,
             'room_type_id' => $validated['room_type_id'],
+            'room_quantity' => $validated['room_quantity'],
             'special_request' => $request->input('special_request'),
             'service_plus_status' => !empty($validated['services']) ? 'not_yet_paid' : 'none',
             'discount_amount' => $discountAmount,
-            'payment_method' => $validated['payment_method'],
-            'status' => $validated['payment_method'] == 'on_site' ? 'pending_confirmation' : 'awaiting_payment',
+            'payment_method' => $paymentMethod == 'cash' ? 'cash' : $onlinePaymentMethod,
+            'status' => 'pending_confirmation',
         ]);
 
-        // Kiểm tra phòng trống
         $allRooms = $roomType->rooms;
         $bookedRoomIds = Booking::whereHas('rooms', function ($query) use ($roomType) {
             $query->where('room_type_id', $roomType->id);
@@ -286,7 +310,6 @@ class BookingController extends Controller
         $selectedRooms = $availableRooms->take($roomQuantity);
         $booking->rooms()->attach($selectedRooms->pluck('id'));
 
-        // Gắn dịch vụ bổ sung
         if (!empty($validated['services'])) {
             $serviceData = [];
             foreach ($validated['services'] as $serviceId) {
@@ -296,12 +319,21 @@ class BookingController extends Controller
             $booking->servicePlus()->attach($serviceData);
         }
 
-        // Gắn thông tin khách
         $guestIds = [];
-        foreach ($validated['guests'] as $guestData) {
+        foreach ($validated['guests'] as $index => $guestData) {
+            $idPhotoPath = null;
+            if (isset($guestData['id_photo_path']) && Storage::disk('public')->exists($guestData['id_photo_path'])) {
+                // Di chuyển file từ thư mục tạm sang thư mục chính
+                $tempPath = $guestData['id_photo_path'];
+                $newPath = 'id_photos/' . basename($tempPath);
+                Storage::disk('public')->move($tempPath, $newPath);
+                $idPhotoPath = $newPath;
+            }
+
             $guest = Guest::create([
                 'name' => $guestData['name'],
                 'id_number' => $guestData['id_number'] ?? null,
+                'id_photo' => $idPhotoPath,
                 'birth_date' => $guestData['birth_date'] ?? null,
                 'gender' => $guestData['gender'] ?? null,
                 'phone' => $guestData['phone'] ?? null,
@@ -312,13 +344,126 @@ class BookingController extends Controller
         }
         $booking->guests()->attach($guestIds);
 
-        if ($validated['payment_method'] == 'online') {
-            $booking->update(['status' => 'confirmed']);
+        $paymentData = [
+            'user_id' => $user->id,
+            'booking_id' => $booking->id,
+            'amount' => $totalPrice,
+            'status' => 'pending',
+            'transaction_id' => null,
+        ];
+
+        if ($paymentMethod == 'cash') {
+            $paymentData['method'] = 'cash';
+            $payment = Payment::create($paymentData);
+            $message = 'Đặt phòng đã được hoàn tất! Vui lòng thanh toán bằng tiền mặt khi nhận phòng.';
+            return redirect()->route('bookings.show', $booking->id)->with('success', $message);
+        } else {
+            $paymentData['method'] = $onlinePaymentMethod;
+            $payment = Payment::create($paymentData);
+
+            if ($onlinePaymentMethod == 'momo') {
+                $partnerCode = env('MOMO_PARTNER_CODE');
+                $accessKey = env('MOMO_ACCESS_KEY');
+                $secretKey = env('MOMO_SECRET_KEY');
+                $endpoint = env('MOMO_ENDPOINT');
+                $redirectUrl = env('MOMO_REDIRECT_URL');
+                $ipnUrl = env('MOMO_IPN_URL');
+
+                $orderId = $booking->booking_code . '-' . time();
+                $requestId = time() . '';
+                $orderInfo = 'Thanh toán đặt phòng ' . $booking->booking_code;
+                $amount = (int) $totalPrice;
+                $extraData = base64_encode(json_encode(['booking_id' => $booking->id]));
+
+                $rawHash = "accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=captureWallet";
+                $signature = hash_hmac("sha256", $rawHash, $secretKey);
+
+                $data = [
+                    'partnerCode' => $partnerCode,
+                    'partnerName' => "Hotel Booking",
+                    'storeId' => "HotelBookingStore",
+                    'requestId' => $requestId,
+                    'amount' => $amount,
+                    'orderId' => $orderId,
+                    'orderInfo' => $orderInfo,
+                    'redirectUrl' => $redirectUrl,
+                    'ipnUrl' => $ipnUrl,
+                    'lang' => 'vi',
+                    'extraData' => $extraData,
+                    'requestType' => 'captureWallet',
+                    'signature' => $signature,
+                ];
+
+                try {
+                    $response = Http::post($endpoint, $data);
+                    $result = $response->json();
+
+                    if (isset($result['payUrl']) && isset($result['qrCodeUrl'])) {
+                        $payment->update(['transaction_id' => $orderId]);
+                        return response()->json([
+                            'success' => true,
+                            'qrCodeUrl' => $result['qrCodeUrl'],
+                            'payUrl' => $result['payUrl'],
+                        ]);
+                    } else {
+                        $booking->delete();
+                        $payment->delete();
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Không thể tạo yêu cầu thanh toán MoMo. Vui lòng thử lại.',
+                        ], 400);
+                    }
+                } catch (\Exception $e) {
+                    $booking->delete();
+                    $payment->delete();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Lỗi khi gọi API MoMo: ' . $e->getMessage(),
+                    ], 500);
+                }
+            } else {
+                $methodName = $onlinePaymentMethod == 'momo' ? 'MoMo' : 'VNPay';
+                $message = "Đặt phòng đã được hoàn tất! Bạn đã chọn thanh toán qua $methodName, vui lòng hoàn tất thanh toán sau.";
+                return redirect()->route('bookings.show', $booking->id)->with('success', $message);
+            }
+        }
+    }
+
+    public function paymentCallback(Request $request)
+    {
+        $data = $request->all();
+        $secretKey = env('MOMO_SECRET_KEY');
+
+        $rawHash = "accessKey=" . env('MOMO_ACCESS_KEY') . "&amount=" . $data['amount'] . "&extraData=" . $data['extraData'] . "&message=" . $data['message'] . "&orderId=" . $data['orderId'] . "&orderInfo=" . $data['orderInfo'] . "&orderType=" . $data['orderType'] . "&partnerCode=" . $data['partnerCode'] . "&payType=" . $data['payType'] . "&requestId=" . $data['requestId'] . "&responseTime=" . $data['responseTime'] . "&resultCode=" . $data['resultCode'] . "&transId=" . $data['transId'];
+        $signature = hash_hmac("sha256", $rawHash, $secretKey);
+
+        if ($signature !== $data['signature']) {
+            Log::error('MoMo Callback - Invalid signature', ['data' => $data]);
+            return response()->json(['status' => 'error', 'message' => 'Invalid signature'], 400);
         }
 
-        return redirect()->route('bookings.show', $booking->id)
-            ->with('success', 'Đặt phòng đã được hoàn tất!');
+        $extraData = json_decode(base64_decode($data['extraData']), true);
+        $bookingId = $extraData['booking_id'];
+
+        $booking = Booking::findOrFail($bookingId);
+        $payment = Payment::where('booking_id', $bookingId)->first();
+
+        if ($data['resultCode'] == 0) {
+            $payment->update([
+                'status' => 'completed',
+                'transaction_id' => $data['transId'],
+            ]);
+            $booking->update(['status' => 'confirmed']);
+            $message = 'Thanh toán thành công! Đặt phòng của bạn đã được xác nhận.';
+        } else {
+            $payment->update(['status' => 'failed']);
+            $booking->update(['status' => 'cancelled']);
+            $message = 'Thanh toán thất bại. Đặt phòng của bạn đã bị hủy.';
+        }
+
+        return redirect()->route('bookings.show', $booking->id)->with('success', $message);
     }
+
     public function show(string $id)
     {
         $booking = Booking::with([

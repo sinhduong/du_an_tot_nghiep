@@ -20,22 +20,34 @@ class HomeController extends Controller
      */
     private function calculateAvailableRooms(RoomType $roomType, $checkIn, $checkOut)
     {
-        // Tổng số phòng của loại phòng này
-        $totalRooms = $roomType->rooms->count();
+        $checkInDate = Carbon::parse($checkIn)->startOfDay();
+        $checkOutDate = Carbon::parse($checkOut)->endOfDay();
+
+        // Tổng số phòng của loại phòng này với trạng thái 'available'
+        $totalRooms = $roomType->rooms()->where('status', 'available')->count();
 
         // Số phòng đã được đặt trong khoảng thời gian
         $bookedRooms = Booking::whereHas('rooms', function ($query) use ($roomType) {
             $query->where('room_type_id', $roomType->id);
         })
-        ->where(function ($query) use ($checkIn, $checkOut) {
-            $query->whereBetween('check_in', [$checkIn, $checkOut])
-                  ->orWhereBetween('check_out', [$checkIn, $checkOut])
-                  ->orWhere(function ($q) use ($checkIn, $checkOut) {
-                      $q->where('check_in', '<=', $checkIn)
-                        ->where('check_out', '>=', $checkOut);
-                  });
-        })
-        ->count();
+            ->where(function ($query) use ($checkInDate, $checkOutDate) {
+                $query->where(function ($q) use ($checkInDate, $checkOutDate) {
+                    $q->whereBetween('check_in', [$checkInDate, $checkOutDate])
+                        ->orWhereBetween('check_out', [$checkInDate, $checkOutDate])
+                        ->orWhere(function ($inner) use ($checkInDate, $checkOutDate) {
+                            $inner->where('check_in', '<=', $checkInDate)
+                                ->where('check_out', '>=', $checkOutDate);
+                        });
+                })
+                // Chỉ tính các booking chưa trả phòng (actual_check_out = null) hoặc trả phòng sau ngày check_in yêu cầu
+                ->where(function ($q) use ($checkInDate) {
+                    $q->whereNull('actual_check_out')
+                        ->orWhere('actual_check_out', '>', $checkInDate);
+                })
+                // Loại bỏ các booking đã bị hủy hoặc hoàn tiền
+                ->whereNotIn('status', ['cancelled', 'refunded']);
+            })
+            ->count();
 
         // Số phòng còn trống
         return max(0, $totalRooms - $bookedRooms);
@@ -51,41 +63,43 @@ class HomeController extends Controller
         $checkOut = $request->input('check_out', Carbon::tomorrow()->format('Y-m-d'));
         $totalGuests = (int) $request->input('total_guests', 2);
         $childrenCount = (int) $request->input('children_count', 0);
+        $roomCount = (int) $request->input('room_count', 1);
 
-        // Validate dữ liệu
+        // Validate input dates
         try {
             $checkInDate = Carbon::parse($checkIn);
             $checkOutDate = Carbon::parse($checkOut);
 
-            if ($checkInDate->greaterThanOrEqualTo($checkOutDate)) {
-                return redirect()->route('home')->with('error', 'Ngày trả phòng phải sau ngày nhận phòng.');
+            if ($checkInDate->lt(Carbon::today())) {
+                return back()->with('error', 'Ngày nhận phòng không thể là ngày trong quá khứ.');
             }
-
-            if ($checkInDate->lessThan(Carbon::today())) {
-                return redirect()->route('home')->with('error', 'Ngày nhận phòng không được trước ngày hiện tại.');
+            if ($checkInDate->gte($checkOutDate)) {
+                return back()->with('error', 'Ngày trả phòng phải sau ngày nhận phòng.');
             }
         } catch (\Exception $e) {
-            return redirect()->route('home')->with('error', 'Ngày nhận phòng hoặc trả phòng không hợp lệ.');
+            return back()->with('error', 'Ngày không hợp lệ.');
         }
 
-        // Tính tổng số khách
+        // Tính tổng số người
         $totalPeople = $totalGuests + $childrenCount;
 
-        // Lấy danh sách loại phòng còn trống
-        $roomTypes = RoomType::with(['rooms', 'amenities', 'roomTypeImages'])
+        // Lấy tất cả các loại phòng thỏa mãn điều kiện
+        $roomTypes = RoomType::query()
+            ->with(['roomTypeImages', 'amenities', 'rooms'])
             ->where('is_active', true)
             ->where('max_capacity', '>=', $totalPeople)
-           ->paginate(4);
+            ->where('children_free_limit', '>=', $childrenCount)
+            ->get();
 
-        // Tính số phòng còn trống cho từng loại phòng
-        $roomTypes = $roomTypes->map(function ($roomType) use ($checkIn, $checkOut) {
-            $roomType->available_rooms = $this->calculateAvailableRooms($roomType, $checkIn, $checkOut);
-            return $roomType;
-        })->filter(function ($roomType) {
-            return $roomType->available_rooms > 0;
+        // Lọc các loại phòng dựa trên số phòng còn trống
+        $roomTypes = $roomTypes->filter(function ($roomType) use ($checkInDate, $checkOutDate, $roomCount) {
+            $availableRooms = $this->calculateAvailableRooms($roomType, $checkInDate, $checkOutDate);
+            $roomType->available_rooms = $availableRooms;
+            return $availableRooms >= $roomCount;
         });
 
-        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount'));
+        // Truyền dữ liệu sang view
+        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount'));
     }
 
     /**
@@ -93,26 +107,56 @@ class HomeController extends Controller
      */
     public function show($id, Request $request)
     {
-        $roomType = RoomType::with(['rooms', 'amenities', 'roomTypeImages', 'services', 'rulesAndRegulations'])
+        // Lấy RoomType theo ID
+        $roomType = RoomType::with(['roomTypeImages', 'amenities', 'services', 'rulesAndRegulations', 'rooms'])
             ->where('is_active', true)
             ->findOrFail($id);
 
-        // Lấy dữ liệu từ request
+        // Lấy dữ liệu từ query string
         $checkIn = $request->input('check_in', Carbon::today()->format('Y-m-d'));
         $checkOut = $request->input('check_out', Carbon::tomorrow()->format('Y-m-d'));
         $totalGuests = (int) $request->input('total_guests', 2);
         $childrenCount = (int) $request->input('children_count', 0);
+        $roomCount = (int) $request->input('room_count', 1);
 
-        $checkInFormatted = FormatHelper::FormatDateVI($checkIn);
-        $checkOutFormatted = FormatHelper::FormatDateVI($checkOut);
-        // Tính số phòng còn trống
-        $roomType->available_rooms = $this->calculateAvailableRooms($roomType, $checkIn, $checkOut);
+        // Validate input dates
+        try {
+            $checkInDate = Carbon::parse($checkIn);
+            $checkOutDate = Carbon::parse($checkOut);
 
-        if ($roomType->available_rooms == 0) {
-            return redirect()->route('home')->with('error', 'Phòng này hiện không còn trống trong khoảng thời gian bạn chọn.');
+            if ($checkInDate->lt(Carbon::today())) {
+                return back()->with('error', 'Ngày nhận phòng không thể là ngày trong quá khứ.');
+            }
+            if ($checkInDate->gte($checkOutDate)) {
+                return back()->with('error', 'Ngày trả phòng phải sau ngày nhận phòng.');
+            }
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ngày không hợp lệ.');
         }
 
-        return view('clients.room.detail', compact('roomType', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount'));
+        // Tính tổng số người
+        $totalPeople = $totalGuests + $childrenCount;
+
+        // Kiểm tra max_capacity và children_free_limit
+        if ($totalPeople > $roomType->max_capacity) {
+            return back()->with('error', 'Tổng số người vượt quá sức chứa tối đa của loại phòng này.');
+        }
+
+        if ($childrenCount > $roomType->children_free_limit) {
+            $request->session()->flash('warning', "Số trẻ em vượt quá giới hạn miễn phí ({$roomType->children_free_limit}). Phí bổ sung có thể được áp dụng.");
+        }
+
+        // Tính số phòng còn trống
+        $availableRooms = $this->calculateAvailableRooms($roomType, $checkInDate, $checkOutDate);
+        $roomType->available_rooms = $availableRooms;
+
+        // Kiểm tra số phòng yêu cầu
+        if ($roomCount > $availableRooms) {
+            return back()->with('error', "Không đủ số phòng còn trống. Hiện tại chỉ còn {$availableRooms} phòng.");
+        }
+
+        // Truyền dữ liệu sang view
+        return view('clients.room.detail', compact('roomType', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount'));
     }
 
     /**

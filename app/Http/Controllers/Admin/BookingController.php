@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorebookingRequest;
 use App\Http\Requests\UpdatebookingRequest;
 use App\Models\Booking;
+use App\Models\Payment;
 use App\Models\ServicePlus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -225,6 +226,23 @@ class BookingController extends Controller
             return redirect()->route('admin.bookings.index')->with('success', 'Cập nhật trạng thái đặt phòng thành công.');
         } elseif ($currentStatus === 'confirmed' && in_array($newStatus, ['paid', 'cancelled'])) {
             // Nếu trạng thái hiện tại là "Đã xác nhận", chỉ cho phép đổi sang "Đã thanh toán" hoặc "Đã hủy"
+            if ($newStatus === 'paid') {
+                // Tìm bản ghi thanh toán liên quan
+                $payment = Payment::where('booking_id', $booking->id)->first();
+                if (!$payment) {
+                    return redirect()->back()->with('error', 'Không tìm thấy bản ghi thanh toán cho đặt phòng này.');
+                }
+
+                // Kiểm tra trạng thái thanh toán
+                if ($payment->status !== 'pending') {
+                    return redirect()->back()->with('error', 'Thanh toán không ở trạng thái "Chưa thanh toán", không thể cập nhật thành "Đã thanh toán".');
+                }
+
+                // Cập nhật trạng thái thanh toán
+                $payment->update([
+                    'status' => 'completed',
+                ]);
+            }
             $booking->update(['status' => $newStatus]);
             return redirect()->route('admin.bookings.index')->with('success', 'Cập nhật trạng thái đặt phòng thành công.');
         } elseif ($currentStatus === 'paid' && in_array($newStatus, ['check_in', 'refunded'])) {
