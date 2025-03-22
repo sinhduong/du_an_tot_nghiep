@@ -282,4 +282,7 @@ Route::prefix('bookings')
         Route::put('{id}/update', [ClientBookingController::class, 'update'])->name('update');
         Route::delete('{id}/destroy', [ClientBookingController::class, 'destroy'])->name('destroy');
         Route::post('/check-promotion', [ClientBookingController::class, 'checkPromotion'])->name('check-promotion');
+
+
+        Route::get('/payment/callback', [ClientBookingController::class, 'paymentCallback'])->name('payment.callback');
     });
