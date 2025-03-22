@@ -6,11 +6,11 @@
                 <div class="lh-col">
                     <div class="search-box">
                         <h4 class="heading">
-                            Check in  -  Check out
+                            Check in - Check out
                         </h4>
                         <div class="calendar">
                             <i class="ri-calendar-2-line"></i>
-                            <input type="text" id="date_range" class="lh-book-form-control" placeholder="Chọn ngày" required>
+                            <input type="text" id="date_range" class="lh-book-form-control" placeholder="Chọn ngày" value="{{ isset($formattedDateRange) ? $formattedDateRange : '' }}" required>
                             <!-- Hidden inputs to store check-in and check-out dates -->
                             <input type="hidden" name="check_in" id="check_in" value="{{ request()->check_in ?? \Carbon\Carbon::today()->format('Y-m-d') }}">
                             <input type="hidden" name="check_out" id="check_out" value="{{ request()->check_out ?? \Carbon\Carbon::tomorrow()->format('Y-m-d') }}">
@@ -84,7 +84,6 @@
 
 <!-- Custom CSS for Search Form -->
 <style>
-
     .lh-book-form-control {
         width: 100%;
         padding: 10px 10px 10px 35px;
@@ -202,62 +201,67 @@
         margin: 10px 0 0 auto;
         transition: background 0.3s;
     }
-
-
 </style>
 
 <!-- JavaScript for Date Range Picker and Counter -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Initialize Flatpickr for date range
+        // Hàm định dạng ngày sang tiếng Việt
+        function formatDateToVietnamese(startDate, endDate) {
+            const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+            const months = [
+                'tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6',
+                'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'
+            ];
+            const startDay = days[startDate.getDay()];
+            const startDateNum = startDate.getDate();
+            const startMonth = months[startDate.getMonth()];
+            const endDay = days[endDate.getDay()];
+            const endDateNum = endDate.getDate();
+            const endMonth = months[endDate.getMonth()];
+            return `${startDay}, ${startDateNum} ${startMonth} - ${endDay}, ${endDateNum} ${endMonth}`;
+        }
+
+        // Lấy ngày mặc định từ server
+        const defaultCheckIn = new Date("{{ request()->check_in ?? \Carbon\Carbon::today()->format('Y-m-d') }}");
+        const defaultCheckOut = new Date("{{ request()->check_out ?? \Carbon\Carbon::tomorrow()->format('Y-m-d') }}");
+
+        // Đặt giá trị ban đầu cho ô input
+        const dateRangeInput = document.getElementById('date_range');
+        if (!dateRangeInput.value) {
+            dateRangeInput.value = formatDateToVietnamese(defaultCheckIn, defaultCheckOut);
+        }
+
+        // Initialize Flatpickr
         flatpickr("#date_range", {
             mode: "range",
             dateFormat: "Y-m-d",
-            minDate: "today",
+            minDate: "today", // Vô hiệu hóa các ngày trước ngày hiện tại
             defaultDate: [
                 "{{ request()->check_in ?? \Carbon\Carbon::today()->format('Y-m-d') }}",
                 "{{ request()->check_out ?? \Carbon\Carbon::tomorrow()->format('Y-m-d') }}"
             ],
             onChange: function(selectedDates) {
                 if (selectedDates.length === 2) {
-                    const startDate = selectedDates[0];
-                    const endDate = selectedDates[1];
+                    const startDate = new Date(selectedDates[0].getTime() - (selectedDates[0].getTimezoneOffset() * 60000));
+                    const endDate = new Date(selectedDates[1].getTime() - (selectedDates[1].getTimezoneOffset() * 60000));
                     document.getElementById('check_in').value = startDate.toISOString().split('T')[0];
                     document.getElementById('check_out').value = endDate.toISOString().split('T')[0];
-
-                    // Format the display value
-                    const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-                    const months = [
-                        'tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6',
-                        'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'
-                    ];
-                    const startDay = days[startDate.getDay()];
-                    const startDateNum = startDate.getDate();
-                    const startMonth = months[startDate.getMonth()];
-                    const endDay = days[endDate.getDay()];
-                    const endDateNum = endDate.getDate();
-                    const endMonth = months[endDate.getMonth()];
-                    document.getElementById('date_range').value = `${startDay}, ${startDateNum} ${startMonth} - ${endDay}, ${endDateNum} ${endMonth}`;
+                    document.getElementById('date_range').value = formatDateToVietnamese(startDate, endDate);
                 }
             },
             locale: {
-                firstDayOfWeek: 1, // Start week on Monday
+                firstDayOfWeek: 1,
                 weekdays: {
                     shorthand: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
                     longhand: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
                 },
                 months: {
-                    shorthand: [
-                        'Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6',
-                        'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'
-                    ],
-                    longhand: [
-                        'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
-                        'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
-                    ]
+                    shorthand: ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'],
+                    longhand: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12']
                 }
             },
-            showMonths: 2 // Show two months at a time
+            showMonths: 2
         });
 
         // Counter Dropdown Logic
@@ -277,7 +281,6 @@
             counterSummary.value = `${totalGuests} người lớn - ${childrenCount} trẻ em - ${roomCount} phòng`;
         });
 
-        // Counter logic
         document.querySelectorAll('.counter-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const target = this.getAttribute('data-target');
@@ -294,7 +297,6 @@
             });
         });
 
-        // Close dropdown when clicking outside
         document.addEventListener('click', function(event) {
             if (!counterSummary.contains(event.target) && !counterDropdown.contains(event.target)) {
                 counterDropdown.classList.remove('show');

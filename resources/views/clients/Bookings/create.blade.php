@@ -55,7 +55,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <p><strong>Trả phòng:</strong> {{ \App\Helpers\FormatHelper::FormatDate($checkOut) }}</p>
-                                    <p>06:00 - 12:00</p>
+                                    <p>Trước 12:00</p>
                                 </div>
                             </div>
                             <p><strong>Tổng thời gian lưu trú:</strong> {{ $days }} đêm</p>
@@ -222,8 +222,7 @@
                                                         <option value="USA" {{ (Auth::user()->country ?? old('country')) == 'USA' ? 'selected' : '' }}>USA</option>
                                                         <option value="UK" {{ (Auth::user()->country ?? old('country')) == 'UK' ? 'selected' : '' }}>UK</option>
                                                         <option value="Japan" {{ (Auth::user()->country ?? old('country')) == 'Japan' ? 'selected' : '' }}>Japan</option>
-                                                        <option value="Singapore" {{ (Auth::user()->country ?? old('country')) == 'Singapore' ? 'selected' : '' }}>Singapore</option>
-                                                    </select>
+                                                        <option value="Singapore" {{ (Auth::user()->country ?? old('country')) == 'Singapore' ? 'selected' : '' }}>Singapore</option>                                                    </select>
                                                     @error('country')
                                                         <small class="text-danger">{{ $message }}</small>
                                                     @enderror

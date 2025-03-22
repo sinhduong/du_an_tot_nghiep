@@ -135,7 +135,6 @@
                                 @if ($childrenCount > $roomType->children_free_limit)
                                     <small class="note text-danger">Số trẻ em vượt quá giới hạn miễn phí ({{ $roomType->children_free_limit }}). Phí bổ sung có thể được áp dụng.</small>
                                 @endif
-                                <small class="note">Mang theo động vật được xem là người lớn</small>
                                 <small class="note">
                                     <a href="#">Đọc thêm về chính sách đặt vé và lịch cùng với trẻ em</a>
                                 </small>
