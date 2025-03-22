@@ -41,6 +41,11 @@ class BookingController extends Controller
             return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để đặt phòng.');
         }
 
+        // Đặt múi giờ
+        Carbon::setLocale('vi');
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+
+        // Lấy dữ liệu từ request
         $roomTypeId = $request->input('room_type_id');
         $checkIn = $request->input('check_in');
         $checkOut = $request->input('check_out');
@@ -49,6 +54,7 @@ class BookingController extends Controller
         $roomQuantity = (int) $request->input('room_quantity', 1);
         $services = $request->input('services', []);
 
+        // Xác thực dữ liệu
         $request->validate([
             'room_type_id' => 'required|exists:room_types,id',
             'check_in' => 'required|date|after_or_equal:today',
@@ -58,12 +64,31 @@ class BookingController extends Controller
             'room_quantity' => 'required|integer|min:1',
         ]);
 
+        // Xử lý ngày giờ
         $checkIn = Carbon::parse($checkIn);
         $checkOut = Carbon::parse($checkOut);
+        $now = Carbon::now();
+
+        // Nếu ngày check-in là quá khứ hoặc hôm nay sau 22:00, điều chỉnh sang ngày hôm sau
+        if ($checkIn->lt($now->startOfDay()) || ($checkIn->isToday() && $now->hour >= 22)) {
+            $checkIn = $now->copy()->addDay()->startOfDay();
+            $checkOut = $checkIn->copy()->addDay();
+            $request->session()->flash('warning', 'Đặt phòng vào thời điểm này sẽ được check-in từ ngày mai (' . $checkIn->format('d/m/Y') . ').');
+        }
+
+        // Kiểm tra check-out phải sau check-in
+        if ($checkIn->gte($checkOut)) {
+            $checkOut = $checkIn->copy()->addDay();
+            $request->session()->flash('warning', 'Ngày trả phòng đã được điều chỉnh để sau ngày nhận phòng.');
+        }
+
+        // Tính số ngày lưu trú
         $days = $checkOut->diffInDays($checkIn);
 
+        // Lấy thông tin loại phòng
         $selectedRoomType = RoomType::with(['amenities', 'services', 'roomTypeImages', 'rooms'])->findOrFail($roomTypeId);
 
+        // Tính giá
         $basePrice = $selectedRoomType->price * $roomQuantity * $days;
         $serviceTotal = 0;
         if (!empty($services)) {
@@ -76,6 +101,7 @@ class BookingController extends Controller
         $taxFee = $subTotal * 0.08;
         $totalPrice = $subTotal + $taxFee;
 
+        // Lấy danh sách phòng còn trống
         $allRooms = $selectedRoomType->rooms;
         $bookedRoomIds = Booking::whereHas('rooms', function ($query) use ($selectedRoomType) {
             $query->where('room_type_id', $selectedRoomType->id);
@@ -88,6 +114,11 @@ class BookingController extends Controller
                             ->where('check_out', '>=', $checkOut);
                     });
             })
+            ->where(function ($q) use ($checkIn) {
+                $q->whereNull('actual_check_out')
+                    ->orWhere('actual_check_out', '>=', $checkIn);
+            })
+            ->whereNotIn('status', ['cancelled', 'refunded'])
             ->with('rooms')
             ->get()
             ->flatMap(function ($booking) {
@@ -99,6 +130,7 @@ class BookingController extends Controller
         $availableRooms = $allRooms->whereNotIn('id', $bookedRoomIds);
         $availableRoomCount = $availableRooms->count();
 
+        // Kiểm tra số lượng phòng yêu cầu
         if ($roomQuantity > $availableRoomCount) {
             return redirect()->route('home')->with('error', "Số lượng phòng yêu cầu ($roomQuantity) vượt quá số phòng còn trống ($availableRoomCount).");
         }

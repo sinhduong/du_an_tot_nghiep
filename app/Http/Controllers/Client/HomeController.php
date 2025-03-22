@@ -39,12 +39,10 @@ class HomeController extends Controller
                                 ->where('check_out', '>=', $checkOutDate);
                         });
                 })
-                // Chỉ tính các booking chưa trả phòng (actual_check_out = null) hoặc trả phòng sau ngày check_in yêu cầu
                 ->where(function ($q) use ($checkInDate) {
                     $q->whereNull('actual_check_out')
-                        ->orWhere('actual_check_out', '>', $checkInDate);
+                        ->orWhere('actual_check_out', '>=', $checkInDate);
                 })
-                // Loại bỏ các booking đã bị hủy hoặc hoàn tiền
                 ->whereNotIn('status', ['cancelled', 'refunded']);
             })
             ->count();
@@ -58,6 +56,10 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
+        // Đặt múi giờ cho Carbon
+        Carbon::setLocale('vi');
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+
         // Lấy dữ liệu từ form tìm kiếm
         $checkIn = $request->input('check_in', Carbon::today()->format('Y-m-d'));
         $checkOut = $request->input('check_out', Carbon::tomorrow()->format('Y-m-d'));
@@ -65,17 +67,42 @@ class HomeController extends Controller
         $childrenCount = (int) $request->input('children_count', 0);
         $roomCount = (int) $request->input('room_count', 1);
 
-        // Validate input dates
+        // Xử lý ngày giờ
         try {
             $checkInDate = Carbon::parse($checkIn);
             $checkOutDate = Carbon::parse($checkOut);
+            $now = Carbon::now();
 
-            if ($checkInDate->lt(Carbon::today())) {
-                return back()->with('error', 'Ngày nhận phòng không thể là ngày trong quá khứ.');
+            // Nếu ngày check-in là quá khứ hoặc hôm nay sau 22:00, điều chỉnh sang ngày hôm sau
+            if ($checkInDate->lt($now->startOfDay()) || ($checkInDate->isToday() && $now->hour >= 22)) {
+                $checkInDate = $now->copy()->addDay()->startOfDay();
+                $checkOutDate = $checkInDate->copy()->addDay();
+                $checkIn = $checkInDate->format('Y-m-d');
+                $checkOut = $checkOutDate->format('Y-m-d');
+                $request->session()->flash('info', 'Đặt phòng vào thời điểm này sẽ được check-in từ ngày mai (' . $checkInDate->format('d/m/Y') . ').');
             }
+
+            // Kiểm tra check-out phải sau check-in
             if ($checkInDate->gte($checkOutDate)) {
-                return back()->with('error', 'Ngày trả phòng phải sau ngày nhận phòng.');
+                $checkOutDate = $checkInDate->copy()->addDay();
+                $checkOut = $checkOutDate->format('Y-m-d');
+                $request->session()->flash('info', 'Ngày trả phòng đã được điều chỉnh để sau ngày nhận phòng.');
             }
+
+            // Định dạng ngày để hiển thị tiếng Việt
+            $days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+            $months = [
+                'tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6',
+                'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'
+            ];
+            $startDay = $days[$checkInDate->dayOfWeek];
+            $startDateNum = $checkInDate->day;
+            $startMonth = $months[$checkInDate->month - 1];
+            $endDay = $days[$checkOutDate->dayOfWeek];
+            $endDateNum = $checkOutDate->day;
+            $endMonth = $months[$checkOutDate->month - 1];
+            $formattedDateRange = "{$startDay}, {$startDateNum} {$startMonth} - {$endDay}, {$endDateNum} {$endMonth}";
+
         } catch (\Exception $e) {
             return back()->with('error', 'Ngày không hợp lệ.');
         }
@@ -96,67 +123,75 @@ class HomeController extends Controller
             $availableRooms = $this->calculateAvailableRooms($roomType, $checkInDate, $checkOutDate);
             $roomType->available_rooms = $availableRooms;
             return $availableRooms >= $roomCount;
-        });
+        })->values();
 
         // Truyền dữ liệu sang view
-        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount'));
+        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange'));
     }
-
     /**
      * Display the specified resource.
      */
     public function show($id, Request $request)
     {
-        // Lấy RoomType theo ID
-        $roomType = RoomType::with(['roomTypeImages', 'amenities', 'services', 'rulesAndRegulations', 'rooms'])
-            ->where('is_active', true)
-            ->findOrFail($id);
+        // Đặt múi giờ cho Carbon
+        Carbon::setLocale('vi');
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
 
-        // Lấy dữ liệu từ query string
+        // Lấy thông tin loại phòng
+        $roomType = RoomType::with(['roomTypeImages', 'amenities', 'services', 'rulesAndRegulations'])->findOrFail($id);
+
+        // Lấy dữ liệu từ request
         $checkIn = $request->input('check_in', Carbon::today()->format('Y-m-d'));
         $checkOut = $request->input('check_out', Carbon::tomorrow()->format('Y-m-d'));
         $totalGuests = (int) $request->input('total_guests', 2);
         $childrenCount = (int) $request->input('children_count', 0);
-        $roomCount = (int) $request->input('room_count', 1);
+        $roomCount = (int) $request->input('room_quantity', 1);
 
-        // Validate input dates
+        // Xử lý ngày giờ
         try {
             $checkInDate = Carbon::parse($checkIn);
             $checkOutDate = Carbon::parse($checkOut);
+            $now = Carbon::now();
 
-            if ($checkInDate->lt(Carbon::today())) {
-                return back()->with('error', 'Ngày nhận phòng không thể là ngày trong quá khứ.');
+            // Nếu ngày check-in là quá khứ hoặc hôm nay sau 22:00, điều chỉnh sang ngày hôm sau
+            if ($checkInDate->lt($now->startOfDay()) || ($checkInDate->isToday() && $now->hour >= 22)) {
+                $checkInDate = $now->copy()->addDay()->startOfDay();
+                $checkOutDate = $checkInDate->copy()->addDay();
+                $checkIn = $checkInDate->format('Y-m-d');
+                $checkOut = $checkOutDate->format('Y-m-d');
+                $request->session()->flash('warning', 'Đặt phòng vào thời điểm này sẽ được check-in từ ngày mai (' . $checkInDate->format('d/m/Y') . ').');
             }
+
+            // Kiểm tra check-out phải sau check-in
             if ($checkInDate->gte($checkOutDate)) {
-                return back()->with('error', 'Ngày trả phòng phải sau ngày nhận phòng.');
+                $checkOutDate = $checkInDate->copy()->addDay();
+                $checkOut = $checkOutDate->format('Y-m-d');
+                $request->session()->flash('warning', 'Ngày trả phòng đã được điều chỉnh để sau ngày nhận phòng.');
             }
+
+            // Định dạng ngày để hiển thị tiếng Việt
+            $days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+            $months = [
+                'tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6',
+                'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'
+            ];
+            $startDay = $days[$checkInDate->dayOfWeek];
+            $startDateNum = $checkInDate->day;
+            $startMonth = $months[$checkInDate->month - 1];
+            $endDay = $days[$checkOutDate->dayOfWeek];
+            $endDateNum = $checkOutDate->day;
+            $endMonth = $months[$checkOutDate->month - 1];
+            $formattedDateRange = "{$startDay}, {$startDateNum} {$startMonth} - {$endDay}, {$endDateNum} {$endMonth}";
+
         } catch (\Exception $e) {
             return back()->with('error', 'Ngày không hợp lệ.');
         }
 
-        // Tính tổng số người
-        $totalPeople = $totalGuests + $childrenCount;
-
-        // Kiểm tra max_capacity và children_free_limit
-        if ($totalPeople > $roomType->max_capacity) {
-            return back()->with('error', 'Tổng số người vượt quá sức chứa tối đa của loại phòng này.');
-        }
-
-        if ($childrenCount > $roomType->children_free_limit) {
-            $request->session()->flash('warning', "Số trẻ em vượt quá giới hạn miễn phí ({$roomType->children_free_limit}). Phí bổ sung có thể được áp dụng.");
-        }
-
-        // Tính số phòng còn trống
-        $availableRooms = $this->calculateAvailableRooms($roomType, $checkInDate, $checkOutDate);
-        $roomType->available_rooms = $availableRooms;
-
-        // Kiểm tra số phòng yêu cầu
-        if ($roomCount > $availableRooms) {
-            return back()->with('error', "Không đủ số phòng còn trống. Hiện tại chỉ còn {$availableRooms} phòng.");
-        }
+        // Tính số phòng còn trống (giả sử bạn có logic tương tự như HomeController)
+        $roomType->available_rooms = $this->calculateAvailableRooms($roomType, $checkInDate, $checkOutDate);
 
         // Truyền dữ liệu sang view
-        return view('clients.room.detail', compact('roomType', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount'));
+        return view('clients.room.detail', compact('roomType', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange'));
     }
 
     /**
