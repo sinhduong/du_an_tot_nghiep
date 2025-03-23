@@ -19,7 +19,10 @@ return new class extends Migration
             $table->dateTime('actual_check_in')->nullable();
             $table->dateTime('actual_check_out')->nullable();
             $table->decimal('total_price', 10, 2);
-            $table->decimal('tax_fee', 15, 2)->nullable();
+            $table->decimal('discount_amount', 15, 2)->nullable(); // Thêm trường giảm giá
+            $table->decimal('base_price', 15, 2)->nullable(); // Thêm trường giá gốc
+            $table->decimal('service_total', 15, 2)->nullable(); // Thêm trường tổng chi phí dịch vụ
+            $table->decimal('tax_fee', 15, 2)->nullable(); // Trường thuế đã có, giữ nguyên
             $table->integer('total_guests'); // Tổng số khách đặt phòng
             $table->integer('children_count')->default(0); // Số trẻ em
             $table->integer('room_quantity')->default(1); // Số lượng phòng được đặt

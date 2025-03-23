@@ -29,7 +29,7 @@
             <div class="col-md-10">
                 <div class="booking-header mb-4">
                     <p class="text-muted">Đã đặt</p>
-                   
+
                 </div>
 
                 <!-- Danh sách đặt phòng -->
@@ -76,7 +76,7 @@
                                 </div>
                                 <!-- Dropdown menu bên trong card -->
                                 <div class="dropdown-menu-custom" style="display: none; position: absolute; top: 40px; right: 20px; background: #fff; border: 2px solid #ddd; border-radius: 8px; box-shadow: 0 6px 12px rgba(0,0,0,0.15); z-index: 1000; padding: 5px 0; min-width: 150px;">
-                                    <a href="{{ route('bookings.edit', $booking->id) }}" class="dropdown-item text-dark" style="display: block; padding: 5px 20px; color: #333; text-decoration: none; transition: background-color 0.3s ease;">Sửa đơn đặt</a>
+                                    {{-- <a href="{{ route('bookings.edit', $booking->id) }}" class="dropdown-item text-dark" style="display: block; padding: 5px 20px; color: #333; text-decoration: none; transition: background-color 0.3s ease;">Sửa đơn đặt</a> --}}
                                     <a href="javascript:void(0)" class="dropdown-item delete-booking text-danger" data-id="{{ $booking->id }}" style="display: block; padding: 5px 20px; color: #dc3545; text-decoration: none; transition: background-color 0.3s ease;">Xóa đơn đặt</a>
                                 </div>
                             </div>
