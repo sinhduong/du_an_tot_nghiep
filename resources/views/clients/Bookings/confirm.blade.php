@@ -65,30 +65,41 @@
 
                         <div class="lh-check-block-content mb-3">
                             <h4 class="lh-room-inner-heading">Bạn đã chọn</h4>
-                            <p>{{ request('room_quantity') }} phòng cho {{ request('total_guests') + request('children_count') }} người</p>
-                            <p>{{ request('room_quantity') }} x {{ $roomType->name }}</p>
+                            <p>{{ $roomQuantity }} phòng cho {{ $totalGuests + $childrenCount }} người</p>
+                            <p>{{ $roomQuantity }} x {{ $roomType->name }}</p>
                             @if (!empty($selectedServices))
                                 <p><strong>Dịch vụ bổ sung:</strong></p>
                                 @foreach ($selectedServices as $service)
-                                    <p>{{ $service->name }} ({{ \App\Helpers\FormatHelper::FormatPrice($service->price) }}) x {{ request("service_quantity_{$service->id}", 1) }}</p>
+                                    @php
+                                        $quantity = $serviceQuantities[$service->id] ?? 1;
+                                        $servicePrice = $service->price * $quantity;
+                                    @endphp
+                                    <p>{{ $service->name }} ({{ $quantity }} x {{ \App\Helpers\FormatHelper::FormatPrice($service->price) }}) = {{ \App\Helpers\FormatHelper::FormatPrice($servicePrice) }}</p>
                                 @endforeach
                             @endif
                         </div>
+
                         <div class="lh-check-block-content mb-3">
                             <h4 class="lh-room-inner-heading">Tổng giá</h4>
                             <div class="d-flex justify-content-between">
-                                <p>Giá gốc</p>
+                                <p>Giá gốc ({{ $roomQuantity }} phòng x {{ $days }} đêm)</p>
                                 <p>VND {{ number_format($basePrice, 0, ',', '.') }}</p>
                             </div>
-                            @if (!empty($selectedServices))
+                            @if ($serviceTotal > 0)
                                 <div class="d-flex justify-content-between">
                                     <p>Dịch vụ bổ sung</p>
                                     <p>VND {{ number_format($serviceTotal, 0, ',', '.') }}</p>
                                 </div>
                             @endif
+                            @if ($discountAmount > 0)
+                                <div class="d-flex justify-content-between">
+                                    <p>Giảm giá</p>
+                                    <p id="discount-amount">- VND {{ number_format($discountAmount, 0, ',', '.') }}</p>
+                                </div>
+                            @endif
                             <div class="d-flex justify-content-between">
-                                <p>Giảm giá (Mã khuyến mãi)</p>
-                                <p id="discount-amount">- VND {{ number_format($discountAmount, 0, ',', '.') }}</p>
+                                <p>Thuế và phí (8%)</p>
+                                <p id="tax-fee-display">VND {{ number_format($taxFee, 0, ',', '.') }}</p>
                             </div>
                             <div class="d-flex justify-content-between mt-2">
                                 <input type="text" id="promotion-code" class="form-control w-50" placeholder="Nhập mã giảm giá">
@@ -100,8 +111,11 @@
                                 <h5 class="lh-room-inner-heading">Tổng cộng</h5>
                                 <h5 class="lh-room-inner-heading text-danger" id="total_price_display">VND {{ number_format($totalPrice, 0, ',', '.') }}</h5>
                             </div>
-                            <p class="text-muted">Đã bao gồm thuế và phí (VND {{ number_format($taxFee, 0, ',', '.') }})</p>
+                            <input type="hidden" id="base_price" value="{{ $basePrice }}">
+                            <input type="hidden" id="service_total" value="{{ $serviceTotal }}">
                             <input type="hidden" id="total_price" value="{{ $totalPrice }}">
+                            <input type="hidden" id="tax_fee" value="{{ $taxFee }}">
+                            <input type="hidden" id="sub_total" value="{{ $subTotal }}">
                             <input type="hidden" id="discount_amount_input" name="discount_amount" value="{{ $discountAmount }}">
                         </div>
                     </div>
@@ -119,15 +133,17 @@
                                         @csrf
                                         <input type="hidden" name="check_in" value="{{ $checkIn }}">
                                         <input type="hidden" name="check_out" value="{{ $checkOut }}">
-                                        <input type="hidden" name="total_guests" value="{{ request('total_guests') }}">
-                                        <input type="hidden" name="children_count" value="{{ request('children_count') }}">
-                                        <input type="hidden" name="room_quantity" value="{{ request('room_quantity') }}">
+                                        <input type="hidden" name="total_guests" value="{{ $totalGuests }}">
+                                        <input type="hidden" name="children_count" value="{{ $childrenCount }}">
+                                        <input type="hidden" name="room_quantity" value="{{ $roomQuantity }}">
                                         <input type="hidden" name="room_type_id" value="{{ $roomType->id }}">
                                         <input type="hidden" name="total_price" id="total_price_input" value="{{ $totalPrice }}">
-                                        <input type="hidden" name="discount_amount" id="discount_amount_form" value="{{ $discountAmount }}">
+                                        <input type="hidden" name="discount_amount" id="discount_amount_form" value="{{ $discountAmount ?? 0 }}">
                                         <input type="hidden" name="special_request" value="{{ request('special_request') }}">
                                         <input type="hidden" name="base_price" value="{{ $basePrice }}">
                                         <input type="hidden" name="service_total" value="{{ $serviceTotal }}">
+                                        <input type="hidden" name="tax_fee" id="tax_fee_input" value="{{ $taxFee }}">
+                                        <input type="hidden" name="sub_total" value="{{ $subTotal }}">
                                         @foreach (request('guests', []) as $index => $guest)
                                             <input type="hidden" name="guests[{{$index}}][name]" value="{{ $guest['name'] }}">
                                             <input type="hidden" name="guests[{{$index}}][id_number]" value="{{ $guest['id_number'] ?? '' }}">
@@ -140,9 +156,10 @@
                                         @endforeach
                                         @foreach ($selectedServices as $service)
                                             <input type="hidden" name="services[]" value="{{ $service->id }}">
-                                            <input type="hidden" name="service_quantity_{{ $service->id }}" value="{{ request("service_quantity_{$service->id}", 1) }}">
+                                            <input type="hidden" name="service_quantity_{{ $service->id }}" value="{{ $serviceQuantities[$service->id] ?? 1 }}">
                                         @endforeach
 
+                                        <!-- Phần phương thức thanh toán -->
                                         <div class="form-check">
                                             <input class="form-check-input payment-method" type="radio" name="payment_method" id="payment1" value="cash" checked>
                                             <label class="form-check-label" for="payment1">Thanh toán tại chỗ (Tiền mặt)</label>
@@ -199,7 +216,8 @@
         // Xử lý áp dụng mã giảm giá
         $('#apply-promotion').on('click', function () {
             const code = $('#promotion-code').val();
-            const totalPrice = parseFloat($('#total_price').val());
+            const basePrice = parseFloat($('#base_price').val());
+            const serviceTotal = parseFloat($('#service_total').val());
 
             if (!code) {
                 $('#promotion-message').html('<p class="text-danger">Vui lòng nhập mã giảm giá.</p>');
@@ -212,16 +230,20 @@
                 data: {
                     _token: '{{ csrf_token() }}',
                     code: code,
-                    total_price: totalPrice
+                    base_price: basePrice,
+                    service_total: serviceTotal
                 },
                 success: function (response) {
                     if (response.success) {
                         const discountAmount = response.discount_amount;
-                        const newTotalPrice = totalPrice - discountAmount;
+                        const newTotalPrice = response.new_total_price;
+                        const taxFee = response.tax_fee;
 
                         $('#discount-amount').text('- VND ' + discountAmount.toLocaleString('vi-VN'));
+                        $('#tax-fee-display').text('VND ' + taxFee.toLocaleString('vi-VN'));
                         $('#total_price_display').text('VND ' + newTotalPrice.toLocaleString('vi-VN'));
                         $('#total_price_input').val(newTotalPrice);
+                        $('#tax_fee_input').val(taxFee);
                         $('#discount_amount_input').val(discountAmount);
                         $('#discount_amount_form').val(discountAmount);
                         $('#promotion-message').html('<p class="text-success">' + response.message + '</p>');
@@ -260,7 +282,7 @@
         });
 
         $('#confirm-form').on('submit', function (e) {
-            e.preventDefault(); // Ngăn form submit mặc định
+            e.preventDefault();
 
             const paymentMethod = $('input[name="payment_method"]:checked').val();
             if (paymentMethod === 'online') {
@@ -271,18 +293,17 @@
                 }
 
                 if (onlineMethod === 'momo') {
-                    // Gửi AJAX để tạo yêu cầu thanh toán MoMo
+                    console.log($(this).serialize()); // Kiểm tra dữ liệu gửi đi
                     $.ajax({
                         url: '{{ route("bookings.store") }}',
                         method: 'POST',
                         data: $(this).serialize(),
                         success: function (response) {
                             if (response.success && response.qrCodeUrl && response.payUrl) {
-                                // Hiển thị mã QR và liên kết thanh toán
                                 $('#momo-qr-code').html('<img src="' + response.qrCodeUrl + '" alt="MoMo QR Code" style="max-width: 300px;">');
                                 $('#momo-pay-link').attr('href', response.payUrl);
                                 $('#momo-qr-section').show();
-                                $('#confirm-button').hide(); // Ẩn nút "Hoàn tất đặt phòng" sau khi hiển thị mã QR
+                                $('#confirm-button').hide();
                             } else {
                                 alert(response.message || 'Không thể tạo yêu cầu thanh toán MoMo. Vui lòng thử lại.');
                             }
@@ -292,11 +313,10 @@
                         }
                     });
                 } else {
-                    // Xử lý VNPay hoặc các phương thức khác
-                    this.submit(); // Submit form nếu không phải MoMo
+                    this.submit();
                 }
             } else {
-                this.submit(); // Submit form nếu là thanh toán tiền mặt
+                this.submit();
             }
         });
     });

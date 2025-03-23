@@ -68,7 +68,7 @@
                             @if (!empty($services))
                                 <p><strong>Dịch vụ bổ sung:</strong></p>
                                 @foreach ($selectedRoomType->services->whereIn('id', $services) as $service)
-                                    <p>{{ $service->name }} ({{ \App\Helpers\FormatHelper::FormatPrice($service->price) }}) x {{ request()->input("service_quantity_{$service->id}", 1) }}</p>
+                                    <p>{{ $service->name }} ({{ \App\Helpers\FormatHelper::FormatPrice($service->price) }})</p>
                                 @endforeach
                             @endif
                         </div>
@@ -76,15 +76,25 @@
                         <div class="lh-check-block-content mb-3">
                             <h4 class="lh-room-inner-heading">Tổng giá</h4>
                             <div class="d-flex justify-content-between">
-                                <p>Giá gốc</p>
+                                <p>Giá gốc ({{ $roomQuantity }} phòng x {{ $days }} đêm)</p>
                                 <p>VND {{ number_format($basePrice, 0, ',', '.') }}</p>
                             </div>
-                            @if (!empty($services))
+                            @if ($discountAmount > 0)
+                                <div class="d-flex justify-content-between">
+                                    <p>Giảm giá</p>
+                                    <p>- VND {{ number_format($discountAmount, 0, ',', '.') }}</p>
+                                </div>
+                            @endif
+                            @if ($serviceTotal > 0)
                                 <div class="d-flex justify-content-between">
                                     <p>Dịch vụ bổ sung</p>
                                     <p>VND {{ number_format($serviceTotal, 0, ',', '.') }}</p>
                                 </div>
                             @endif
+                            <div class="d-flex justify-content-between">
+                                <p>Thuế và phí (8%)</p>
+                                <p>VND {{ number_format($taxFee, 0, ',', '.') }}</p>
+                            </div>
                             <hr>
                             <div class="d-flex justify-content-between">
                                 <h5 class="lh-room-inner-heading">Tổng cộng</h5>
@@ -143,14 +153,14 @@
                                 <!-- Mô tả loại phòng -->
                                 @if ($selectedRoomType->description)
                                     <div class="lh-check-block-content mb-4">
-                                        <h5 class="lh-room-inner-heading">Mô tả</h5>
+                                        <h3 class="lh-checkout-title">Mô tả</h3>
                                         <p class="text-muted">{{ $selectedRoomType->description }}</p>
                                     </div>
                                 @endif
 
                                 <!-- Tiện nghi -->
                                 <div class="lh-check-block-content mb-4">
-                                    <h5 class="lh-room-inner-heading">Tiện nghi</h5>
+                                    <h3 class="lh-checkout-title">Tiện nghi</h3>
                                     @if ($selectedRoomType->amenities->isNotEmpty())
                                         <div class="row">
                                             @foreach ($selectedRoomType->amenities as $amenity)
@@ -167,7 +177,7 @@
                                 <!-- Quy định -->
                                 @if ($selectedRoomType->rulesAndRegulations->isNotEmpty())
                                     <div class="lh-check-block-content mb-4">
-                                        <h5 class="lh-room-inner-heading">Quy định</h5>
+                                        <h3 class="lh-checkout-title">Quy tắc & quy định</h3>
                                         <ul class="list-unstyled">
                                             @foreach ($selectedRoomType->rulesAndRegulations as $rule)
                                                 <li class="mb-2"><i class="fas fa-exclamation-circle text-warning me-2"></i> {{ $rule->name }}</li>
@@ -177,18 +187,17 @@
                                 @endif
                             </div>
 
-                            <h3 class="lh-checkout-title">Nhập thông tin chi tiết của bạn</h3>
                             <div class="lh-check-block-content">
                                 <div class="lh-checkout-wrap mb-24">
-                                    <h3 class="lh-checkout-title">Thông tin người đặt</h3>
+                                    <h3 class="lh-checkout-title">Nhập thông tin chi tiết của bạn</h3>
                                     <form action="{{ route('bookings.confirm') }}" method="POST" id="booking-form" enctype="multipart/form-data">
                                         @csrf
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Họ Tên*</label>
-                                                    <input type="text" name="name" class="form-control" value="{{ Auth::user()->name ?? old('name') }}" placeholder="Nhập họ của bạn" required />
-                                                    @error('name')
+                                                    <label class="form-label">Họ Tên *</label>
+                                                    <input type="text" name="guests[0][name]" class="form-control" value="{{ Auth::user()->name ?? old('guests.0.name') }}" placeholder="Nhập họ tên của bạn" required />
+                                                    @error('guests.0.name')
                                                         <small class="text-danger">{{ $message }}</small>
                                                     @enderror
                                                 </div>
@@ -197,9 +206,9 @@
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label class="form-label">Email *</label>
-                                                    <input type="email" name="email" class="form-control" value="{{ Auth::user()->email ?? old('email') }}" placeholder="Nhập email của bạn" required />
+                                                    <input type="email" name="guests[0][email]" class="form-control" value="{{ Auth::user()->email ?? old('guests.0.email') }}" placeholder="Nhập email của bạn" required />
                                                     <small class="form-text text-muted">Email đặt phòng sẽ được gửi đến địa chỉ này</small>
-                                                    @error('email')
+                                                    @error('guests.0.email')
                                                         <small class="text-danger">{{ $message }}</small>
                                                     @enderror
                                                 </div>
@@ -207,8 +216,8 @@
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label class="form-label">Số điện thoại *</label>
-                                                    <input type="text" name="phone" class="form-control" value="{{ Auth::user()->phone ?? old('phone') }}" placeholder="Nhập số điện thoại của bạn" required />
-                                                    @error('phone')
+                                                    <input type="text" name="guests[0][phone]" class="form-control" value="{{ Auth::user()->phone ?? old('guests.0.phone') }}" placeholder="Nhập số điện thoại của bạn" required />
+                                                    @error('guests.0.phone')
                                                         <small class="text-danger">{{ $message }}</small>
                                                     @enderror
                                                 </div>
@@ -216,14 +225,18 @@
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label class="form-label">Quốc gia *</label>
-                                                    <select name="country" class="form-control" required>
-                                                        <option value="" disabled selected>Chọn quốc gia</option>
-                                                        <option value="Vietnam" {{ (Auth::user()->country ?? old('country')) == 'Vietnam' ? 'selected' : '' }}>Việt Nam</option>
-                                                        <option value="USA" {{ (Auth::user()->country ?? old('country')) == 'USA' ? 'selected' : '' }}>USA</option>
-                                                        <option value="UK" {{ (Auth::user()->country ?? old('country')) == 'UK' ? 'selected' : '' }}>UK</option>
-                                                        <option value="Japan" {{ (Auth::user()->country ?? old('country')) == 'Japan' ? 'selected' : '' }}>Japan</option>
-                                                        <option value="Singapore" {{ (Auth::user()->country ?? old('country')) == 'Singapore' ? 'selected' : '' }}>Singapore</option>                                                    </select>
-                                                    @error('country')
+                                                    <input type="text" name="guests[0][country]" class="form-control" value="{{ Auth::user()->country ?? old('guests.0.country') }}" placeholder="Nhập quốc gia của bạn" required />
+                                                    @error('guests.0.country')
+                                                        <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Giới tính</label>
+                                                    <input type="text" name="guests[0][gender]" class="form-control" value="{{ old('guests.0.gender') }}" placeholder="Nhập Giới tính" />
+                                                    @error('guests.0.gender')
                                                         <small class="text-danger">{{ $message }}</small>
                                                     @enderror
                                                 </div>
@@ -232,125 +245,41 @@
                                                 <div class="mb-3">
                                                     <label class="form-label">Ngày sinh</label>
                                                     @if (Auth::user()->birth_date)
-                                                        <input type="text" name="birth_date" class="form-control" value="{{ \Carbon\Carbon::parse(Auth::user()->birth_date)->format('d/m/Y') }}" />
+                                                        <input type="text" name="guests[0][birth_date]" class="form-control" value="{{ \Carbon\Carbon::parse(Auth::user()->birth_date)->format('d/m/Y') }}" />
                                                     @else
-                                                        <input type="date" name="birth_date" class="form-control" value="{{ old('birth_date') }}" />
+                                                        <input type="date" name="guests[0][birth_date]" class="form-control" value="{{ old('guests.0.birth_date') }}" />
                                                     @endif
-                                                    @error('birth_date')
+                                                    @error('guests.0.birth_date')
                                                         <small class="text-danger">{{ $message }}</small>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Giới tính</label>
-                                                    <select name="gender" class="form-control">
-                                                        <option value="" disabled selected>Chọn giới tính</option>
-                                                        <option value="male" {{ (Auth::user()->gender ?? old('gender')) == 'male' ? 'selected' : '' }}>Nam</option>
-                                                        <option value="female" {{ (Auth::user()->gender ?? old('gender')) == 'female' ? 'selected' : '' }}>Nữ</option>
-                                                        <option value="other" {{ (Auth::user()->gender ?? old('gender')) == 'other' ? 'selected' : '' }}>Khác</option>
-                                                    </select>
-                                                    @error('gender')
+                                                    <label class="form-label">Số CMND/CCCD</label>
+                                                    <input type="text" name="guests[0][id_number]" class="form-control" value="{{ old('guests.0.id_number') }}" placeholder="Nhập số CMND/CCCD" />
+                                                    @error('guests.0.id_number')
                                                         <small class="text-danger">{{ $message }}</small>
                                                     @enderror
                                                 </div>
                                             </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Ảnh CCCD</label>
+                                                    <input type="file" name="guests[0][id_photo]" class="form-control" accept="image/*" />
+                                                    @error('guests.0.id_photo')
+                                                        <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="guests[0][relationship]" value="Người đặt">
                                         </div>
 
                                         <!-- Thông tin người ở -->
                                         <div class="lh-checkout-wrap mb-24">
                                             <h3 class="lh-checkout-title">Thông tin người ở</h3>
                                             <div class="lh-check-block-content" id="guest-list">
-                                                <!-- Form người ở đầu tiên -->
-                                                <div class="guest-form" data-index="0">
-                                                    <h5>Người ở 1</h5>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Họ và tên *</label>
-                                                                <input type="text" name="guests[0][name]" class="form-control" placeholder="Nhập họ và tên" required />
-                                                                @error('guests.0.name')
-                                                                    <small class="text-danger">{{ $message }}</small>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Số CMND/CCCD</label>
-                                                                <input type="text" name="guests[0][id_number]" class="form-control" placeholder="Nhập số CMND/CCCD" />
-                                                                @error('guests.0.id_number')
-                                                                    <small class="text-danger">{{ $message }}</small>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Ảnh CCCD</label>
-                                                                <input type="file" name="guests[0][id_photo]" class="form-control" accept="image/*" />
-                                                                @error('guests.0.id_photo')
-                                                                    <small class="text-danger">{{ $message }}</small>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Ngày sinh</label>
-                                                                <input type="date" name="guests[0][birth_date]" class="form-control" />
-                                                                @error('guests.0.birth_date')
-                                                                    <small class="text-danger">{{ $message }}</small>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Giới tính</label>
-                                                                <select name="guests[0][gender]" class="form-control">
-                                                                    <option value="" disabled selected>Chọn giới tính</option>
-                                                                    <option value="male">Nam</option>
-                                                                    <option value="female">Nữ</option>
-                                                                    <option value="other">Khác</option>
-                                                                </select>
-                                                                @error('guests.0.gender')
-                                                                    <small class="text-danger">{{ $message }}</small>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Số điện thoại</label>
-                                                                <input type="text" name="guests[0][phone]" class="form-control" placeholder="Nhập số điện thoại" />
-                                                                @error('guests.0.phone')
-                                                                    <small class="text-danger">{{ $message }}</small>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Email</label>
-                                                                <input type="email" name="guests[0][email]" class="form-control" placeholder="Nhập email" />
-                                                                @error('guests.0.email')
-                                                                    <small class="text-danger">{{ $message }}</small>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Mối quan hệ với người đặt</label>
-                                                                <select name="guests[0][relationship]" class="form-control">
-                                                                    <option value="" disabled selected>Chọn mối quan hệ</option>
-                                                                    <option value="Vợ/Chồng">Vợ/Chồng</option>
-                                                                    <option value="Con">Con</option>
-                                                                    <option value="Bạn">Bạn</option>
-                                                                    <option value="Đồng nghiệp">Đồng nghiệp</option>
-                                                                    <option value="Khác">Khác</option>
-                                                                </select>
-                                                                @error('guests.0.relationship')
-                                                                    <small class="text-danger">{{ $message }}</small>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <!-- Các form người ở sẽ được thêm động bằng JavaScript -->
                                             </div>
                                             <button type="button" class="btn btn-outline-primary mt-3" id="add-guest-btn">
                                                 <i class="fas fa-plus me-2"></i> Thêm người ở
@@ -368,16 +297,16 @@
                                         <input type="hidden" name="total_price" id="total_price" value="{{ $totalPrice }}">
                                         <input type="hidden" name="base_price" value="{{ $basePrice }}">
                                         <input type="hidden" name="service_total" value="{{ $serviceTotal }}">
+                                        <input type="hidden" name="discount_amount" value="{{ $discountAmount }}">
                                         @foreach ($services as $serviceId)
                                             <input type="hidden" name="services[]" value="{{ $serviceId }}">
-                                            <input type="hidden" name="service_quantity_{{ $serviceId }}" value="{{ request()->input("service_quantity_{$serviceId}", 1) }}">
                                         @endforeach
 
                                         <!-- Yêu cầu đặc biệt -->
                                         <div class="lh-checkout-wrap mb-24">
                                             <h3 class="lh-checkout-title">Yêu cầu đặc biệt (không bắt buộc)</h3>
                                             <div class="lh-check-block-content">
-                                                <textarea class="form-control" name="special_request" rows="3" placeholder="Nhập yêu cầu của bạn"></textarea>
+                                                <textarea class="form-control" name="special_request" rows="3" placeholder="Nhập yêu cầu của bạn">{{ old('special_request') }}</textarea>
                                             </div>
                                         </div>
 
@@ -463,6 +392,11 @@
         let guestCount = parseInt(document.getElementById('guest-count').value);
         const maxGuests = {{ $totalGuests + $childrenCount }};
 
+        // Người đặt được tính là người ở đầu tiên, nên chỉ cho phép thêm (maxGuests - 1) người ở khác
+        if (maxGuests <= 1) {
+            addGuestBtn.style.display = 'none'; // Ẩn nút "Thêm người ở" nếu chỉ có 1 người
+        }
+
         addGuestBtn.addEventListener('click', function () {
             if (guestCount >= maxGuests) {
                 alert('Bạn đã đạt số lượng người ở tối đa (' + maxGuests + ' người).');
@@ -544,6 +478,15 @@
 
             // Thêm form mới vào danh sách
             guestList.insertAdjacentHTML('beforeend', newForm);
+        });
+
+        // Kiểm tra số lượng người ở khi submit form
+        document.getElementById('booking-form').addEventListener('submit', function (e) {
+            const totalGuests = {{ $totalGuests + $childrenCount }};
+            if (guestCount < totalGuests) {
+                e.preventDefault();
+                alert('Vui lòng nhập thông tin cho tất cả ' + totalGuests + ' người ở.');
+            }
         });
     });
 </script>
