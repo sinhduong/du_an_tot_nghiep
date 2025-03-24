@@ -99,7 +99,7 @@
                             </div>
 
                             <div class="lh-side-reservation-from">
-                                <label>Số lượng</label>
+                                <h4>Số lượng</h4>
                                 <div class="counter-box">
                                     <div class="counter-item">
                                         <label>Người lớn</label>
@@ -130,7 +130,7 @@
                                     <small class="note text-danger">Số trẻ em vượt quá giới hạn miễn phí ({{ $roomType->children_free_limit }}). Phí bổ sung có thể được áp dụng.</small>
                                 @endif
                                 <small class="note">
-                                    <a href="#">Đọc thêm về chính sách đặt vé và lịch cùng với trẻ em</a>
+                                    <a href="#">Đọc thêm về chính sách đặt phòng cùng với trẻ em</a>
                                 </small>
                             </div>
 
