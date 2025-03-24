@@ -277,6 +277,7 @@ Route::prefix('bookings')
         Route::get('/create', [ClientBookingController::class, 'create'])->name('create');
         Route::post('/confirm', [ClientBookingController::class, 'confirm'])->name('confirm'); // Chuyển từ create sang confirm
         Route::post('/store', [ClientBookingController::class, 'store'])->name('store'); // Lưu dữ liệu từ confirm
+        Route::get('{id}/returnVnpay',           [ClientBookingController::class, 'returnVnpay'])->name('return.vnpay');
         Route::get('{id}/show', [ClientBookingController::class, 'show'])->name('show');
         Route::get('{id}/edit', [ClientBookingController::class, 'edit'])->name('edit');
         Route::put('{id}/update', [ClientBookingController::class, 'update'])->name('update');
