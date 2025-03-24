@@ -287,3 +287,5 @@ Route::prefix('bookings')
 
         Route::get('/payment/callback', [ClientBookingController::class, 'paymentCallback'])->name('payment.callback');
     });
+
+Route::get('payments', [HomeController::class, 'paymentsList'])->name('payments.lists');

@@ -25,4 +25,9 @@ class Promotion extends Model
         return $this->belongsToMany(RoomType::class, 'promotion_room_type', 'promotion_id', 'room_type_id')
             ->withTimestamps();
     }
+
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+    ];
 }
