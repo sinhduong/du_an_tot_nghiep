@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
@@ -728,15 +729,33 @@ class BookingController extends Controller
 
     public function returnVnpay(Request $request)
     {
-
         $vnp_ResponseCode = $request->input('vnp_ResponseCode');
-        // Kiểm tra nếu thanh toán thành công
+        $booking_id = $request->id;
         if ($vnp_ResponseCode == '00') {
-            //Thay đổi trạng thái thanh toán tại đây
-            // Booking::where('id', $request->id)->update(['service_plus_status' => 'paid']);
-            return redirect()->route('bookings.show', $request->id)->with('success','Thanh toán thành công!');
+            try {
+                DB::transaction(function () use ($booking_id, $request) {
+                    // Cập nhật trạng thái đơn đặt vé
+                    Booking::where('id', $booking_id)->update(['status' => 'paid']);
+
+                    // Cập nhật trạng thái thanh toán nếu có
+                    $payment = Payment::where('booking_id', $booking_id)->first();
+                    if ($payment) {
+                        $payment->update([
+                            'transaction_id' => $request->input('vnp_TransactionNo'), // Lấy dữ liệu an toàn hơn
+                            'status' => 'completed'
+                        ]);
+                    }
+                });
+
+                return redirect()->route('bookings.show', $booking_id)
+                    ->with('success', 'Thanh toán thành công!');
+            } catch (\Throwable $th) {
+                return redirect()->route('bookings.show', $booking_id)
+                    ->with('error', 'Đã có lỗi xảy ra trong quá trình cập nhật thanh toán.');
+            }
         } else {
-            return redirect()->route('bookings.show', $request->id)->with('error','Thanh toán không thành công!');
+            return redirect()->route('bookings.show', $booking_id)
+                ->with('error', 'Thanh toán không thành công!');
         }
     }
 }
