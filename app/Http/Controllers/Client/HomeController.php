@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Models\Promotion;
+use Log;
 use Carbon\Carbon;
 use App\Models\Faq;
 use App\Models\About;
 use App\Models\Booking;
 use App\Models\Service;
 use App\Models\RoomType;
+use App\Models\Promotion;
 use App\Models\Introduction;
 use Illuminate\Http\Request;
 use App\Helpers\FormatHelper;
@@ -21,105 +22,289 @@ class HomeController extends Controller
      */
     private function calculateAvailableRooms(RoomType $roomType, $checkIn, $checkOut)
     {
-        // Tổng số phòng của loại phòng này
-        $totalRooms = $roomType->rooms->count();
+        $checkInDate = Carbon::parse($checkIn)->startOfDay();
+        $checkOutDate = Carbon::parse($checkOut)->endOfDay();
 
-        // Số phòng đã được đặt trong khoảng thời gian
+        $totalRooms = $roomType->rooms()->where('status', 'available')->count();
+
         $bookedRooms = Booking::whereHas('rooms', function ($query) use ($roomType) {
             $query->where('room_type_id', $roomType->id);
         })
-        ->where(function ($query) use ($checkIn, $checkOut) {
-            $query->whereBetween('check_in', [$checkIn, $checkOut])
-                  ->orWhereBetween('check_out', [$checkIn, $checkOut])
-                  ->orWhere(function ($q) use ($checkIn, $checkOut) {
-                      $q->where('check_in', '<=', $checkIn)
-                        ->where('check_out', '>=', $checkOut);
-                  });
-        })
-        ->count();
+            ->where(function ($query) use ($checkInDate, $checkOutDate) {
+                $query->where(function ($q) use ($checkInDate, $checkOutDate) {
+                    $q->whereBetween('check_in', [$checkInDate, $checkOutDate])
+                        ->orWhereBetween('check_out', [$checkInDate, $checkOutDate])
+                        ->orWhere(function ($inner) use ($checkInDate, $checkOutDate) {
+                            $inner->where('check_in', '<=', $checkInDate)
+                                ->where('check_out', '>=', $checkOutDate);
+                        });
+                })
+                    ->where(function ($q) use ($checkInDate) {
+                        $q->whereNull('actual_check_out')
+                            ->orWhere('actual_check_out', '>=', $checkInDate);
+                    })
+                    ->whereNotIn('status', ['cancelled', 'refunded']);
+            })
+            ->count();
 
-        // Số phòng còn trống
         return max(0, $totalRooms - $bookedRooms);
     }
 
-    /**
-     * Display a listing of the resource.
-     */
+    private function calculateDiscountedPrice($originalPrice, $promotion, $nights, $roomCount)
+    {
+        $totalPrice = $originalPrice * $nights * $roomCount; // Tổng giá gốc
+        if (!$promotion || $promotion->status !== 'active') {
+            return $totalPrice;
+        }
+
+        // Kiểm tra min_booking_amount
+        if ($promotion->min_booking_amount && $totalPrice < $promotion->min_booking_amount) {
+            \Log::info("Total price $totalPrice does not meet min_booking_amount {$promotion->min_booking_amount}");
+            return $totalPrice;
+        }
+
+        $discountedPrice = $totalPrice;
+
+        if ($promotion->type === 'percent') {
+            $discount = $totalPrice * ($promotion->value / 100);
+            if ($promotion->max_discount_value && $discount > $promotion->max_discount_value) {
+                $discount = $promotion->max_discount_value;
+            }
+            $discountedPrice = $totalPrice - $discount;
+        } elseif ($promotion->type === 'fixed') {
+            $discountedPrice = $totalPrice - $promotion->value;
+        }
+
+        return max(0, $discountedPrice);
+    }
+
     public function index(Request $request)
     {
-        // Lấy dữ liệu từ form tìm kiếm
+        Carbon::setLocale('vi');
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+
         $checkIn = $request->input('check_in', Carbon::today()->format('Y-m-d'));
         $checkOut = $request->input('check_out', Carbon::tomorrow()->format('Y-m-d'));
         $totalGuests = (int) $request->input('total_guests', 2);
         $childrenCount = (int) $request->input('children_count', 0);
+        $roomCount = (int) $request->input('room_count', 1);
 
-        // Validate dữ liệu
         try {
             $checkInDate = Carbon::parse($checkIn);
             $checkOutDate = Carbon::parse($checkOut);
+            $now = Carbon::now();
 
-            if ($checkInDate->greaterThanOrEqualTo($checkOutDate)) {
-                return redirect()->route('home')->with('error', 'Ngày trả phòng phải sau ngày nhận phòng.');
+            if ($checkInDate->lt($now->startOfDay()) || ($checkInDate->isToday() && $now->hour >= 22)) {
+                $checkInDate = $now->copy()->addDay()->startOfDay();
+                $checkOutDate = $checkInDate->copy()->addDay();
+                $checkIn = $checkInDate->format('Y-m-d');
+                $checkOut = $checkOutDate->format('Y-m-d');
+                $request->session()->flash('info', 'Đặt phòng vào thời điểm này sẽ được check-in từ ngày mai (' . $checkInDate->format('d/m/Y') . ').');
             }
 
-            if ($checkInDate->lessThan(Carbon::today())) {
-                return redirect()->route('home')->with('error', 'Ngày nhận phòng không được trước ngày hiện tại.');
+            if ($checkInDate->gte($checkOutDate)) {
+                $checkOutDate = $checkInDate->copy()->addDay();
+                $checkOut = $checkOutDate->format('Y-m-d');
+                $request->session()->flash('info', 'Ngày trả phòng đã được điều chỉnh để sau ngày nhận phòng.');
             }
+
+            $nights = $checkInDate->diffInDays($checkOutDate);
+
+            $days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+            $months = ['tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6', 'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'];
+            $startDay = $days[$checkInDate->dayOfWeek];
+            $startDateNum = $checkInDate->day;
+            $startMonth = $months[$checkInDate->month - 1];
+            $endDay = $days[$checkOutDate->dayOfWeek];
+            $endDateNum = $checkOutDate->day;
+            $endMonth = $months[$checkOutDate->month - 1];
+            $formattedDateRange = "{$startDay}, {$startDateNum} {$startMonth} - {$endDay}, {$endDateNum} {$endMonth}";
         } catch (\Exception $e) {
-            return redirect()->route('home')->with('error', 'Ngày nhận phòng hoặc trả phòng không hợp lệ.');
+            return back()->with('error', 'Ngày không hợp lệ.');
         }
 
-        // Tính tổng số khách
         $totalPeople = $totalGuests + $childrenCount;
 
-        // Lấy danh sách loại phòng còn trống
-        $roomTypes = RoomType::with(['rooms', 'amenities', 'roomTypeImages'])
+        $roomTypes = RoomType::query()
+            ->with(['roomTypeImages', 'amenities', 'rooms', 'promotions']) // Load promotions (nhiều-nhiều)
             ->where('is_active', true)
             ->where('max_capacity', '>=', $totalPeople)
-           ->paginate(4);
-
-        // Tính số phòng còn trống cho từng loại phòng
-        $roomTypes = $roomTypes->map(function ($roomType) use ($checkIn, $checkOut) {
-            $roomType->available_rooms = $this->calculateAvailableRooms($roomType, $checkIn, $checkOut);
-            return $roomType;
-        })->filter(function ($roomType) {
-            return $roomType->available_rooms > 0;
-        });
-
-        $promotions = Promotion::where('status', 'active')
-            ->where('end_date', '>=', now())
+            ->where('children_free_limit', '>=', $childrenCount)
             ->get();
 
-        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'promotions'));
-    }
+        $roomTypes = $roomTypes->filter(function ($roomType) use ($checkInDate, $checkOutDate, $roomCount, $nights, $now) {
+            $availableRooms = $this->calculateAvailableRooms($roomType, $checkInDate, $checkOutDate);
+            $roomType->available_rooms = $availableRooms;
 
+            // Tính giá gốc
+            $roomType->total_original_price = $roomType->price * $nights * $roomCount;
+
+            // Lấy tất cả mã giảm giá của loại phòng
+            $promotions = $roomType->promotions()
+                ->where('status', 'active')
+                ->whereDate('start_date', '<=', $now->toDateString())
+                ->whereDate('end_date', '>=', $now->toDateString())
+                ->where('quantity', '>', 0)
+                ->get();
+
+            // Chọn mã giảm giá tốt nhất (giảm nhiều nhất)
+            $bestPromotion = null;
+            $bestDiscountedPrice = $roomType->total_original_price;
+
+            foreach ($promotions as $promotion) {
+                $discountedPrice = $this->calculateDiscountedPrice($roomType->price, $promotion, $nights, $roomCount);
+                if ($discountedPrice < $bestDiscountedPrice) {
+                    $bestDiscountedPrice = $discountedPrice;
+                    $bestPromotion = $promotion;
+                }
+            }
+
+            // Gán giá giảm tốt nhất
+            $roomType->total_discounted_price = $bestDiscountedPrice;
+
+            // Tính giá mỗi đêm sau khi áp dụng mã giảm giá (chỉ để hiển thị)
+            $roomType->discounted_price_per_night = $bestPromotion ? ($roomType->total_discounted_price / ($nights * $roomCount)) : $roomType->price;
+
+            // Gán thông tin chương trình giảm giá (nếu có)
+            $roomType->promotion_info = $bestPromotion ? [
+                'code' => $bestPromotion->code,
+                'value' => $bestPromotion->value,
+                'type' => $bestPromotion->type,
+            ] : null;
+
+            return $availableRooms >= $roomCount;
+        })->values();
+
+        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights'));
+    }
+    /**
+     * Display the specified resource.
+     */
     /**
      * Display the specified resource.
      */
     public function show($id, Request $request)
     {
-        $roomType = RoomType::with(['rooms', 'amenities', 'roomTypeImages', 'services', 'rulesAndRegulations'])
-            ->where('is_active', true)
-            ->findOrFail($id);
+        // Đặt múi giờ cho Carbon
+        Carbon::setLocale('vi');
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+
+        // Lấy thông tin loại phòng
+        $roomType = RoomType::with([
+            'roomTypeImages',
+            'amenities' => function ($query) {
+                $query->where('is_active', true);
+            },
+            'services' => function ($query) {
+                $query->where('is_active', true);
+            },
+            'rulesAndRegulations' => function ($query) {
+                $query->where('is_active', true);
+            },
+            'promotions'
+        ])->findOrFail($id);
 
         // Lấy dữ liệu từ request
         $checkIn = $request->input('check_in', Carbon::today()->format('Y-m-d'));
         $checkOut = $request->input('check_out', Carbon::tomorrow()->format('Y-m-d'));
         $totalGuests = (int) $request->input('total_guests', 2);
         $childrenCount = (int) $request->input('children_count', 0);
+        $roomCount = (int) $request->input('room_quantity', 1);
 
-        $checkInFormatted = FormatHelper::FormatDateVI($checkIn);
-        $checkOutFormatted = FormatHelper::FormatDateVI($checkOut);
-        // Tính số phòng còn trống
-        $roomType->available_rooms = $this->calculateAvailableRooms($roomType, $checkIn, $checkOut);
+        // Xử lý ngày giờ
+        try {
+            $checkInDate = Carbon::parse($checkIn);
+            $checkOutDate = Carbon::parse($checkOut);
+            $now = Carbon::now();
 
-        if ($roomType->available_rooms == 0) {
-            return redirect()->route('home')->with('error', 'Phòng này hiện không còn trống trong khoảng thời gian bạn chọn.');
+            // Nếu ngày check-in là quá khứ hoặc hôm nay sau 22:00, điều chỉnh sang ngày hôm sau
+            if ($checkInDate->lt($now->startOfDay()) || ($checkInDate->isToday() && $now->hour >= 22)) {
+                $checkInDate = $now->copy()->addDay()->startOfDay();
+                $checkOutDate = $checkInDate->copy()->addDay();
+                $checkIn = $checkInDate->format('Y-m-d');
+                $checkOut = $checkOutDate->format('Y-m-d');
+                $request->session()->flash('warning', 'Đặt phòng vào thời điểm này sẽ được check-in từ ngày mai (' . $checkInDate->format('d/m/Y') . ').');
+            }
+
+            // Kiểm tra check-out phải sau check-in
+            if ($checkInDate->gte($checkOutDate)) {
+                $checkOutDate = $checkInDate->copy()->addDay();
+                $checkOut = $checkOutDate->format('Y-m-d');
+                $request->session()->flash('warning', 'Ngày trả phòng đã được điều chỉnh để sau ngày nhận phòng.');
+            }
+
+            // Tính số đêm
+            $nights = $checkInDate->diffInDays($checkOutDate);
+
+            // Định dạng ngày để hiển thị tiếng Việt
+            $days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+            $months = [
+                'tháng 1',
+                'tháng 2',
+                'tháng 3',
+                'tháng 4',
+                'tháng 5',
+                'tháng 6',
+                'tháng 7',
+                'tháng 8',
+                'tháng 9',
+                'tháng 10',
+                'tháng 11',
+                'tháng 12'
+            ];
+            $startDay = $days[$checkInDate->dayOfWeek];
+            $startDateNum = $checkInDate->day;
+            $startMonth = $months[$checkInDate->month - 1];
+            $endDay = $days[$checkOutDate->dayOfWeek];
+            $endDateNum = $checkOutDate->day;
+            $endMonth = $months[$checkOutDate->month - 1];
+            $formattedDateRange = "{$startDay}, {$startDateNum} {$startMonth} - {$endDay}, {$endDateNum} {$endMonth}";
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ngày không hợp lệ.');
         }
 
-        return view('clients.room.detail', compact('roomType', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount'));
-    }
+        // Tính số phòng còn trống
+        $roomType->available_rooms = $this->calculateAvailableRooms($roomType, $checkInDate, $checkOutDate);
 
+        // Tính giá gốc
+        $roomType->total_original_price = $roomType->price * $nights * $roomCount;
+
+        // Lấy tất cả mã giảm giá của loại phòng
+        $promotions = $roomType->promotions()
+            ->where('status', 'active')
+            ->whereDate('start_date', '<=', $now->toDateString())
+            ->whereDate('end_date', '>=', $now->toDateString())
+            ->where('quantity', '>', 0)
+            ->get();
+
+        // Chọn mã giảm giá tốt nhất (giảm nhiều nhất)
+        $bestPromotion = null;
+        $bestDiscountedPrice = $roomType->total_original_price;
+
+        foreach ($promotions as $promotion) {
+            $discountedPrice = $this->calculateDiscountedPrice($roomType->price, $promotion, $nights, $roomCount);
+            if ($discountedPrice < $bestDiscountedPrice) {
+                $bestDiscountedPrice = $discountedPrice;
+                $bestPromotion = $promotion;
+            }
+        }
+
+        // Gán giá giảm tốt nhất
+        $roomType->total_discounted_price = $bestDiscountedPrice;
+
+        // Tính giá mỗi đêm sau khi áp dụng mã giảm giá (chỉ để hiển thị)
+        $roomType->discounted_price_per_night = $bestPromotion ? ($roomType->total_discounted_price / ($nights * $roomCount)) : $roomType->price;
+
+        // Gán thông tin chương trình giảm giá (nếu có)
+        $roomType->promotion_info = $bestPromotion ? [
+            'code' => $bestPromotion->code,
+            'value' => $bestPromotion->value,
+            'type' => $bestPromotion->type,
+        ] : null;
+
+        // Truyền dữ liệu sang view
+        return view('clients.room.detail', compact('roomType', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights'));
+    }
     /**
      * Display FAQs
      */

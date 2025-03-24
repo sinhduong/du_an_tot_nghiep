@@ -1,3 +1,31 @@
+<style>
+    .discount-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #ff4d4f;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.discount-info {
+    color: #ff4d4f;
+    font-size: 14px;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.discount-info i {
+    margin-right: 5px;
+}
+</style>
+
+
 <section class="section-room padding-tb-100" data-aos="fade-up" data-aos-duration="2000" id="rooms">
     <div class="container">
         <div class="banner">
@@ -6,6 +34,11 @@
         @if (session('error'))
             <div class="alert alert-danger">
                 {{ session('error') }}
+            </div>
+        @endif
+        @if (session('info'))
+            <div class="alert alert-info">
+                {{ session('info') }}
             </div>
         @endif
         @if ($roomTypes->isEmpty())
@@ -21,7 +54,14 @@
                                 $mainImage = $roomType->roomTypeImages->where('is_main', true)->first();
                                 $imagePath = $mainImage ? asset('storage/' . $mainImage->image) : asset('assets/client/assets/img/room/' . ($index + 1) . '.jpg');
                             @endphp
-                            <img src="{{ $imagePath }}" alt="{{ $roomType->name }}">
+                            <div style="position: relative;">
+                                <img src="{{ $imagePath }}" alt="{{ $roomType->name }}">
+                                @if ($roomType->promotion_info)
+                                    <span class="discount-badge">
+                                        Giảm {{ $roomType->promotion_info['value'] }}{{ $roomType->promotion_info['type'] === 'percent' ? '%' : 'K' }}
+                                    </span>
+                                @endif
+                            </div>
                             {{ $roomType->name }}
                         </button>
                     @endforeach
@@ -37,7 +77,47 @@
                                         <div class="lh-contain-heading">
                                             <h4>{{ $roomType->name }}</h4>
                                             <div class="lh-room-price">
-                                                <h4>{{ \App\Helpers\FormatHelper::FormatPrice($roomType->price) }} /<span>Mỗi đêm</span></h4>
+                                                <!-- Hiển thị tổng giá -->
+
+                                                @if ($roomType->total_discounted_price < $roomType->total_original_price)
+                                                    <p style="text-decoration: line-through; color: #888; font-size: 16px;">
+                                                        {{ \App\Helpers\FormatHelper::FormatPrice($roomType->total_original_price) }}
+                                                    </p>
+                                                    <h4 style="color: red; font-weight: bold;">
+                                                        {{ \App\Helpers\FormatHelper::FormatPrice($roomType->total_discounted_price) }}
+                                                    </h4>
+                                                    <!-- Hiển thị thông tin chương trình giảm giá -->
+                                                    @if ($roomType->promotion_info)
+                                                        <p class="discount-info">
+                                                            <i class="ri-coupon-3-line"></i>
+                                                            Mã: {{ $roomType->promotion_info['code'] }} - Giảm {{ round($roomType->promotion_info['value'], 2) }}{{ $roomType->promotion_info['type'] === 'percent' ? '%' : 'K' }}
+                                                        </p>
+                                                   @endif
+                                                @else
+                                                    <h4 style="color: #333; font-weight: bold;">
+                                                        {{ \App\Helpers\FormatHelper::FormatPrice($roomType->total_original_price) }}
+                                                    </h4>
+                                                @endif
+                                                <p style="font-size: 14px; color: #555;">
+                                                    Chi phí cho {{ $nights }} đêm, {{ $totalGuests + $childrenCount }} khách
+                                                </p>
+                                                <!-- Hiển thị giá mỗi đêm trong tooltip (tùy chọn) -->
+                                                @if ($nights > 1 || $roomCount > 1)
+                                                    <p style="font-size: 12px; color: #888;" data-toggle="tooltip" data-placement="top" title="Giá mỗi đêm">
+                                                        (Giá mỗi đêm:
+                                                        @if ($roomType->discounted_price_per_night < $roomType->price)
+                                                            <span style="text-decoration: line-through;">
+                                                                {{ \App\Helpers\FormatHelper::FormatPrice($roomType->price) }}
+                                                            </span>
+                                                            <span style="color: red;">
+                                                                {{ \App\Helpers\FormatHelper::FormatPrice($roomType->discounted_price_per_night) }}
+                                                            </span>
+                                                        @else
+                                                            {{ \App\Helpers\FormatHelper::FormatPrice($roomType->price) }}
+                                                        @endif
+                                                        )
+                                                    </p>
+                                                @endif
                                             </div>
                                         </div>
                                         <div class="lh-room-size d-flex">
@@ -89,7 +169,7 @@
                                             $imagePath = $mainImage ? asset('storage/' . $mainImage->image) : asset('assets/client/assets/img/room/room-' . ($index + 1) . '.jpg');
                                         @endphp
                                         <img src="{{ $imagePath }}" alt="room-img" class="room-image">
-                                        <a href="{{ route('room.details', $roomType->id) }}?check_in={{ $checkIn }}&check_out={{ $checkOut }}&total_guests={{ $totalGuests }}&children_count={{ $childrenCount }}" class="link"><i class="ri-arrow-right-line"></i></a>
+                                        <a href="{{ route('room.details', $roomType->id) }}?check_in={{ $checkIn }}&check_out={{ $checkOut }}&total_guests={{ $totalGuests }}&children_count={{ $childrenCount }}&room_count={{ $roomCount }}" class="link"><i class="ri-arrow-right-line"></i></a>
                                     </div>
                                 </div>
                             </div>

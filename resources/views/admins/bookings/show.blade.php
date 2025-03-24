@@ -507,19 +507,23 @@
                             </li>
                             <li>
                                 <strong>Trạng thái:</strong>
-                                <span class="status-badge {{ 'status-' . $booking->status }}">
-                                        @php
-                                            $statusMapping = [
-                                                'pending_confirmation' => 'Chưa xác nhận',
-                                                'confirmed' => 'Đã xác nhận',
-                                                'paid' => 'Đã thanh toán',
-                                                'check_in' => 'Đã check in',
-                                                'check_out' => 'Đã checkout',
-                                                'cancelled' => 'Đã hủy',
-                                                'refunded' => 'Đã hoàn tiền',
-                                            ];
-                                        @endphp
-                                    {{ $statusMapping[$booking->status] ?? 'Không xác định' }}
+                                <span>
+                                    @php
+                                        $statusMapping = [
+                                            'pending_confirmation' => ['text' => 'Chưa xác nhận', 'color' => '#f1c40f'], // Màu vàng
+                                            'confirmed' => ['text' => 'Đã xác nhận', 'color' => '#17a2b8'], // Màu xanh lam
+                                            'paid' => ['text' => 'Đã thanh toán', 'color' => '#28a745'], // Màu xanh lá
+                                            'check_in' => ['text' => 'Đã check in', 'color' => '#007bff'], // Màu xanh dương
+                                            'check_out' => ['text' => 'Đã checkout', 'color' => '#6c757d'], // Màu xám
+                                            'cancelled' => ['text' => 'Đã hủy', 'color' => '#dc3545'], // Màu đỏ
+                                            'refunded' => ['text' => 'Đã hoàn tiền', 'color' => '#ff851b'], // Màu cam
+                                        ];
+                                        $status = $booking->status ?? 'unknown';
+                                        $statusInfo = $statusMapping[$status] ?? ['text' => 'Không xác định', 'color' => '#000000']; // Mặc định màu đen
+                                    @endphp
+                                    <span style="color: {{ $statusInfo['color'] }};">
+                                        {{ $statusInfo['text'] }}
+                                    </span>
                                 </span>
                             </li>
                         </ul>
@@ -539,20 +543,24 @@
                                 <h6>Thanh toán</h6>
                                 <div class="booking-info">
                                     @forelse ($booking->payments as $payment)
-                                        <div class="info-item">
-                                            <label>Phương thức:</label>
-                                            <span class="status-badge {{ 'method-' . strtolower($payment->method ?? 'unknown') }}">
-                                                    @php
-                                                        $methodMapping = [
-                                                            'momo' => 'MOMO',
-                                                            'vnpay' => 'VNPAY',
-                                                            'cash' => 'Tiền mặt',
-                                                        ];
-                                                    @endphp
-                                                {{ $methodMapping[strtolower($payment->method ?? 'unknown')] ?? 'Không xác định' }}
-                                                </span>
-                                        </div>
-                                        <div class="info-item">
+                                    <div class="info-item">
+                                        <label>Phương thức:</label>
+                                        <span>
+                                            @php
+                                                $methodMapping = [
+                                                    'momo' => ['text' => 'MOMO', 'color' => '#d82c6b'], // Màu đỏ cho MOMO
+                                                    'vnpay' => ['text' => 'VNPAY', 'color' => '#0055a5'], // Màu xanh dương cho VNPAY
+                                                    'cash' => ['text' => 'Tiền mặt', 'color' => '#28a745'], // Màu xanh lá cho Tiền mặt
+                                                ];
+                                                $method = strtolower($payment->method ?? 'unknown');
+                                                $methodInfo = $methodMapping[$method] ?? ['text' => 'Không xác định', 'color' => '#000000']; // Mặc định màu đen
+                                            @endphp
+                                            <span style="color: {{ $methodInfo['color'] }};">
+                                                {{ $methodInfo['text'] }}
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="info-item">
                                             <label>Số tiền:</label>
                                             <span>{{ \App\Helpers\FormatHelper::formatPrice($payment->amount ?? 0) }}</span>
                                         </div>
@@ -562,16 +570,24 @@
                                         </div>
                                         <div class="info-item">
                                             <label>Trạng thái:</label>
-                                            <span class="status-badge {{ 'status-' . strtolower($payment->status ?? 'unknown') }}">
+                                            <span>
+                                                @if ($payment)
                                                     @php
                                                         $statusMapping = [
-                                                            'pending' => 'Đang chờ',
-                                                            'completed' => 'Đã hoàn thành',
-                                                            'failed' => 'Không hoàn thành',
+                                                            'pending' => ['text' => 'Đang chờ', 'color' => '#f1c40f'], // Màu vàng cho Đang chờ
+                                                            'completed' => ['text' => 'Đã hoàn thành', 'color' => '#28a745'], // Màu xanh lá cho Đã hoàn thành
+                                                            'failed' => ['text' => 'Không hoàn thành', 'color' => '#dc3545'], // Màu đỏ cho Không hoàn thành
                                                         ];
+                                                        $status = strtolower($payment->status ?? 'unknown');
+                                                        $statusInfo = $statusMapping[$status] ?? ['text' => 'Không xác định', 'color' => '#000000']; // Mặc định màu đen
                                                     @endphp
-                                                {{ $statusMapping[strtolower($payment->status ?? 'unknown')] ?? 'Không xác định' }}
-                                                </span>
+                                                    <span style="color: {{ $statusInfo['color'] }};">
+                                                        {{ $statusInfo['text'] }}
+                                                    </span>
+                                                @else
+                                                    <span style="color: #000000;">Không có thanh toán</span>
+                                                @endif
+                                            </span>
                                         </div>
                                     @empty
                                         <div class="info-item">
