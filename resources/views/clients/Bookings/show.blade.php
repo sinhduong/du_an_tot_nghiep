@@ -129,7 +129,7 @@
                                             @default
                                                 <span class="badge bg-info">Thanh toán trực tuyến ({{ $method }})</span>
                                         @endswitch
-                                        <span class="ms-2">
+                                        <div>
                                             @switch($paymentStatus)
                                                 @case('pending')
                                                     <span class="badge bg-warning text-dark">Chưa thanh toán</span>
@@ -137,7 +137,11 @@
 
                                                 @case('completed')
                                                     <span class="badge bg-success">Đã thanh toán</span>
-                                                @break
+                                                    <span class="badge bg-info mt-2">
+                                                        <i class="fas fa-clock"></i> {{ $payment->created_at->format('H:i:s d-m-Y') }}
+                                                    </span>
+
+                                                    @break
 
                                                 @case('failed')
                                                     <span class="badge bg-danger">Thanh toán thất bại</span>
@@ -150,7 +154,7 @@
                                                 @default
                                                     <span class="badge bg-secondary">{{ $paymentStatus }}</span>
                                             @endswitch
-                                        </span>
+                                        </div>
                                     @else
                                         <span class="badge bg-warning text-dark">Chưa thanh toán</span>
                                     @endif

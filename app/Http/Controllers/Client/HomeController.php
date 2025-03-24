@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Models\Payment;
+use Illuminate\Support\Facades\Auth;
 use Log;
 use Carbon\Carbon;
 use App\Models\Faq;
@@ -175,7 +177,9 @@ class HomeController extends Controller
             return $availableRooms >= $roomCount;
         })->values();
 
-        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights'));
+        $promotions = Promotion::where('status', 'active')->where('end_date', '>=' , now())->get();
+
+        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights', 'promotions'));
     }
     /**
      * Display the specified resource.
@@ -339,5 +343,11 @@ class HomeController extends Controller
     {
         $introduction = Introduction::where('is_use', 1)->first() ?? new Introduction(['introduction' => 'Chưa có nội dung nào được thiết lập.']);
         return view('clients.introduction', compact('introduction'));
+    }
+
+    public function paymentsList()
+    {
+        $payments = Payment::where('user_id', Auth::user()->id)->get();
+        return view('clients.payments', compact('payments'));
     }
 }
