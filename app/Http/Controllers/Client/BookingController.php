@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Client;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BookingSuccess;
-
+use Illuminate\Http\JsonResponse;
 use App\Models\User;
 use App\Models\Guest;
 use App\Models\Booking;
@@ -679,14 +679,35 @@ class BookingController extends Controller
         return redirect()->back()->with('error', 'Không thể thay đổi trạng thái từ ' . $currentStatus . ' sang ' . $newStatus . '.');
     }
 
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
         $booking = Booking::findOrFail($id);
-        if ($booking->user_id === Auth::id()) {
-            $booking->delete();
-            return redirect()->route('client.bookings.index')->with('success', 'Xóa đơn đặt thành công!');
+
+        // Kiểm tra quyền sở hữu
+        if ($booking->user_id !== Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền xóa đơn đặt này!'
+            ], 403);
         }
-        return redirect()->back()->with('error', 'Bạn không có quyền xóa đơn đặt này!');
+
+        // Điều kiện: Chỉ cho xóa nếu trạng thái là 'pending' và trước ngày check_in ít nhất 24 giờ
+        $now = Carbon::now();
+        $checkInDate = Carbon::parse($booking->check_in);
+        if ($booking->status !== 'pending' || $checkInDate->diffInHours($now) < 24) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể xóa đơn đặt này vì đã được xác nhận hoặc quá gần ngày nhận phòng!'
+            ], 400);
+        }
+
+        // Xóa mềm
+        $booking->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Xóa đơn đặt thành công!'
+        ], 200);
     }
 
     public function checkPromotion(Request $request)

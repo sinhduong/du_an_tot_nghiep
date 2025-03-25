@@ -416,7 +416,7 @@
                                         <div class="col"><strong>Dịch vụ:</strong>
                                             <ul class="list-unstyled">
                                                 @forelse ($room->roomType->services as $service)
-                                                    <li>{{ $service->name }}</li>
+                                                    <li>{{ $service->name }}  -  {{  \App\Helpers\FormatHelper::formatPrice($service->price) }}</li>
                                                 @empty
                                                     <li>Không có dịch vụ.</li>
                                                 @endforelse
@@ -430,19 +430,19 @@
                 </div>
             </div>
 
-            <!-- Dịch vụ bổ sung -->
+            <!-- Dịch vụ phát sinh -->
             <div class="col-md-6">
                 <div class="booking-section">
                     <div class="booking-section-header">
-                        <h5>Dịch vụ bổ sung</h5>
+                        <h5>Dịch vụ phát sinh</h5>
                         <span class="toggle-icon">▼</span>
                     </div>
                     <div class="booking-section-content">
                         <button class="btn btn-primary ms-2 text-end" data-bs-toggle="modal" data-bs-target="#addServicePlusModal">
-                            Thêm dịch vụ bổ sung
+                            Thêm dịch vụ phát sinh
                         </button>
                         @if ($booking->servicePlus->isEmpty())
-                            <p>Chưa có dịch vụ bổ sung nào được chọn.</p>
+                            <p>Chưa có dịch vụ phát sinh nào được chọn.</p>
                         @else
                             <table class="table table-striped" id="servicePlusTable">
                                 <thead>
@@ -495,6 +495,21 @@
                             </li>
                             <li>
                                 <strong>Giờ check-out thực tế:</strong> {{ $booking->actual_check_out ? \App\Helpers\FormatHelper::formatDateTime($booking->actual_check_out) : 'Chưa check-out' }}
+                            </li>
+                            <li>
+                                <strong>Giá gốc:</strong> {{ \App\Helpers\FormatHelper::formatPrice($booking->base_price) }}
+                            </li>
+                            <li>
+                                <strong>số tiền giảm:</strong> {{ \App\Helpers\FormatHelper::formatPrice($booking->discount_amount) }}
+                            </li>
+                            <li>
+                                <strong>Phí thuế:</strong> {{ \App\Helpers\FormatHelper::formatPrice($booking->tax_fee) }}
+                            </li>
+                            <li>
+                                <strong>Số lượng phòng:</strong> {{ $booking->room_quantity }}
+                            </li>
+                            <li>
+                                <strong>Tiền dịch vụ bổ sung:</strong> {{ \App\Helpers\FormatHelper::formatPrice($booking->service_total) }}
                             </li>
                             <li>
                                 <strong>Tổng tiền:</strong> {{ \App\Helpers\FormatHelper::formatPrice($booking->total_price) }}
@@ -664,7 +679,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addServicePlusModalLabel">Chọn dịch vụ bổ sung</h5>
+                <h5 class="modal-title" id="addServicePlusModalLabel">Chọn dịch vụ phát sinh</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -672,7 +687,7 @@
                     @csrf
                     <input type="hidden" name="action" value="addServicePlus">
                     <div class="form-group">
-                        <label for="service_plus_id">Dịch vụ bổ sung:</label>
+                        <label for="service_plus_id">Dịch vụ phát sinh:</label>
                         <select name="service_plus_id" class="form-control" required>
                             <option value="">Chọn dịch vụ</option>
                             @foreach ($availableServicePlus as $servicePlus)
@@ -694,12 +709,12 @@
     </div>
 </div>
 
-<!-- Modal sửa số lượng dịch vụ bổ sung -->
+<!-- Modal sửa số lượng dịch vụ phát sinh -->
 <div class="modal fade" id="editServicePlusModal" tabindex="-1" aria-labelledby="editServicePlusModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editServicePlusModalLabel">Sửa số lượng dịch vụ bổ sung</h5>
+                <h5 class="modal-title" id="editServicePlusModalLabel">Sửa số lượng dịch vụ phát sinh</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -812,7 +827,7 @@
             });
         });
 
-        // Thêm dịch vụ bổ sung
+        // Thêm dịch vụ phát sinh
         document.getElementById('addServicePlusForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const formData = new FormData(this);
@@ -855,7 +870,7 @@
                         text: data.message,
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        // Cập nhật bảng dịch vụ bổ sung
+                        // Cập nhật bảng dịch vụ phát sinh
                         const tableBody = document.querySelector('#servicePlusTable tbody');
                         const noServiceMsg = document.querySelector('.booking-section-content p');
                         if (noServiceMsg) noServiceMsg.remove();
@@ -913,7 +928,7 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Lỗi',
-                    text: 'Có lỗi xảy ra khi thêm dịch vụ bổ sung: ' + error.message,
+                    text: 'Có lỗi xảy ra khi thêm dịch vụ phát sinh: ' + error.message,
                     confirmButtonText: 'OK'
                 }).then(() => {
                     restoreScrollState(); // Khôi phục cuộn nếu có lỗi
@@ -977,7 +992,7 @@
                         Swal.fire({
                             icon: 'error',
                             title: 'Lỗi',
-                            text: 'Có lỗi xảy ra khi xóa dịch vụ bổ sung.',
+                            text: 'Có lỗi xảy ra khi xóa dịch vụ phát sinh.',
                             confirmButtonText: 'OK'
                         }).then(() => {
                             restoreScrollState(); // Khôi phục cuộn nếu có lỗi
@@ -987,7 +1002,7 @@
             }
         });
 
-        // Sửa số lượng dịch vụ bổ sung
+        // Sửa số lượng dịch vụ phát sinh
         document.getElementById('editServicePlusForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const formData = new FormData(this);
@@ -1032,7 +1047,7 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Lỗi',
-                    text: 'Có lỗi xảy ra khi cập nhật dịch vụ bổ sung.',
+                    text: 'Có lỗi xảy ra khi cập nhật dịch vụ phát sinh.',
                     confirmButtonText: 'OK'
                 }).then(() => {
                     restoreScrollState(); // Khôi phục cuộn nếu có lỗi
