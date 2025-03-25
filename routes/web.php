@@ -1,35 +1,35 @@
 <?php
 
-use App\Http\Controllers\Admin\SystemController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\FaqController;
-use App\Http\Controllers\StaffRoleController;
-use App\Http\Controllers\admin\RoleController;
-use App\Http\Controllers\Admin\RoomController;
-use App\Http\Controllers\StaffShiftController;
 use App\Http\Controllers\Admin\AboutController;
-use App\Http\Controllers\Admin\StaffController;
-use App\Http\Controllers\Client\HomeController;
-use App\Http\Controllers\Admin\BannerController;
-use App\Http\Controllers\Admin\PolicyController;
-use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\AmenityController;
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BookingController;
-use App\Http\Controllers\Admin\PaymentController;
-use App\Http\Controllers\Admin\ProfileController;
-use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\ContactsController;
 use App\Http\Controllers\Admin\CustomerController;
-use App\Http\Controllers\Admin\RoomTypeController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\IntroductionController;
+use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\PolicyController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\PromotionController;
-use App\Http\Controllers\StaffAttendanceController;
+use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\admin\RoleController;
+use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\Admin\RoomTypeController;
+use App\Http\Controllers\Admin\RulesAndRegulationController;
+use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\ServicePlusController;
+use App\Http\Controllers\Admin\StaffAttendanceController;
+use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Admin\StaffRoleController;
+use App\Http\Controllers\Admin\StaffShiftController;
+use App\Http\Controllers\Admin\SystemController;
+use App\Http\Controllers\Client\BookingController as ClientBookingController;
+use App\Http\Controllers\Client\HomeController;
+use Illuminate\Support\Facades\Route;
 
 // client
-use App\Http\Controllers\Admin\ServicePlusController;
-use App\Http\Controllers\Admin\IntroductionController;
-use App\Http\Controllers\Admin\RulesAndRegulationController;
-use App\Http\Controllers\Client\BookingController as ClientBookingController;
 
 
 /*
@@ -291,6 +291,7 @@ Route::prefix('bookings')
         Route::get('/create', [ClientBookingController::class, 'create'])->name('create');
         Route::post('/confirm', [ClientBookingController::class, 'confirm'])->name('confirm'); // Chuyển từ create sang confirm
         Route::post('/store', [ClientBookingController::class, 'store'])->name('store'); // Lưu dữ liệu từ confirm
+        Route::get('{id}/returnVnpay',           [ClientBookingController::class, 'returnVnpay'])->name('return.vnpay');
         Route::get('{id}/show', [ClientBookingController::class, 'show'])->name('show');
         Route::get('{id}/edit', [ClientBookingController::class, 'edit'])->name('edit');
         Route::put('{id}/update', [ClientBookingController::class, 'update'])->name('update');
@@ -300,3 +301,5 @@ Route::prefix('bookings')
 
         Route::get('/payment/callback', [ClientBookingController::class, 'paymentCallback'])->name('payment.callback');
     });
+
+Route::get('payments', [HomeController::class, 'paymentsList'])->name('payments.lists');

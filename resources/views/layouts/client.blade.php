@@ -18,7 +18,7 @@
     <meta name="keywords"
         content="hotel, booking, business, restaurant, spa, resort, landing, agency, corporate, start up, site design, new business site, business template, professional template, classic, modern">
     <title>Luxurious - Hotel Booking HTML Template + Admin Dashboard</title>
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="icon" href="{{ asset('assets/client/assets/img/favicons/favicon.png ') }}" type="image/x-icon">
 
     <!-- Css All Plugins Files -->
@@ -184,7 +184,7 @@
 
     <!-- Main-js -->
     <script src="{{ asset('assets/client/assets/js/main.js')}}"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 </body>
 
 

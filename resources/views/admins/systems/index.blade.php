@@ -11,7 +11,7 @@
                     <li>Dashboard</li>
                 </ul>
             </div>
-            <div class="lh-tools">
+            {{-- <div class="lh-tools">
                 <a href="javascript:void(0)" title="Refresh" class="refresh"><i class="ri-refresh-line"></i></a>
                 <div id="pagedate">
                     <div class="lh-date-range" title="Date">
@@ -31,7 +31,7 @@
                         </ul>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
         <div class="row">
             <div class="col-xl-12 col-md-12">
@@ -101,8 +101,8 @@
                                             <td>{{ $item->email }}</td>
                                             <td>{{ $item->phone }}</td>
                                             <td>
-                                                <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">
-                                                    {{ $item->is_active ? 'Hoạt động' : 'Không hoạt động' }}
+                                                <span class="badge {{ $item->is_use ? 'bg-success' : 'bg-danger' }}">
+                                                    {{ $item->is_use ? 'Hoạt động' : 'Không hoạt động' }}
                                                 </span>
                                             </td>  
                                             <td>
