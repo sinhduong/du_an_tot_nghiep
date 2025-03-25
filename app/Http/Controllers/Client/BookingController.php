@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Client;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BookingSuccess;
+
 use App\Models\User;
 use App\Models\Guest;
 use App\Models\Booking;
@@ -366,7 +369,7 @@ class BookingController extends Controller
             'payment_method' => $paymentMethod == 'cash' ? 'cash' : $onlinePaymentMethod,
             'status' => 'pending_confirmation',
         ]);
-
+        Log::info('New booking created with payment_method: ' . ($paymentMethod == 'cash' ? 'cash' : $onlinePaymentMethod));
         // Kiểm tra và gắn phòng
         $allRooms = $roomType->rooms;
         $bookedRoomIds = Booking::whereHas('rooms', function ($query) use ($roomType) {
@@ -446,8 +449,16 @@ class BookingController extends Controller
 
         if ($paymentMethod == 'cash') {
             $paymentData['method'] = 'cash';
+            $paymentData['status'] = 'pending';
             $payment = Payment::create($paymentData);
-            $message = 'Đặt phòng đã được hoàn tất! Vui lòng thanh toán bằng tiền mặt khi nhận phòng.';
+            $message = 'Đặt phòng của bạn đã hoàn tất! Thông tin chi tiết đã được gửi qua email. Vui lòng thanh toán bằng tiền mặt khi đến nhận phòng. Cảm ơn bạn!';
+
+            // Log để debug
+            // Load lại booking với quan hệ user
+            $booking = Booking::with('user')->find($booking->id);
+            Log::info('Booking data before email (cash): ' . json_encode($booking->toArray()));
+            // Gửi email
+            Mail::to($user->email)->send(new BookingSuccess($booking));
             return redirect()->route('bookings.show', $booking->id)->with('success', $message);
         } else {
             $paymentData['method'] = $onlinePaymentMethod;
@@ -587,6 +598,7 @@ class BookingController extends Controller
             } else {
                 $methodName = $onlinePaymentMethod == 'momo' ? 'MoMo' : 'VNPay';
                 $message = "Đặt phòng đã được hoàn tất! Bạn đã chọn thanh toán qua $methodName, vui lòng hoàn tất thanh toán sau.";
+                // Gửi email cho trường hợp khác
                 return redirect()->route('bookings.show', $booking->id)->with('success', $message);
             }
         }
@@ -731,24 +743,31 @@ class BookingController extends Controller
     {
         $vnp_ResponseCode = $request->input('vnp_ResponseCode');
         $booking_id = $request->id;
+
         if ($vnp_ResponseCode == '00') {
             try {
                 DB::transaction(function () use ($booking_id, $request) {
-                    // Cập nhật trạng thái đơn đặt vé
-                    Booking::where('id', $booking_id)->update(['status' => 'paid']);
+                    $booking = Booking::where('id', $booking_id)->firstOrFail();
+                    $booking->update(['status' => 'paid']);
 
-                    // Cập nhật trạng thái thanh toán nếu có
                     $payment = Payment::where('booking_id', $booking_id)->first();
                     if ($payment) {
                         $payment->update([
-                            'transaction_id' => $request->input('vnp_TransactionNo'), // Lấy dữ liệu an toàn hơn
-                            'status' => 'completed'
+                            'transaction_id' => $request->input('vnp_TransactionNo'),
+                            'status' => 'completed',
                         ]);
                     }
+
+                    // Refresh và log dữ liệu
+                    $booking = Booking::find($booking->id);
+                    Log::info('Booking data before email (vnpay): ' . json_encode($booking->toArray()));
+
+                    // Gửi email
+                    Mail::to($booking->user->email)->send(new BookingSuccess($booking));
                 });
 
                 return redirect()->route('bookings.show', $booking_id)
-                    ->with('success', 'Thanh toán thành công!');
+                    ->with('success', 'Thanh toán thành công! Thông tin đặt phòng đã được gửi qua email.');
             } catch (\Throwable $th) {
                 return redirect()->route('bookings.show', $booking_id)
                     ->with('error', 'Đã có lỗi xảy ra trong quá trình cập nhật thanh toán.');
@@ -757,5 +776,9 @@ class BookingController extends Controller
             return redirect()->route('bookings.show', $booking_id)
                 ->with('error', 'Thanh toán không thành công!');
         }
+    }
+    public function success(Request $request){
+        $title='Trạng thái đặt phòng';
+        return view('clients.bookings.success',compact('title'));
     }
 }

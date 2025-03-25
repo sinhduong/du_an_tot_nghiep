@@ -7,7 +7,7 @@
                     <a href="">
                         <i class="ri-mail-line"></i>
                     </a>
-                       {{ $systems->email}}
+{{--                       {{ $systems->email}}--}}
                     </div>
 
                     <div class="lh-location">
@@ -20,14 +20,14 @@
                             </select>
                         </div> --}}
                         <i class="ri-map-pin-line"></i>
-                        {{ $systems->address}}
+{{--                        {{ $systems->address}}--}}
 
                     </div>
                 </div>
                 <div class="col-lg-6 col-sm-12 lh-top-social">
                     <div class="lh-phone">
                         <i class="ri-phone-line"></i>
-                        {{ $systems->phone}}
+{{--                        {{ $systems->phone}}--}}
                     </div>
                     <div class="lh-header-icons">
                         <a href="javascript:void(0)"><i class="ri-facebook-box-line facebook"></i></a>
