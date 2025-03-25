@@ -300,6 +300,7 @@ Route::prefix('bookings')
 
 
         Route::get('/payment/callback', [ClientBookingController::class, 'paymentCallback'])->name('payment.callback');
+        Route::get('/success', [ClientBookingController::class, 'success'])->name('success');
     });
 
 Route::get('payments', [HomeController::class, 'paymentsList'])->name('payments.lists');

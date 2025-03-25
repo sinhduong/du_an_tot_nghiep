@@ -53,41 +53,14 @@ class HomeController extends Controller
         return max(0, $totalRooms - $bookedRooms);
     }
 
-    private function calculateDiscountedPrice($originalPrice, $promotion, $nights, $roomCount)
-    {
-        $totalPrice = $originalPrice * $nights * $roomCount; // Tổng giá gốc
-        if (!$promotion || $promotion->status !== 'active') {
-            return $totalPrice;
-        }
-
-        // Kiểm tra min_booking_amount
-        if ($promotion->min_booking_amount && $totalPrice < $promotion->min_booking_amount) {
-            \Log::info("Total price $totalPrice does not meet min_booking_amount {$promotion->min_booking_amount}");
-            return $totalPrice;
-        }
-
-        $discountedPrice = $totalPrice;
-
-        if ($promotion->type === 'percent') {
-            $discount = $totalPrice * ($promotion->value / 100);
-            if ($promotion->max_discount_value && $discount > $promotion->max_discount_value) {
-                $discount = $promotion->max_discount_value;
-            }
-            $discountedPrice = $totalPrice - $discount;
-        } elseif ($promotion->type === 'fixed') {
-            $discountedPrice = $totalPrice - $promotion->value;
-        }
-
-        return max(0, $discountedPrice);
-    }
 
     public function index(Request $request)
     {
         Carbon::setLocale('vi');
         date_default_timezone_set('Asia/Ho_Chi_Minh');
 
-        $checkIn = $request->input('check_in', Carbon::today()->format('Y-m-d'));
-        $checkOut = $request->input('check_out', Carbon::tomorrow()->format('Y-m-d'));
+        $checkIn = $request->input('check_in', Carbon::today()->setHour(14)->setMinute(0)->setSecond(0)->toDateTimeString());
+        $checkOut = $request->input('check_out', Carbon::tomorrow()->setHour(12)->setMinute(0)->setSecond(0)->toDateTimeString());
         $totalGuests = (int) $request->input('total_guests', 2);
         $childrenCount = (int) $request->input('children_count', 0);
         $roomCount = (int) $request->input('room_count', 1);
@@ -97,39 +70,41 @@ class HomeController extends Controller
             $checkOutDate = Carbon::parse($checkOut);
             $now = Carbon::now();
 
-            if ($checkInDate->lt($now->startOfDay()) || ($checkInDate->isToday() && $now->hour >= 22)) {
-                $checkInDate = $now->copy()->addDay()->startOfDay();
-                $checkOutDate = $checkInDate->copy()->addDay();
-                $checkIn = $checkInDate->format('Y-m-d');
-                $checkOut = $checkOutDate->format('Y-m-d');
-                $request->session()->flash('info', 'Đặt phòng vào thời điểm này sẽ được check-in từ ngày mai (' . $checkInDate->format('d/m/Y') . ').');
+            if ($checkInDate->lt($now) || ($checkInDate->isToday() && $now->hour >= 21)) {
+                $checkInDate = $now->copy()->addDay()->setHour(14)->setMinute(0)->setSecond(0);
+                $checkOutDate = $checkInDate->copy()->addDay()->setHour(12)->setMinute(0)->setSecond(0);
+                $checkIn = $checkInDate->toDateTimeString();
+                $checkOut = $checkOutDate->toDateTimeString();
             }
 
             if ($checkInDate->gte($checkOutDate)) {
-                $checkOutDate = $checkInDate->copy()->addDay();
-                $checkOut = $checkOutDate->format('Y-m-d');
+                $checkOutDate = $checkInDate->copy()->addDay()->setHour(12)->setMinute(0)->setSecond(0);
+                $checkOut = $checkOutDate->toDateTimeString();
                 $request->session()->flash('info', 'Ngày trả phòng đã được điều chỉnh để sau ngày nhận phòng.');
             }
 
             $nights = $checkInDate->diffInDays($checkOutDate);
+            if ($nights < 1) $nights = 1;
 
             $days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
             $months = ['tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6', 'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'];
             $startDay = $days[$checkInDate->dayOfWeek];
             $startDateNum = $checkInDate->day;
             $startMonth = $months[$checkInDate->month - 1];
+            $startTime = $checkInDate->format('H:i');
             $endDay = $days[$checkOutDate->dayOfWeek];
             $endDateNum = $checkOutDate->day;
             $endMonth = $months[$checkOutDate->month - 1];
-            $formattedDateRange = "{$startDay}, {$startDateNum} {$startMonth} - {$endDay}, {$endDateNum} {$endMonth}";
+            $endTime = $checkOutDate->format('H:i');
+            $formattedDateRange = "{$startDay}, {$startDateNum} {$startMonth} {$startTime} - {$endDay}, {$endDateNum} {$endMonth} {$endTime}";
         } catch (\Exception $e) {
-            return back()->with('error', 'Ngày không hợp lệ.');
+            return back()->with('error', 'Ngày giờ không hợp lệ.');
         }
 
         $totalPeople = $totalGuests + $childrenCount;
 
         $roomTypes = RoomType::query()
-            ->with(['roomTypeImages', 'amenities', 'rooms', 'promotions']) // Load promotions (nhiều-nhiều)
+            ->with(['roomTypeImages', 'amenities', 'rooms', 'promotions'])
             ->where('is_active', true)
             ->where('max_capacity', '>=', $totalPeople)
             ->where('children_free_limit', '>=', $childrenCount)
@@ -142,15 +117,15 @@ class HomeController extends Controller
             // Tính giá gốc
             $roomType->total_original_price = $roomType->price * $nights * $roomCount;
 
-            // Lấy tất cả mã giảm giá của loại phòng
+            // Lấy tất cả mã giảm giá của loại phòng (chỉ percent)
             $promotions = $roomType->promotions()
                 ->where('status', 'active')
+                ->where('type', 'percent')
                 ->whereDate('start_date', '<=', $now->toDateString())
                 ->whereDate('end_date', '>=', $now->toDateString())
                 ->where('quantity', '>', 0)
                 ->get();
 
-            // Chọn mã giảm giá tốt nhất (giảm nhiều nhất)
             $bestPromotion = null;
             $bestDiscountedPrice = $roomType->total_original_price;
 
@@ -162,27 +137,49 @@ class HomeController extends Controller
                 }
             }
 
-            // Gán giá giảm tốt nhất
             $roomType->total_discounted_price = $bestDiscountedPrice;
-
-            // Tính giá mỗi đêm sau khi áp dụng mã giảm giá (chỉ để hiển thị)
             $roomType->discounted_price_per_night = $bestPromotion ? ($roomType->total_discounted_price / ($nights * $roomCount)) : $roomType->price;
-
-            // Gán thông tin chương trình giảm giá (nếu có)
             $roomType->promotion_info = $bestPromotion ? [
                 'code' => $bestPromotion->code,
                 'value' => $bestPromotion->value,
-                'type' => $bestPromotion->type,
+                'type' => 'percent',
             ] : null;
+
+            // Debug để kiểm tra giá
+            \Log::info("Room: {$roomType->name}, Price: {$roomType->price}, Nights: $nights, RoomCount: $roomCount, Original: {$roomType->total_original_price}, Discounted: {$roomType->total_discounted_price}, Promotion: " . json_encode($bestPromotion ? $bestPromotion->toArray() : null));
 
             return $availableRooms >= $roomCount;
         })->values();
 
-        $promotions = Promotion::where('status', 'active')->where('end_date', '>=' , now())->get();
+        $promotions = Promotion::where('status', 'active')
+            ->where('type', 'percent')
+            ->where('end_date', '>=', now())
+            ->get();
 
         // lấy thông tin, dữ liệu system 
         $systems = System::orderBy('id', 'desc')->first(); // Lấy bản ghi mới nhất
         return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights', 'promotions','systems'));
+    }
+
+    private function calculateDiscountedPrice($originalPrice, $promotion, $nights, $roomCount)
+    {
+        $totalPrice = $originalPrice * $nights * $roomCount;
+        if (!$promotion || $promotion->status !== 'active' || $promotion->type !== 'percent') {
+            return $totalPrice;
+        }
+
+        if ($promotion->min_booking_amount && $totalPrice < $promotion->min_booking_amount) {
+            \Log::info("Total price $totalPrice does not meet min_booking_amount {$promotion->min_booking_amount}");
+            return $totalPrice;
+        }
+
+        $discount = $totalPrice * ($promotion->value / 100);
+        if ($promotion->max_discount_value && $discount > $promotion->max_discount_value) {
+            $discount = $promotion->max_discount_value;
+        }
+        $discountedPrice = $totalPrice - $discount;
+
+        return max(0, $discountedPrice);
     }
     /**
      * Display the specified resource.

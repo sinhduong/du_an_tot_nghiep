@@ -1,30 +1,29 @@
 <style>
     .discount-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: #ff4d4f;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 14px;
-    font-weight: bold;
-    z-index: 10;
-}
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: #ff4d4f;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 10;
+    }
 
-.discount-info {
-    color: #ff4d4f;
-    font-size: 14px;
-    margin-top: 5px;
-    display: flex;
-    align-items: center;
-}
+    .discount-info {
+        color: #ff4d4f;
+        font-size: 14px;
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+    }
 
-.discount-info i {
-    margin-right: 5px;
-}
+    .discount-info i {
+        margin-right: 5px;
+    }
 </style>
-
 
 <section class="section-room padding-tb-100" data-aos="fade-up" data-aos-duration="2000" id="rooms">
     <div class="container">
@@ -48,8 +47,8 @@
                 <div class="nav nav-tabs rooms lh-room" id="nav-tab" role="tablist">
                     @foreach ($roomTypes as $index => $roomType)
                         <button class="nav-link {{ $index == 0 ? 'active' : '' }}" id="nav-{{ $roomType->id }}-tab" data-bs-toggle="tab"
-                            data-bs-target="#nav-{{ $roomType->id }}" type="button" role="tab" aria-controls="nav-{{ $roomType->id }}"
-                            aria-selected="{{ $index == 0 ? 'true' : 'false' }}">
+                                data-bs-target="#nav-{{ $roomType->id }}" type="button" role="tab" aria-controls="nav-{{ $roomType->id }}"
+                                aria-selected="{{ $index == 0 ? 'true' : 'false' }}">
                             @php
                                 $mainImage = $roomType->roomTypeImages->where('is_main', true)->first();
                                 $imagePath = $mainImage ? asset('storage/' . $mainImage->image) : asset('assets/client/assets/img/room/' . ($index + 1) . '.jpg');
@@ -58,7 +57,7 @@
                                 <img src="{{ $imagePath }}" alt="{{ $roomType->name }}">
                                 @if ($roomType->promotion_info)
                                     <span class="discount-badge">
-                                        Giảm {{ $roomType->promotion_info['value'] }}{{ $roomType->promotion_info['type'] === 'percent' ? '%' : 'K' }}
+                                        Giảm {{ $roomType->promotion_info['value'] }}%
                                     </span>
                                 @endif
                             </div>
@@ -77,8 +76,6 @@
                                         <div class="lh-contain-heading">
                                             <h4>{{ $roomType->name }}</h4>
                                             <div class="lh-room-price">
-                                                <!-- Hiển thị tổng giá -->
-
                                                 @if ($roomType->total_discounted_price < $roomType->total_original_price)
                                                     <p style="text-decoration: line-through; color: #888; font-size: 16px;">
                                                         {{ \App\Helpers\FormatHelper::FormatPrice($roomType->total_original_price) }}
@@ -86,13 +83,12 @@
                                                     <h4 style="color: red; font-weight: bold;">
                                                         {{ \App\Helpers\FormatHelper::FormatPrice($roomType->total_discounted_price) }}
                                                     </h4>
-                                                    <!-- Hiển thị thông tin chương trình giảm giá -->
                                                     @if ($roomType->promotion_info)
                                                         <p class="discount-info">
                                                             <i class="ri-coupon-3-line"></i>
-                                                            Mã: {{ $roomType->promotion_info['code'] }} - Giảm {{ round($roomType->promotion_info['value'], 2) }}{{ $roomType->promotion_info['type'] === 'percent' ? '%' : 'K' }}
+                                                            Mã: {{ $roomType->promotion_info['code'] }} - Giảm {{ round($roomType->promotion_info['value'], 2) }}%
                                                         </p>
-                                                   @endif
+                                                    @endif
                                                 @else
                                                     <h4 style="color: #333; font-weight: bold;">
                                                         {{ \App\Helpers\FormatHelper::FormatPrice($roomType->total_original_price) }}
@@ -101,7 +97,6 @@
                                                 <p style="font-size: 14px; color: #555;">
                                                     Chi phí cho {{ $nights }} đêm, {{ $totalGuests + $childrenCount }} khách
                                                 </p>
-                                                <!-- Hiển thị giá mỗi đêm trong tooltip (tùy chọn) -->
                                                 @if ($nights > 1 || $roomCount > 1)
                                                     <p style="font-size: 12px; color: #888;" data-toggle="tooltip" data-placement="top" title="Giá mỗi đêm">
                                                         (Giá mỗi đêm:
@@ -124,14 +119,14 @@
                                             <p>{{ $roomType->size }} m² <span>|</span></p>
                                             <p>
                                                 @php
-                                                $bedTypeMapping = [
-                                                    'single' => 'Giường đơn',
-                                                    'double' => 'Giường đôi',
-                                                    'queen' => 'Giường Queen',
-                                                    'king' => 'Giường King',
-                                                    'bunk' => 'Giường tầng',
-                                                    'sofa' => 'Giường sofa',
-                                                ];
+                                                    $bedTypeMapping = [
+                                                        'single' => 'Giường đơn',
+                                                        'double' => 'Giường đôi',
+                                                        'queen' => 'Giường Queen',
+                                                        'king' => 'Giường King',
+                                                        'bunk' => 'Giường tầng',
+                                                        'sofa' => 'Giường sofa',
+                                                    ];
                                                 @endphp
                                                 {{ $bedTypeMapping[$roomType->bed_type] ?? 'Không xác định' }}<span>|</span>
                                             </p>
