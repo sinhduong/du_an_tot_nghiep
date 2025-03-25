@@ -16,6 +16,7 @@ use App\Models\Introduction;
 use Illuminate\Http\Request;
 use App\Helpers\FormatHelper;
 use App\Http\Controllers\Controller;
+use App\Models\System;
 
 class HomeController extends Controller
 {
@@ -179,7 +180,9 @@ class HomeController extends Controller
 
         $promotions = Promotion::where('status', 'active')->where('end_date', '>=' , now())->get();
 
-        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights', 'promotions'));
+        // lấy thông tin, dữ liệu system 
+        $systems = System::orderBy('id', 'desc')->first(); // Lấy bản ghi mới nhất
+        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights', 'promotions','systems'));
     }
     /**
      * Display the specified resource.

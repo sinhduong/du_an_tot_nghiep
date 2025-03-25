@@ -225,7 +225,9 @@
                                     class="ri-git-commit-line"></i>Trang Giới thiệu</a></li>
                         <li><a href="{{ route('admin.banners.index') }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Quản lý banner</a></li>
-
+                        <li><a href="{{ route('admin.systems.index') }}" class="lh-page-link drop"><i
+                                        class="ri-git-commit-line"></i>Quản lý system </a></li>
+    
                     </ul>
                 </li>
 

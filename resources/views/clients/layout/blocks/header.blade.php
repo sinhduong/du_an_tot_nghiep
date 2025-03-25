@@ -7,24 +7,27 @@
                     <a href="">
                         <i class="ri-mail-line"></i>
                     </a>
-                        sinh.duongvan24@gmail.com
+                       {{ $systems->email}}
                     </div>
 
                     <div class="lh-location">
-                        <div class="custom-select">
+                        {{-- <div class="custom-select">
                             <i class="ri-map-pin-line"></i>
                             <select>
                                 <option value="option1">Hà Nội</option>
                                 <option value="option2">Bắc Giang</option>
                                 <option value="option3">Bắc Ninh</option>
                             </select>
-                        </div>
+                        </div> --}}
+                        <i class="ri-map-pin-line"></i>
+                        {{ $systems->address}}
+
                     </div>
                 </div>
                 <div class="col-lg-6 col-sm-12 lh-top-social">
                     <div class="lh-phone">
                         <i class="ri-phone-line"></i>
-                        +84(865)(642)(497)
+                        {{ $systems->phone}}
                     </div>
                     <div class="lh-header-icons">
                         <a href="javascript:void(0)"><i class="ri-facebook-box-line facebook"></i></a>
