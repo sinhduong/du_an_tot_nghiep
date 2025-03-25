@@ -225,55 +225,12 @@
                                     class="ri-git-commit-line"></i>Trang Giới thiệu</a></li>
                         <li><a href="{{ route('admin.banners.index') }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Quản lý banner</a></li>
-
-                    </ul>
-                </li>
-
-                    </ul>
-                </li>
-                <li class="lh-sb-item-separator"></li>
-                <li class="lh-sb-item sb-drop-item">
-                    <a href="javascript:void(0)" class="lh-drop-toggle">
-                        <i class="ri-home-8-line"></i><span class="condense">Dịch vụ & Tiện nghi<i
-                                class="drop-arrow ri-arrow-down-s-line"></i></span></a>
-                    <ul class="lh-sb-drop condense">
-                        <li><a href="{{ route('admin.services.index') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Dịch vụ</a></li>
-
-                        <li><a href="{{ route('admin.amenities.index') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Tiện nghi</a></li>
-                    </ul>
-                </li>
-                <li class="lh-sb-item-separator"></li>
-                <li class="lh-sb-item sb-drop-item">
-                    <a href="javascript:void(0)" class="lh-drop-toggle">
-                        <i class="ri-home-8-line"></i><span class="condense">Quản Lý Banner<i
-                                class="drop-arrow ri-arrow-down-s-line"></i></span></a>
-                    <ul class="lh-sb-drop condense">
-                        <li><a href="{{ route('admin.banners.index') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Danh sách banner </a></li>
-                        <li><a href="{{ route('admin.banners.create') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Thêm mới </a></li>
-                        {{-- <li><a href="{{ route('admin.banners.trashed') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Thùng rác</a></li> --}}
-
-                    </ul>
-                </li>
-                <li class="lh-sb-item-separator"></li>
-                <li class="lh-sb-item sb-drop-item">
-                    <a href="javascript:void(0)" class="lh-drop-toggle">
-                        <i class="ri-home-8-line"></i><span class="condense">Quản Lý Systems<i
-                                class="drop-arrow ri-arrow-down-s-line"></i></span></a>
-                    <ul class="lh-sb-drop condense">
                         <li><a href="{{ route('admin.systems.index') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Danh sách systems </a></li>
-                        <li><a href="{{ route('admin.systems.create') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Thêm mới </a></li>
-                        {{-- <li><a href="{{ route('admin.systems.trashed') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Thùng rác</a></li> --}}
-
+                                        class="ri-git-commit-line"></i>Quản lý system </a></li>
+    
                     </ul>
                 </li>
+
 
                 <li class="lh-sb-title condense">Settings</li>
             </ul>

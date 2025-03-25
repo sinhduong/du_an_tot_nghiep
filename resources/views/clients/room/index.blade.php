@@ -8,6 +8,11 @@
                 {{ session('error') }}
             </div>
         @endif
+        @if (session('info'))
+            <div class="alert alert-info">
+                {{ session('info') }}
+            </div>
+        @endif
         @if ($roomTypes->isEmpty())
             <p>Không có phòng nào phù hợp với yêu cầu của bạn.</p>
         @else
@@ -89,7 +94,7 @@
                                             $imagePath = $mainImage ? asset('storage/' . $mainImage->image) : asset('assets/client/assets/img/room/room-' . ($index + 1) . '.jpg');
                                         @endphp
                                         <img src="{{ $imagePath }}" alt="room-img" class="room-image">
-                                        <a href="{{ route('room.details', $roomType->id) }}?check_in={{ $checkIn }}&check_out={{ $checkOut }}&total_guests={{ $totalGuests }}&children_count={{ $childrenCount }}" class="link"><i class="ri-arrow-right-line"></i></a>
+                                        <a href="{{ route('room.details', $roomType->id) }}?check_in={{ $checkIn }}&check_out={{ $checkOut }}&total_guests={{ $totalGuests }}&children_count={{ $childrenCount }}&room_count={{ $roomCount }}" class="link"><i class="ri-arrow-right-line"></i></a>
                                     </div>
                                 </div>
                             </div>
