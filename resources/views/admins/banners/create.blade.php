@@ -11,7 +11,7 @@
                     <li>Dashboard</li>
                 </ul>
             </div>
-            <div class="lh-tools">
+            {{-- <div class="lh-tools">
                 <a href="javascript:void(0)" title="Refresh" class="refresh"><i class="ri-refresh-line"></i></a>
                 <div id="pagedate">
                     <div class="lh-date-range" title="Date">
@@ -31,7 +31,7 @@
                         </ul>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
         <div class="row">
             <div class="col-xxl-12 col-xl-8 col-md-12">
