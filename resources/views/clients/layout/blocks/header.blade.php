@@ -7,7 +7,7 @@
                     <a href="">
                         <i class="ri-mail-line"></i>
                     </a>
-{{--                       {{ $systems->email}}--}}
+                      {{ $systems->email}}
                     </div>
 
                     <div class="lh-location">
@@ -20,14 +20,14 @@
                             </select>
                         </div> --}}
                         <i class="ri-map-pin-line"></i>
-{{--                        {{ $systems->address}}--}}
+                       {{ $systems->address}}
 
                     </div>
                 </div>
                 <div class="col-lg-6 col-sm-12 lh-top-social">
                     <div class="lh-phone">
                         <i class="ri-phone-line"></i>
-{{--                        {{ $systems->phone}}--}}
+                       {{ $systems->phone}}
                     </div>
                     <div class="lh-header-icons">
                         <a href="javascript:void(0)"><i class="ri-facebook-box-line facebook"></i></a>
@@ -82,19 +82,20 @@
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                             <li class="nav-item dropdown">
+                                <a class="nav-link" href="{{ route('home') }}">Trang Chủ</a>
                                 <a class="nav-link dropdown-toggle" href="javascript:void(0)" role="button"
                                     data-bs-toggle="dropdown">
-                                    Trang Chủ
-                                    <i class="ri-arrow-down-s-line"></i>
+                                    {{-- Trang Chủ --}}
+                                    {{-- <i class="ri-arrow-down-s-line"></i> --}}
                                 </a>
-                                <ul class="dropdown-menu">
+                                {{-- <ul class="dropdown-menu">
                                     <li>
                                         <a class="dropdown-item" href="index.html">Home Layout 1</a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item" href="demo-2.html">Home Layout 2</a>
                                     </li>
-                                </ul>
+                                </ul> --}}
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="javascript:void(0)" role="button"
@@ -122,7 +123,7 @@
                                         <a class="dropdown-item" href="room.html">Rooms</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="room-2.html">Rooms 2</a>
+                                        <a class="dropdown-item" href="{{route('room.view')}}">Rooms 2</a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item" href="room-details.html">Rooms details</a>
