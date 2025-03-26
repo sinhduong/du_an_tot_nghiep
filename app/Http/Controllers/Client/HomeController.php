@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Models\Amenity;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
 use Log;
@@ -16,6 +17,7 @@ use App\Models\Introduction;
 use Illuminate\Http\Request;
 use App\Helpers\FormatHelper;
 use App\Http\Controllers\Controller;
+use App\Models\RulesAndRegulation;
 use App\Models\System;
 
 class HomeController extends Controller
@@ -52,8 +54,6 @@ class HomeController extends Controller
 
         return max(0, $totalRooms - $bookedRooms);
     }
-
-
     public function index(Request $request)
     {
         Carbon::setLocale('vi');
@@ -84,7 +84,8 @@ class HomeController extends Controller
             }
 
             $nights = $checkInDate->diffInDays($checkOutDate);
-            if ($nights < 1) $nights = 1;
+            if ($nights < 1)
+                $nights = 1;
 
             $days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
             $months = ['tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6', 'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'];
@@ -150,8 +151,8 @@ class HomeController extends Controller
             ->where('type', 'percent')
             ->where('end_date', '>=', now())
             ->get();
-
-        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights', 'promotions'));
+        $systems = System::orderBy('id', 'desc')->first();
+        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights', 'promotions', 'systems'));
     }
 
     private function calculateDiscountedPrice($originalPrice, $promotion, $nights, $roomCount)
@@ -191,7 +192,9 @@ class HomeController extends Controller
         $totalGuests = (int) $request->input('total_guests', 2);
         $childrenCount = (int) $request->input('children_count', 0);
         $roomCount = (int) $request->input('room_count', 1);
-
+        $systems = System::orderBy('id', 'desc')->first();
+        $room_rule = RulesAndRegulation::orderBy('id', 'desc')->get();
+        $amenities = Amenity::with('roomTypes')->orderBy('id', 'desc')->get();
         try {
             $checkInDate = Carbon::parse($checkIn);
             $checkOutDate = Carbon::parse($checkOut);
@@ -211,7 +214,8 @@ class HomeController extends Controller
             }
 
             $nights = $checkInDate->diffInDays($checkOutDate);
-            if ($nights < 1) $nights = 1;
+            if ($nights < 1)
+                $nights = 1;
 
             $days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
             $months = ['tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6', 'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'];
@@ -268,19 +272,22 @@ class HomeController extends Controller
             'value' => $bestPromotion->value,
             'type' => 'percent',
         ] : null;
+        // dd($roomType->amenities);
 
         // Debug
         \Log::info("Room: {$roomType->name}, Price: {$roomType->price}, Nights: $nights, RoomCount: $roomCount, Original: {$roomType->total_original_price}, Discounted: {$roomType->total_discounted_price}, Promotion: " . json_encode($bestPromotion ? $bestPromotion->toArray() : null));
 
-        return view('clients.room.detail', compact('roomType', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights'));
+        return view('clients.room.detail', compact('roomType', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights', 'systems', 'room_rule', 'amenities'));
     }
     /**
      * Display FAQs
      */
     public function faqs()
     {
+        $systems = System::orderBy('id', 'desc')->first();
+
         $faqs = Faq::where('is_active', 1)->get();
-        return view('clients.faq', compact('faqs'));
+        return view('clients.faq', compact('faqs', 'systems'));
     }
 
     /**
@@ -288,8 +295,10 @@ class HomeController extends Controller
      */
     public function services()
     {
+        $systems = System::orderBy('id', 'desc')->first();
+
         $services = Service::where('is_active', 1)->get();
-        return view('clients.service', compact('services'));
+        return view('clients.service', compact('services', 'systems'));
     }
 
     /**
@@ -297,8 +306,10 @@ class HomeController extends Controller
      */
     public function abouts()
     {
+        $systems = System::orderBy('id', 'desc')->first();
+
         $about = About::where('is_use', 1)->first() ?? new About(['about' => 'Chưa có nội dung nào được thiết lập.']);
-        return view('clients.about', compact('about'));
+        return view('clients.about', compact('about', 'systems'));
     }
 
     /**
@@ -306,8 +317,10 @@ class HomeController extends Controller
      */
     public function introductions()
     {
+        $systems = System::orderBy('id', 'desc')->first();
+
         $introduction = Introduction::where('is_use', 1)->first() ?? new Introduction(['introduction' => 'Chưa có nội dung nào được thiết lập.']);
-        return view('clients.introduction', compact('introduction'));
+        return view('clients.introduction', compact('introduction', 'systems'));
     }
 
     public function paymentsList()
@@ -316,8 +329,23 @@ class HomeController extends Controller
         return view('clients.payments', compact('payments'));
     }
 
-    public function header(){
-        $system =  System::where('is_use',1)->get();
-        return view('clients.header', compact('system'));
+    public function header()
+    {
+
+        $systems = System::where('is_use', 1)->get();
+        return view('clients.header', compact('systems'));
+    }
+    public function room_view()
+    {
+        // Lấy danh sách các loại phòng (RoomType) có trạng thái active
+        $roomTypes = RoomType::with(['roomTypeImages', 'amenities'])
+            ->where('is_active', true)
+            ->get();
+
+        // Lấy thông tin hệ thống (System)
+        $systems = System::orderBy('id', 'desc')->first();
+
+        // Trả về view với dữ liệu roomTypes và systems
+        return view('clients.room.room', compact('roomTypes', 'systems'));
     }
 }

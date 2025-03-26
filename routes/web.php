@@ -276,6 +276,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Route::get('/', [HomeController::class, 'systems'])->name('home');
 // Route cho trang chi tiết phòng
 Route::get('/room/{id}', [HomeController::class, 'show'])->name('room.details');
+Route::get('/room', [HomeController::class, 'room_view'])->name('room.view');
 
 Route::get('/cau-hoi-thuong-gap', [HomeController::class, 'faqs'])->name('faqs');
 Route::get('/dich-vu', [HomeController::class, 'services'])->name('services');
