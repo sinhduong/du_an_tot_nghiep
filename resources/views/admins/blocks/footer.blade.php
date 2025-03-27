@@ -1,8 +1,9 @@
 <footer>
     <div class="container-fluid">
         <div class="copyright">
-            <p><span id="copyright_year"></span> © Luxurious, All rights Reserved.</p>
-            <p>Design by MaraviyaInfotech.</p>
+            <p>{{ date('Y') }} © Bản quyền thuộc về Booking Hotel Luxurious. Mọi quyền được bảo lưu.</p>
+            <p>Thiết kế bởi Ước mơ ra trường.</p>
+            <p>Liên hệ: 0865642497 | sinh.duongvan24@gmail.com </p>
         </div>
     </div>
 </footer>

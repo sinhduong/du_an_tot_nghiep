@@ -151,8 +151,8 @@ class HomeController extends Controller
             ->where('type', 'percent')
             ->where('end_date', '>=', now())
             ->get();
-        $systems = System::orderBy('id', 'desc')->first();
-        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights', 'promotions', 'systems'));
+//        $systems = System::orderBy('id', 'desc')->first();
+        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights', 'promotions'));
     }
 
     private function calculateDiscountedPrice($originalPrice, $promotion, $nights, $roomCount)

@@ -7,42 +7,36 @@
                     <div class="lh-footer-heading">
                         <h4>Explore</h4>
                     </div>
+
                     <ul>
                         <li>
                             <code>*</code>
-                            <a href="index.html">Home</a>
+                            <a href="{{route('home')}}">Trang chủ</a>
                         </li>
                         <li>
                             <code>*</code>
-                            <a href="about.html">About</a>
+                            <a href="{{route('abouts')}}">Về chúng tôi</a>
                         </li>
                         <li>
                             <code>*</code>
-                            <a href="room-details.html">Rooms & suites</a>
+                            <a href="{{route('introductions')}}">Giới thiệu</a>
                         </li>
                         <li>
                             <code>*</code>
-                            <a href="spa.html">spa & Wellness</a>
+                            <a href="{{route('faqs')}}">Câu hỏi thường gặp</a>
                         </li>
                         <li>
                             <code>*</code>
                             <a href="restaurant.html">Restaurant</a>
                         </li>
-                        <li>
-                            <code>*</code>
-                            <a href="gallery.html">Gallery</a>
-                        </li>
-                        <li>
-                            <code>*</code>
-                            <a href="contact.html">Contact</a>
-                        </li>
+
                     </ul>
                 </div>
             </div>
             <div class="col-lg-6 rs-pb-24 order-lg-2 order-md-1 order-1">
                 <div class="lh-social-media">
                     <div class="footer-logos">
-                        <img src="{{ asset('assets/client/assets/img/logo/logo.png ') }}" alt="logo">
+                        <img src="{{ asset('storage/' . $systems->logo) }}" alt="logo">
                     </div>
                     <div class="lh-footer-social">
                         <p>This is the dolor sit amet consectetur adipisicing elit. Libero voluptatem soluta eaque

@@ -1,60 +1,60 @@
-<div class="lh-sidebar-overlay"></div>
-<div id="lh_mobile_menu" class="lh-side-cart lh-mobile-menu">
-    <div class="lh-menu-title">
-        <span class="menu-title">My Menu</span>
-        <button class="lh-close">×</button>
-    </div>
-    <div class="lh-menu-inner">
-        <input type="text" placeholder="Search" class="lh-menu-box">
-        <div class="lh-menu-content">
-            <ul>
-                <li class="dropdown drop-list">
-                    <a href="#" class="dropdown-list">Home</a>
-                    <ul class="sub-menu">
-                        <li><a href="index.html">Home Layout 1</a></li>
-                        <li><a href="demo-2.html">Home Layout 2</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown drop-list">
-                    <a href="#" class="dropdown-list">Danh Sách Khác Sạn</a>
-                    <ul class="sub-menu">
-                        <li><a href="gallery.html">Danh dục 1</a></li>
-                        <li><a href="gallery-2.html">Danh mục 2</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown drop-list">
-                    <a href="#" class="dropdown-list">Room</a>
-                    <ul class="sub-menu">
-                        <li><a href="room.html">Rooms</a></li>
-                        <li><a href="room-2.html">Rooms 2</a></li>
-                        <li><a href="room-details.html">Room Details</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown drop-list">
-                    <a href="#" class="dropdown-list">Pages</a>
-                    <ul class="sub-menu">
-                        <li><a href="about.html">About Us</a></li>
-                        <li><a href="contact.html">Contact</a></li>
-                        <li><a href="facilities.html">Facilities</a></li>
-                        <li><a href="faq.html">Faq</a></li>
-                        <li><a href="prices.html">Prices</a></li>
-                        <li><a href="services.html">Services</a></li>
-                        <li><a href="spa.html">Spa</a></li>
-                        <li><a href="team.html">Team</a></li>
-                        <li><a href="checkout.html">Checkout</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown drop-list">
-                    <a href="#" class="dropdown-list">Blog</a>
-                    <ul class="sub-menu">
-                        <li><a href="blog.html">Blog</a></li>
-                        <li><a href="blog-details.html">Blog Details</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown drop-list">
-                    <a href="restaurant.html">Restaurant</a>
-                </li>
-            </ul>
-        </div>
+<div class="lh-header">
+    <div class="container">
+        <nav class="navbar navbar-expand-lg">
+            <a class="navbar-brand" href="{{ route('home') }}">
+                <img src="{{ asset('storage/' . $systems->logo) }}" alt="Logo" class="lh-logo">
+            </a>
+            <button class="navbar-toggler shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="ri-menu-2-line"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('home') }}">Trang Chủ</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Danh Sách Khách Sạn <i class="ri-arrow-down-s-line"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Danh sách 1</a></li>
+                            <li><a class="dropdown-item" href="#">Danh sách 2</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Phòng <i class="ri-arrow-down-s-line"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('room.view') }}">Danh sách phòng</a></li>
+                            <li><a class="dropdown-item" href="#">Chi tiết phòng</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Giới Thiệu <i class="ri-arrow-down-s-line"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('introductions') }}">Giới thiệu</a></li>
+                            <li><a class="dropdown-item" href="{{ route('abouts') }}">Về chúng tôi</a></li>
+                            <li><a class="dropdown-item" href="{{ route('faqs') }}">Câu hỏi thường gặp</a></li>
+                            <li><a class="dropdown-item" href="{{ route('services') }}">Dịch vụ</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Tin Tức <i class="ri-arrow-down-s-line"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Blog</a></li>
+                            <li><a class="dropdown-item" href="#">Chi tiết Blog</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Nhà hàng</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
     </div>
 </div>
