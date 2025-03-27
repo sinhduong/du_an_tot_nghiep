@@ -48,7 +48,7 @@
 
     <!-- Mobile-menu -->
     @include('clients.layout.menu')
-    {{-- @include('clients.layout.blocks.slider') --}}
+{{--     @include('clients.layout.blocks.slider')--}}
     <!-- Hero -->
 
 

@@ -6,7 +6,7 @@
                 <div class="lh-col">
                     <div class="search-box">
                         <h4 class="heading">
-                            Check in - Check out
+                            Nhận phòng - Trả phòng
                         </h4>
                         <div class="calendar">
                             <i class="ri-calendar-2-line"></i>
