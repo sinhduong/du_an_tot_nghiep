@@ -52,6 +52,15 @@
                                                     @enderror
                                                 </div>
                                             </li>
+                                            <li><strong>Map </strong>
+                                                <div class="form-group">
+                                                    <input type="text" name="map" placeholder="Map"
+                                                        class="form-control" value="{{ $systems->map }}">
+                                                    @error('map')
+                                                        <p class="text-danger">{{ $message }}</p>
+                                                    @enderror
+                                                </div>
+                                            </li>
                                             <li><strong>Email : </strong>
                                                 <div class="form-group">
                                                     <input type="email" name="email" placeholder="Nhập Email"
