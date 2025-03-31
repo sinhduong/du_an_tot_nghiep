@@ -19,6 +19,7 @@ class Guest extends Model
         'gender',
         'phone',
         'email',
+        'country',
         'relationship',
     ];
 

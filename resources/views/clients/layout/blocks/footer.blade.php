@@ -36,7 +36,7 @@
             <div class="col-lg-6 rs-pb-24 order-lg-2 order-md-1 order-1">
                 <div class="lh-social-media">
                     <div class="footer-logos">
-                        <img src="{{ asset('storage/' . $systems->logo) }}" alt="logo">
+                        <img src="{{ $systems->logo ? asset('storage/' . $systems->logo) : asset('assets/client/assets/img/logo/logo-2.png') }}" alt="Logo" class="lh-logo">
                     </div>
                     <div class="lh-footer-social">
                         <p>This is the dolor sit amet consectetur adipisicing elit. Libero voluptatem soluta eaque
