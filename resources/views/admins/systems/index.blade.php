@@ -67,6 +67,7 @@
                                             <th>Địa Chỉ  </th>                
                                             <th>Email </th>                
                                             <th>Phone</th>
+                                            <th>Map</th>
                                             <th>Trạng Thái </th>
                                             <th>Hành động</th>
                                         </tr>
@@ -100,6 +101,9 @@
                                             <td>{{ $item->address }}</td>
                                             <td>{{ $item->email }}</td>
                                             <td>{{ $item->phone }}</td>
+                                            <td><a href="{{ $item->map }}" target="_blank">
+                                                {{ \Illuminate\Support\Str::limit($item->map, 30, '...') }}
+                                            </a></td>
                                             <td>
                                                 <span class="badge {{ $item->is_use ? 'bg-success' : 'bg-danger' }}">
                                                     {{ $item->is_use ? 'Hoạt động' : 'Không hoạt động' }}
