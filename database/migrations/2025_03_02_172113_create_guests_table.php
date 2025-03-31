@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('gender')->nullable(); // Giới tính
             $table->string('phone')->nullable(); // Số điện thoại
             $table->string('email')->nullable(); // Email
+            $table->string('country')->nullable(); // quốc gia
             $table->string('relationship')->nullable(); // Quan hệ với người đặt (ví dụ: bạn, gia đình, v.v.)
             $table->softDeletes();
             $table->timestamps();

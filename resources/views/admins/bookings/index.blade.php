@@ -111,7 +111,7 @@
                                                         @csrf
                                                         @method('PUT')
                                                         <select name="status" onchange="this.form.submit()" class="form-select">
-                                                            <option value="pending_confirmation" {{ $booking->status == 'pending_confirmation' ? 'selected' : '' }}>Chưa xác nhận</option>
+{{--                                                            <option value="pending_confirmation" {{ $booking->status == 'pending_confirmation' ? 'selected' : '' }}>Chưa xác nhận</option>--}}
                                                             <option value="confirmed" {{ $booking->status == 'confirmed' ? 'selected' : '' }}>Đã xác nhận</option>
                                                             <option value="paid" {{ $booking->status == 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
                                                             <option value="check_in" {{ $booking->status == 'check_in' ? 'selected' : '' }}>Đã check in</option>

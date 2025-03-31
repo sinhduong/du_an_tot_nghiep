@@ -9,13 +9,9 @@
                     <h2>Đặt phòng</h2>
                     <div class="lh-breadcrumb">
                         <h5>
-                        <span class="lh-inner-breadcrumb">
-                            <a href="{{ route('home') }}">Trang chủ</a>
-                        </span>
+                            <span class="lh-inner-breadcrumb"><a href="{{ route('home') }}">Trang chủ</a></span>
                             <span> / </span>
-                            <span>
-                            <a href="javascript:void(0)">Đặt phòng</a>
-                        </span>
+                            <span><a href="javascript:void(0)">Đặt phòng</a></span>
                         </h5>
                     </div>
                 </div>
@@ -64,10 +60,10 @@
                             <div class="lh-check-block-content mb-3">
                                 <h4 class="lh-room-inner-heading">Bạn đã chọn</h4>
                                 <p>{{ $roomQuantity }} phòng cho {{ $totalGuests + $childrenCount }} người</p>
-                                <p>{{ $roomQuantity }} x {{ $selectedRoomType->name }}</p>
-                                @if (!empty($services))
+                                <p>{{ $roomQuantity }} x {{ $roomType->name }}</p>
+                                @if (!empty($selectedServices))
                                     <p><strong>Dịch vụ bổ sung:</strong></p>
-                                    @foreach ($selectedRoomType->services->whereIn('id', $services) as $service)
+                                    @foreach ($selectedServices as $service)
                                         <p>{{ $service->name }} ({{ \App\Helpers\FormatHelper::FormatPrice($service->price) }})</p>
                                     @endforeach
                                 @endif
@@ -114,25 +110,83 @@
                 </div>
 
                 <div class="col-lg-8 check-dash" data-aos="fade-up" data-aos-duration="2000">
-                    <div class="lh-checkout">
-                        <div class="lh-checkout-content">
-                            <div class="lh-checkout-inner">
+                    <div class="lh-check-block-content">
+                        <div class="lh-checkout-wrap mb-24">
+                            <form action="{{ route('bookings.confirm') }}" method="POST" id="booking-form" enctype="multipart/form-data">
+                                @csrf
+                                <div class="lh-checkout-wrap mb-24">
+                                    <h3 class="lh-checkout-title">Thông tin người đặt</h3>
+                                    <div class="lh-check-block-content">
+                                        <p><strong>Email:</strong> {{ $user->email }} (Tài khoản đang đăng nhập)</p>
+                                    </div>
+                                </div>
+
+                                <div class="lh-checkout-wrap mb-24">
+                                    <h3 class="lh-checkout-title">Thông tin chi tiết của bạn (Người ở chính)</h3>
+                                    <div class="lh-check-block-content">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Họ và tên *</label>
+                                                    <input type="text" name="guest[name]" class="form-control" value="{{ old('guest.name') }}" placeholder="Nhập họ và tên" required />
+                                                    @error('guest.name')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Email *</label>
+                                                    <input type="email" name="guest[email]" class="form-control" value="{{ old('guest.email') }}" placeholder="Nhập email" required />
+                                                    @error('guest.email')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Số điện thoại *</label>
+                                                    <input type="text" name="guest[phone]" class="form-control" value="{{ old('guest.phone') }}" placeholder="Nhập số điện thoại" required />
+                                                    @error('guest.phone')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Vùng quốc gia *</label>
+                                                    <select name="guest[country]" class="form-control" required>
+                                                        <option value="">Chọn quốc gia</option>
+                                                        <option value="Việt Nam" {{ old('guest.country') == 'Việt Nam' ? 'selected' : '' }}>Việt Nam</option>
+                                                        <option value="United States" {{ old('guest.country') == 'United States' ? 'selected' : '' }}>United States</option>
+                                                        <option value="Japan" {{ old('guest.country') == 'Japan' ? 'selected' : '' }}>Japan</option>
+                                                    </select>
+                                                    @error('guest.country')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="guest[relationship]" value="Người ở chính">
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="lh-checkout-wrap mb-24">
                                     <div class="d-flex align-items-center mb-4">
                                         <div class="me-3">
                                             @php
-                                                $mainImage = $selectedRoomType->roomTypeImages->where('is_main', true)->first();
+                                                $mainImage = $roomType->roomTypeImages->where('is_main', true)->first();
                                             @endphp
                                             @if ($mainImage)
-                                                <img src="{{ Storage::url($mainImage->image) }}" alt="{{ $selectedRoomType->name }}" class="rounded" style="width: 150px; height: 100px; object-fit: cover; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                                                <img src="{{ Storage::url($mainImage->image) }}" alt="{{ $roomType->name }}" class="rounded" style="width: 150px; height: 100px; object-fit: cover; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
                                             @else
                                                 <img src="{{ asset('images/default-room.jpg') }}" alt="Default Room Image" class="rounded" style="width: 150px; height: 100px; object-fit: cover; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
                                             @endif
                                         </div>
                                         <div>
-                                            <h3 class="lh-checkout-title mb-1">{{ $selectedRoomType->name }}</h3>
+                                            <h3 class="lh-checkout-title mb-1">{{ $roomType->name }}</h3>
                                             <p class="text-muted mb-0">
-                                                <i class="fas fa-ruler-combined me-1"></i> {{ $selectedRoomType->size }} m² |
+                                                <i class="fas fa-ruler-combined me-1"></i> {{ $roomType->size }} m² |
                                                 <i class="fas fa-bed me-1"></i>
                                                 @php
                                                     $bedTypeMapping = [
@@ -144,24 +198,24 @@
                                                         'sofa' => 'Giường sofa',
                                                     ];
                                                 @endphp
-                                                {{ $bedTypeMapping[$selectedRoomType->bed_type] ?? 'Không xác định' }} |
-                                                <i class="fas fa-users me-1"></i> Tối đa {{ $selectedRoomType->max_capacity }} người
+                                                {{ $bedTypeMapping[$roomType->bed_type] ?? 'Không xác định' }} |
+                                                <i class="fas fa-users me-1"></i> Tối đa {{ $roomType->max_capacity }} người
                                             </p>
                                         </div>
                                     </div>
 
-                                    @if ($selectedRoomType->description)
+                                    @if ($roomType->description)
                                         <div class="lh-check-block-content mb-4">
                                             <h3 class="lh-checkout-title">Mô tả</h3>
-                                            <p class="text-muted">{{ $selectedRoomType->description }}</p>
+                                            <p class="text-muted">{{ $roomType->description }}</p>
                                         </div>
                                     @endif
 
                                     <div class="lh-check-block-content mb-4">
                                         <h3 class="lh-checkout-title">Tiện nghi</h3>
-                                        @if ($selectedRoomType->amenities->isNotEmpty())
+                                        @if ($roomType->amenities->isNotEmpty())
                                             <div class="row">
-                                                @foreach ($selectedRoomType->amenities as $amenity)
+                                                @foreach ($roomType->amenities as $amenity)
                                                     <div class="col-md-6 mb-2">
                                                         <p class="mb-0"><i class="fas fa-check-circle text-success me-2"></i> {{ $amenity->name }}</p>
                                                     </div>
@@ -172,11 +226,11 @@
                                         @endif
                                     </div>
 
-                                    @if ($selectedRoomType->rulesAndRegulations->isNotEmpty())
+                                    @if ($roomType->rulesAndRegulations->isNotEmpty())
                                         <div class="lh-check-block-content mb-4">
                                             <h3 class="lh-checkout-title">Quy tắc & quy định</h3>
                                             <ul class="list-unstyled">
-                                                @foreach ($selectedRoomType->rulesAndRegulations as $rule)
+                                                @foreach ($roomType->rulesAndRegulations as $rule)
                                                     <li class="mb-2"><i class="fas fa-exclamation-circle text-warning me-2"></i> {{ $rule->name }}</li>
                                                 @endforeach
                                             </ul>
@@ -184,114 +238,40 @@
                                     @endif
                                 </div>
 
-                                <div class="lh-check-block-content">
-                                    <div class="lh-checkout-wrap mb-24">
-                                        <h3 class="lh-checkout-title">Nhập thông tin chi tiết của bạn</h3>
-                                        @if ($errors->any())
-                                            <div class="alert alert-danger">
-                                                <ul>
-                                                    @foreach ($errors->all() as $error)
-                                                        <li>{{ $error }}</li>
-                                                    @endforeach
-                                                </ul>
-                                            </div>
-                                        @endif
-                                        <form action="{{ route('bookings.confirm') }}" method="POST" id="booking-form" enctype="multipart/form-data">
-                                            @csrf
-                                            <!-- Thông tin người đặt -->
-                                            <div class="mb-4">
-                                                <h4 class="lh-checkout-title">Thông tin người đặt</h4>
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Họ và tên *</label>
-                                                            <input type="text" name="guests[0][name]" class="form-control" value="{{ Auth::user()->name ?? old('guests.0.name') }}" required />
-                                                            @error('guests.0.name')
-                                                            <small class="text-danger">{{ $message }}</small>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Email *</label>
-                                                            <input type="email" name="guests[0][email]" class="form-control" value="{{ Auth::user()->email ?? old('guests.0.email') }}" required />
-                                                            <small class="form-text text-muted">Email đặt phòng sẽ được gửi đến địa chỉ này</small>
-                                                            @error('guests.0.email')
-                                                            <small class="text-danger">{{ $message }}</small>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Số điện thoại *</label>
-                                                            <input type="text" name="guests[0][phone]" class="form-control" value="{{ Auth::user()->phone ?? old('guests.0.phone') }}" required />
-                                                            @error('guests.0.phone')
-                                                            <small class="text-danger">{{ $message }}</small>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Quốc gia *</label>
-                                                            <input type="text" name="guests[0][country]" class="form-control" value="{{ Auth::user()->country ?? old('guests.0.country') }}" required />
-                                                            @error('guests.0.country')
-                                                            <small class="text-danger">{{ $message }}</small>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <input type="hidden" name="guests[0][relationship]" value="Người đặt">
-                                            </div>
-
-                                            <!-- Thông tin người ở -->
-                                            <div class="lh-checkout-wrap mb-24">
-                                                <h3 class="lh-checkout-title">Thông tin người ở ({{ $totalGuests + $childrenCount - 1 }} người khác)</h3>
-                                                <div class="lh-check-block-content" id="guest-list">
-                                                    <!-- Các form người ở sẽ được thêm động bằng JavaScript -->
-                                                </div>
-                                                <button type="button" class="btn btn-outline-primary mt-3" id="add-guest-btn">
-                                                    <i class="fas fa-plus me-2"></i> Thêm người ở
-                                                </button>
-                                                <input type="hidden" id="guest-count" value="1">
-                                            </div>
-
-                                            <input type="hidden" name="check_in" value="{{ $checkIn }}">
-                                            <input type="hidden" name="check_out" value="{{ $checkOut }}">
-                                            <input type="hidden" name="total_guests" value="{{ $totalGuests }}">
-                                            <input type="hidden" name="children_count" value="{{ $childrenCount }}">
-                                            <input type="hidden" name="room_quantity" value="{{ $roomQuantity }}">
-                                            <input type="hidden" name="room_type_id" value="{{ $selectedRoomType->id }}">
-                                            <input type="hidden" name="total_price" id="total_price" value="{{ $totalPrice }}">
-                                            <input type="hidden" name="base_price" value="{{ $basePrice }}">
-                                            <input type="hidden" name="service_total" value="{{ $serviceTotal }}">
-                                            <input type="hidden" name="discount_amount" value="{{ $discountAmount }}">
-                                            @foreach ($services as $serviceId)
-                                                <input type="hidden" name="services[]" value="{{ $serviceId }}">
-                                            @endforeach
-
-                                            <div class="lh-checkout-wrap mb-24">
-                                                <h3 class="lh-checkout-title">Yêu cầu đặc biệt (không bắt buộc)</h3>
-                                                <div class="lh-check-block-content">
-                                                    <textarea class="form-control" name="special_request" rows="3" placeholder="Nhập yêu cầu của bạn">{{ old('special_request') }}</textarea>
-                                                </div>
-                                            </div>
-
-                                            <div class="lh-checkout-wrap mb-24">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="terms" id="terms" required>
-                                                    <label class="form-check-label" for="terms">
-                                                        Tôi đã đọc và đồng ý với các điều khoản và điều kiện.
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div class="text-end">
-                                                <button type="submit" class="btn btn-primary">Tiếp theo: Hoàn tất đặt phòng</button>
-                                            </div>
-                                        </form>
+                                <div class="lh-checkout-wrap mb-24">
+                                    <h3 class="lh-checkout-title">Yêu cầu đặc biệt (không bắt buộc)</h3>
+                                    <div class="lh-check-block-content">
+                                        <textarea class="form-control" name="special_request" rows="3" placeholder="Nhập yêu cầu của bạn">{{ old('special_request') }}</textarea>
                                     </div>
                                 </div>
-                            </div>
+
+                                <input type="hidden" name="check_in" value="{{ $checkIn }}">
+                                <input type="hidden" name="check_out" value="{{ $checkOut }}">
+                                <input type="hidden" name="total_guests" value="{{ $totalGuests }}">
+                                <input type="hidden" name="children_count" value="{{ $childrenCount }}">
+                                <input type="hidden" name="room_quantity" value="{{ $roomQuantity }}">
+                                <input type="hidden" name="room_type_id" value="{{ $roomType->id }}">
+                                <input type="hidden" name="total_price" value="{{ $totalPrice }}">
+                                <input type="hidden" name="base_price" value="{{ $basePrice }}">
+                                <input type="hidden" name="service_total" value="{{ $serviceTotal }}">
+                                <input type="hidden" name="discount_amount" value="{{ $discountAmount }}">
+                                @foreach ($selectedServices as $service)
+                                    <input type="hidden" name="services[]" value="{{ $service->id }}">
+                                @endforeach
+
+                                <div class="lh-checkout-wrap mb-24">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="terms" id="terms" required>
+                                        <label class="form-check-label" for="terms">
+                                            Tôi đã đọc và đồng ý với các điều khoản và điều kiện.
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary">Tiếp theo: Hoàn tất đặt phòng</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -299,155 +279,15 @@
         </div>
     </section>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6-beta3/css/all.min.css">
     <style>
-        .progress-bar-custom {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 30px;
-        }
-        .progress-step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            width: 120px;
-        }
-        .progress-step .step-circle {
-            width: 30px;
-            height: 30px;
-            background-color: #007bff;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            margin-bottom: 5px;
-        }
-        .progress-step.active .step-circle {
-            background-color: #007bff;
-        }
-        .progress-step:not(.active) .step-circle {
-            background-color: #ccc;
-        }
-        .progress-step .step-label {
-            font-size: 14px;
-            color: #333;
-            text-align: center;
-        }
-        .progress-line {
-            flex: 1;
-            height: 2px;
-            background-color: #007bff;
-            margin: 0 10px;
-        }
+        .progress-bar-custom { display: flex; align-items: center; justify-content: center; margin-bottom: 30px; }
+        .progress-step { display: flex; flex-direction: column; align-items: center; position: relative; width: 120px; }
+        .progress-step .step-circle { width: 30px; height: 30px; background-color: #007bff; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; margin-bottom: 5px; }
+        .progress-step.active .step-circle { background-color: #007bff; }
+        .progress-step:not(.active) .step-circle { background-color: #ccc; }
+        .progress-step .step-label { font-size: 14px; color: #333; text-align: center; }
+        .progress-line { flex: 1; height: 2px; background-color: #007bff; margin: 0 10px; }
+        .form-check { margin-bottom: 10px; }
     </style>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const addGuestBtn = document.getElementById('add-guest-btn');
-            const guestList = document.getElementById('guest-list');
-            let guestCount = parseInt(document.getElementById('guest-count').value);
-            const maxGuests = {{ $totalGuests + $childrenCount }};
-
-            if (maxGuests <= 1) {
-                addGuestBtn.style.display = 'none'; // Ẩn nút nếu chỉ có người đặt
-            }
-
-            addGuestBtn.addEventListener('click', function () {
-                if (guestCount >= maxGuests) {
-                    alert('Bạn đã đạt số lượng người ở tối đa (' + maxGuests + ' người).');
-                    return;
-                }
-
-                const index = guestCount;
-                guestCount++;
-                document.getElementById('guest-count').value = guestCount;
-
-                const newForm = `
-                <div class="guest-form mb-3" data-index="${index}">
-                    <h5>Người ở ${index + 1}</h5>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Họ và tên *</label>
-                                <input type="text" name="guests[${index}][name]" class="form-control" placeholder="Nhập họ và tên" required />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Số CMND/CCCD</label>
-                                <input type="text" name="guests[${index}][id_number]" class="form-control" placeholder="Nhập số CMND/CCCD" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Ảnh CCCD</label>
-                                <input type="file" name="guests[${index}][id_photo]" class="form-control" accept="image/*" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Ngày sinh</label>
-                                <input type="date" name="guests[${index}][birth_date]" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Giới tính</label>
-                                <select name="guests[${index}][gender]" class="form-control">
-                                    <option value="" selected>Chọn giới tính</option>
-                                    <option value="male">Nam</option>
-                                    <option value="female">Nữ</option>
-                                    <option value="other">Khác</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Số điện thoại</label>
-                                <input type="text" name="guests[${index}][phone]" class="form-control" placeholder="Nhập số điện thoại" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" name="guests[${index}][email]" class="form-control" placeholder="Nhập email" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Mối quan hệ với người đặt</label>
-                                <select name="guests[${index}][relationship]" class="form-control">
-                                    <option value="" selected>Chọn mối quan hệ</option>
-                                    <option value="Vợ/Chồng">Vợ/Chồng</option>
-                                    <option value="Con">Con</option>
-                                    <option value="Bạn">Bạn</option>
-                                    <option value="Đồng nghiệp">Đồng nghiệp</option>
-                                    <option value="Khác">Khác</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-                guestList.insertAdjacentHTML('beforeend', newForm);
-
-                if (guestCount >= maxGuests) {
-                    addGuestBtn.style.display = 'none';
-                }
-            });
-
-            document.getElementById('booking-form').addEventListener('submit', function (e) {
-                const totalGuests = {{ $totalGuests + $childrenCount }};
-                if (guestCount < totalGuests) {
-                    e.preventDefault();
-                    alert('Vui lòng nhập thông tin cho tất cả ' + totalGuests + ' người ở.');
-                }
-            });
-        });
-    </script>
 @endsection

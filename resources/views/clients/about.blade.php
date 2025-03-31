@@ -21,6 +21,7 @@
             </div>
         </div>
     </div>
+</section>
     <section class="section-contact padding-tb-100">
         <div class="container">
             <div class="row mb-24">
@@ -104,7 +105,7 @@
                 <div class="col-lg-6 rs-pb-24">
                     <div class="lh-contact-touch-ifrem">
                         <iframe
-                            src="{{$systems->map}} " 
+                            src="{{$systems->map}} "
                             style="border:0;"></iframe>
                     </div>
                 </div>

@@ -1,27 +1,28 @@
 @extends('layouts.client')
 
 @section('content')
-<section class="section-banner">
-    <div class="row banner-image">
-        <div class="banner-overlay"></div>
-        <div class="banner-section">
-            <div class="lh-banner-contain">
-                <h2>Dịch vu khách sạn</h2>
-                <div class="lh-breadcrumb">
-                    <h5>
-                        <span class="lh-inner-breadcrumb">
-                            <a href="{{ route('home') }}">Trang chủ</a>
-                        </span>
-                        <span> / </span>
-                        <span>
-                            <a href="javascript:void(0)">Dịch vu khách sạn</a>
-                        </span>
-                    </h5>
+    <section class="section-banner">
+        <div class="row banner-image">
+            <div class="banner-overlay"></div>
+            <div class="banner-section">
+                <div class="lh-banner-contain">
+                    <h2>Dịch vụ khách sạn</h2>
+                    <div class="lh-breadcrumb">
+                        <h5>
+                            <span class="lh-inner-breadcrumb">
+                                <a href="{{ route('home') }}">Trang chủ</a>
+                            </span>
+                            <span> / </span>
+                            <span>
+                                <a href="javascript:void(0)">Dịch vụ khách sạn</a>
+                            </span>
+                        </h5>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+
     <section class="section-room padding-tb-100" data-aos="fade-up" data-aos-duration="2000" id="rooms">
         <div class="container">
             <div class="row g-4">
@@ -38,27 +39,22 @@
             </div>
         </div>
     </section>
-@endsection
 
-
-
-@foreach ($roomTypes as $roomType)
-
-
+    <!-- Room Types Section -->
+    <section class="section-room padding-tb-100" data-aos="fade-up" data-aos-duration="2000">
+        <div class="container">
+            <div class="row g-4">
+                @forelse ($roomTypes as $roomType)
                     <div class="col-xl-4 col-md-6" data-aos="fade-up" data-aos-duration="1500">
                         <div class="rooms-card">
-                            <!-- Hình ảnh loại phòng -->
                             <img src="{{ $roomType->roomTypeImages->isNotEmpty() ? asset('storage/' . $roomType->roomTypeImages->first()->image) : asset('assets/img/room/default.jpg') }}" alt="{{ $roomType->name }}">
                             <div class="details">
-                                <!-- Tên loại phòng -->
                                 <h3>{{ $roomType->name }}</h3>
-                                <!-- Giá mỗi đêm -->
                                 <span>{{ number_format($roomType->price, 0, ',', '.') }} / Night</span>
-                                <!-- Tiện ích -->
                                 <ul>
                                     <li><i class="ri-group-line"></i>{{ $roomType->max_capacity }} Persons</li>
-                                    <li><i class="ri-hotel-bed-line"></i>1 Double Bed</li> <!-- Có thể thêm trường bed_type trong RoomType nếu cần -->
-                                    <li><i class="ri-restaurant-2-line"></i>Breakfast</li> <!-- Có thể thêm trường has_breakfast nếu cần -->
+                                    <li><i class="ri-hotel-bed-line"></i>1 Double Bed</li>
+                                    <li><i class="ri-restaurant-2-line"></i>Breakfast</li>
                                     @if($roomType->amenities->contains('name', 'Swimming Pool'))
                                         <li><i class="mdi mdi-pool"></i>Swimming Pool</li>
                                     @endif
@@ -66,7 +62,6 @@
                                         <li><i class="ri-wifi-line"></i>Free Wifi</li>
                                     @endif
                                 </ul>
-                                <!-- Nút View More -->
                                 <a href="{{ route('room.details', $roomType->id) }}" class="lh-buttons-2">View More <i class="ri-arrow-right-line"></i></a>
                             </div>
                         </div>
@@ -75,4 +70,8 @@
                     <div class="col-12">
                         <p>Không có loại phòng nào để hiển thị.</p>
                     </div>
-                    @endforeach 
+                @endforelse
+            </div>
+        </div>
+    </section>
+@endsection

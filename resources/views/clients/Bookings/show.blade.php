@@ -14,7 +14,7 @@
                             </span>
                             <span> / </span>
                             <span>
-                                <a href="{{ route('bookings.index') }}">Danh sách đặt phòng</a>
+                                <a href="">Danh sách đặt phòng</a>
                             </span>
                             <span> / </span>
                             <span>Chi tiết</span>
@@ -27,7 +27,6 @@
 
 
     <section class="booking-details padding-tb-20 mt-5">
-
         <div class="container">
             <div class="row">
                 <div>
@@ -530,65 +529,4 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- CSS tùy chỉnh -->
-    <style>
-        .lh-room-inner-heading {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .lh-checkout-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .lh-check-block-content p {
-            margin-bottom: 0.5rem;
-        }
-
-        .lh-check-block-content .text-muted {
-            font-size: 0.9rem;
-        }
-
-        .badge {
-            padding: 5px 10px;
-            font-size: 0.9rem;
-            border-radius: 12px;
-        }
-
-        .guest-info {
-            border-bottom: 1px solid #e0e0e0;
-            padding-bottom: 15px;
-        }
-
-        .guest-info:last-child {
-            border-bottom: none;
-        }
-
-        .lh-side-room {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .lh-checkout {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-danger,
-        .btn-secondary {
-            padding: 8px 16px;
-            font-size: 0.9rem;
-        }
-
-        .text-primary {
-            color: #007bff !important;
-        }
-    </style>
 @endsection
