@@ -26,6 +26,10 @@ class Promotion extends Model
             ->withTimestamps();
     }
 
+    public function bookings() {
+        return $this->belongsToMany(Booking::class, 'booking_promotions', 'promotion_id', 'booking_id');
+    }
+
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
