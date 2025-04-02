@@ -72,4 +72,8 @@ class Booking extends Model
         return $this->belongsToMany(ServicePlus::class, 'booking_service_plus', 'booking_id', 'service_plus_id')
             ->withPivot('quantity');
     }
+
+    public function Promotions() {
+        return $this->belongsToMany(Promotion::class, 'booking_promotions', 'booking_id', 'promotion_id');
+    }
 }

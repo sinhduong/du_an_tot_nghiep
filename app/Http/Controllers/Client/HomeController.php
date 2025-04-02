@@ -147,10 +147,20 @@ class HomeController extends Controller
             return $availableRooms >= $roomCount;
         })->sortBy([['total_discounted_price', 'asc'], ['available_rooms', 'desc']])->values();
 
-        $promotions = Promotion::where('status', 'active')
-            ->where('type', 'percent')
+        $promotionQuery = Promotion::where('status', 'active')
+            ->where('start_date', '<=', now())
             ->where('end_date', '>=', now())
-            ->get();
+            ->where('quantity', '>', 0);
+
+        if (Auth::check()) {
+            $userId = Auth::id();
+
+            $promotions = $promotionQuery->whereDoesntHave('bookings', function ($promotionQuery) use ($userId) {
+                $promotionQuery->where('bookings.user_id', $userId);
+            })->get();
+        } else {
+            $promotions = $promotionQuery->get();
+        }
 //        $systems = System::orderBy('id', 'desc')->first();
         return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights', 'promotions'));
     }
