@@ -8,49 +8,57 @@
     </div>
     <div class="input-control">
         <div class="row p-l-5 p-r-5">
+            {{-- Name --}}
             <div class="col-md-6 p-l-10 p-r-10">
-                <input type="text" placeholder="Nhập tên người dùng" name="name" value="{{old('name')}}" required>
-                <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                <input type="text" placeholder="Nhập tên người dùng" name="name" value="{{ old('name') }}"  >
+                @error('name')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
             </div>
+            {{-- Email --}}
             <div class="col-md-6 p-l-10 p-r-10">
-                <input type="email" placeholder="Nhập Email" name="email" value="{{ old('email') }}" required>
-                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                <input type="email" placeholder="Nhập Email" name="email" value="{{ old('email') }}"  >
+                @error('email')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
             </div>
-            {{-- password --}}
+            {{-- Password --}}
             <div class="col-md-6 p-l-10 p-r-10">
                 <div class="password-container" style="position: relative;">
                     <input type="password"
                            id="password"
                            placeholder="Nhập mật khẩu"
                            name="password"
-                           class="input-checkmark"
-                           required
+
                            autocomplete="new-password">
                     <span class="toggle-password"
                           onclick="togglePassword('password', 'eye-icon-password')"
                           style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer;">
                         <i class="fa fa-eye" id="eye-icon-password"></i>
                     </span>
-                    <x-input-error :messages="$errors->get('password')" class="mt-2" />
                 </div>
+                @error('password')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
             </div>
-            {{-- confirm password --}}
+            {{-- Confirm Password --}}
             <div class="col-md-6 p-l-10 p-r-10">
                 <div class="password-container" style="position: relative;">
-                    <input class="input-checkmark"
-                           id="password_confirmation"
+                    <input id="password_confirmation"
                            type="password"
                            placeholder="Xác nhận mật khẩu"
                            name="password_confirmation"
-                           required
+
                            autocomplete="new-password">
                     <span class="toggle-password"
                           onclick="togglePassword('password_confirmation', 'eye-icon-confirm')"
                           style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer;">
                         <i class="fa fa-eye" id="eye-icon-confirm"></i>
                     </span>
-                    <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                 </div>
+                @error('password_confirmation')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
             </div>
         </div>
         <label class="label-container">Tôi đồng ý với <a href="#">chính sách bảo mật</a>
@@ -98,4 +106,13 @@ function togglePassword(fieldId, iconId) {
     }
 }
 </script>
+
+<style>
+    .error-message {
+        color: red;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+</style>
+
 @endsection
