@@ -7,7 +7,7 @@
             <div class="lh-breadcrumb">
                 <h5>Phòng</h5>
                 <ul>
-                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
                     <li>Dashboard</li>
                 </ul>
             </div>

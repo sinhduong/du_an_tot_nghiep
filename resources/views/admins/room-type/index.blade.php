@@ -13,20 +13,6 @@
                     </ol>
                 </nav>
             </div>
-            <div class="lh-tools d-flex gap-2">
-                <button class="btn btn-link p-0" title="Refresh"><i class="ri-refresh-line"></i></button>
-                <div class="lh-date-range" title="Date"><span></span></div>
-                <div class="dropdown" title="Filter">
-                    <button class="btn btn-link dropdown-toggle p-0" data-bs-toggle="dropdown">
-                        <i class="ri-sound-module-line"></i>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Booking</a></li>
-                        <li><a class="dropdown-item" href="#">Revenue</a></li>
-                        <li><a class="dropdown-item" href="#">Expence</a></li>
-                    </ul>
-                </div>
-            </div>
         </div>
 
         <div class="lh-card">
@@ -86,7 +72,7 @@
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
                                             <i class="ri-settings-3-line"></i>
                                         </button>
                                         <ul class="dropdown-menu">

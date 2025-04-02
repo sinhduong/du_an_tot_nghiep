@@ -2,27 +2,73 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\StorebookingRequest;
-use App\Http\Requests\UpdatebookingRequest;
+use Carbon\Carbon;
+use App\Models\Guest;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\ServicePlus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StorebookingRequest;
+use App\Http\Requests\StoreCheckInRequest;
+use App\Http\Requests\UpdatebookingRequest;
+
 class BookingController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $title = 'Đơn đặt phòng mới nhất';
-        $bookings = Booking::with('user', 'rooms')->latest()->paginate(10);
-        return view('admins.bookings.index', compact('bookings', 'title'));
+    public function index(Request $request)
+{
+    $title = 'Đơn đặt phòng mới nhất';
+
+    // Khởi tạo query
+    $query = Booking::with('user', 'rooms')->latest();
+
+    // Lọc theo khoảng thời gian
+    if ($request->has('start_date') && $request->has('end_date')) {
+        $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+        $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+        $query->whereBetween('created_at', [$startDate, $endDate]);
+    } elseif ($request->has('filter')) {
+        switch ($request->input('filter')) {
+            case 'today':
+                $query->whereDate('created_at', Carbon::today());
+                break;
+            case 'this_week':
+                $query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+                break;
+            case 'this_month':
+                $query->whereMonth('created_at', Carbon::now()->month)
+                      ->whereYear('created_at', Carbon::now()->year);
+                break;
+            case 'last_month':
+                $query->whereMonth('created_at', Carbon::now()->subMonth()->month)
+                      ->whereYear('created_at', Carbon::now()->subMonth()->year);
+                break;
+        }
     }
+
+    // Lọc theo trạng thái (nếu có)
+    if ($request->has('status') && $request->input('status') !== '') {
+        $query->where('status', $request->input('status'));
+    }
+
+    // Phân trang
+    $bookings = $query->paginate(10);
+
+    // Truyền thêm dữ liệu lọc để hiển thị lại trên giao diện
+    $filterData = [
+        'start_date' => $request->input('start_date'),
+        'end_date' => $request->input('end_date'),
+        'filter' => $request->input('filter'),
+        'status' => $request->input('status'),
+    ];
+
+    return view('admins.bookings.index', compact('bookings', 'title', 'filterData'));
+}
 
     /**
      * Show the form for creating a new resource.
@@ -32,13 +78,56 @@ class BookingController extends Controller
         return view('admins.bookings.create');
     }
 
-    public function store(StoreBookingRequest $request)
+
+    public function storeCheckIn(StoreCheckInRequest $request)
     {
-        Booking::create($request->validated());
-        return redirect()->route('bookings.index')->with('success', 'Đã thêm đơn đặt phòng.');
+        try {
+            Log::info('Received check-in request', ['request_data' => $request->all()]);
+
+            $booking = Booking::findOrFail($request->booking_id);
+
+            if ($booking->status !== 'paid') {
+                Log::info('Booking status not paid', ['booking_id' => $request->booking_id, 'status' => $booking->status]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không thể check-in: Đặt phòng chưa ở trạng thái "Đã thanh toán". Vui lòng kiểm tra lại trạng thái thanh toán.'
+                ], 400);
+            }
+
+            DB::beginTransaction();
+
+            foreach ($request->guests as $index => $guestData) {
+                if ($request->hasFile("guests.$index.id_photo")) {
+                    $file = $request->file("guests.$index.id_photo");
+                    $fileName = time() . '_' . $index . '.' . $file->getClientOriginalExtension();
+                    $file->storeAs('id_photos', $fileName, 'public');
+                    $guestData['id_photo'] = 'id_photos/' . $fileName;
+                }
+
+                $guest = Guest::create($guestData);
+                $booking->guests()->attach($guest->id);
+            }
+
+            DB::commit();
+
+            Log::info('Check-in successful', ['booking_id' => $request->booking_id]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Check-in thành công và thông tin người ở đã được lưu.'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error in storeCheckIn: ' . $e->getMessage(), [
+                'exception' => $e,
+                'request_data' => $request->all(),
+                'stack_trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi hệ thống: Không thể lưu thông tin người ở. Vui lòng thử lại sau.'
+            ], 500);
+        }
     }
-
-
     /**
      * Display the specified resource.
      */

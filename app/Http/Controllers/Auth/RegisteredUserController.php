@@ -40,10 +40,10 @@ class RegisteredUserController extends Controller
             'name.max' => 'Họ và tên không được vượt quá 255 ký tự.',
             'name.unique' => 'Họ và tên này đã được sử dụng.',
 
-            'email.required' => 'Vui lòng nhập địa chỉ email.',
+            'email.required' => 'Vui lòng nhập email.',
             'email.string' => 'Email phải là một chuỗi ký tự.',
             'email.lowercase' => 'Email phải viết thường.',
-            'email.email' => 'Vui lòng nhập một địa chỉ email hợp lệ.',
+            'email.email' => 'Vui lòng nhập một email hợp lệ.',
             'email.max' => 'Email không được vượt quá 255 ký tự.',
             'email.unique' => 'Email này đã được sử dụng.',
 

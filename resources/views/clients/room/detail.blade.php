@@ -235,18 +235,64 @@
             }
 
             if (typeof flatpickr !== 'undefined') {
+                function formatDateToVietnamese(startDate, endDate) {
+                    if (!startDate || !endDate) return ""; // Tránh lỗi nếu ngày chưa được chọn
+
+                    const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+                    const months = [
+                        'tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6',
+                        'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'
+                    ];
+
+                    const startDay = days[startDate.getDay()];
+                    const startDateNum = startDate.getDate();
+                    const startMonth = months[startDate.getMonth()];
+
+                    const endDay = days[endDate.getDay()];
+                    const endDateNum = endDate.getDate();
+                    const endMonth = months[endDate.getMonth()];
+
+                    return `${startDay}, ${startDateNum} ${startMonth} - ${endDay}, ${endDateNum} ${endMonth}`;
+                }
+
+                // Gán giá trị ban đầu khi trang tải
+                const checkInValue = document.getElementById('booking_check_in').value;
+                const checkOutValue = document.getElementById('booking_check_out').value;
+
+                if (checkInValue && checkOutValue) {
+                    const startDate = new Date(checkInValue);
+                    const endDate = new Date(checkOutValue);
+                    document.getElementById('booking_date_range').value = formatDateToVietnamese(startDate, endDate);
+                }
+
+                // Khởi tạo Flatpickr
                 flatpickr("#booking_date_range", {
                     mode: "range",
                     dateFormat: "Y-m-d",
                     minDate: "today",
-                    defaultDate: ["{{ $checkIn }}", "{{ $checkOut }}"],
                     onChange: function(selectedDates) {
                         if (selectedDates.length === 2) {
-                            document.getElementById('booking_check_in').value = selectedDates[0].toISOString().split('T')[0];
-                            document.getElementById('booking_check_out').value = selectedDates[1].toISOString().split('T')[0];
-                            updatePrice();
+                            const startDate = new Date(selectedDates[0].getTime() - (selectedDates[0].getTimezoneOffset() * 60000));
+                            const endDate = new Date(selectedDates[1].getTime() - (selectedDates[1].getTimezoneOffset() * 60000));
+
+                            document.getElementById('booking_check_in').value = startDate.toISOString().split('T')[0];
+                            document.getElementById('booking_check_out').value = endDate.toISOString().split('T')[0];
+
+                            document.getElementById('booking_date_range').value = formatDateToVietnamese(startDate, endDate);
                         }
-                    }
+                    },
+                    locale: {
+                        firstDayOfWeek: 1,
+                        weekdays: {
+                            shorthand: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+                            longhand: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
+                        },
+months: {
+                            shorthand: ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'],
+                            longhand: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12']
+                        }
+                    },
+                    showMonths: 2
                 });
             } else {
                 console.warn('Flatpickr không được tải.');
