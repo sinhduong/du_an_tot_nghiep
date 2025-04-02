@@ -208,45 +208,48 @@
     document.addEventListener('DOMContentLoaded', function () {
         // Hàm định dạng ngày sang tiếng Việt
         function formatDateToVietnamese(startDate, endDate) {
+            if (!startDate || !endDate) return ""; // Tránh lỗi nếu ngày chưa được chọn
+
             const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
             const months = [
                 'tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6',
                 'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'
             ];
+
             const startDay = days[startDate.getDay()];
             const startDateNum = startDate.getDate();
             const startMonth = months[startDate.getMonth()];
+
             const endDay = days[endDate.getDay()];
             const endDateNum = endDate.getDate();
             const endMonth = months[endDate.getMonth()];
+
             return `${startDay}, ${startDateNum} ${startMonth} - ${endDay}, ${endDateNum} ${endMonth}`;
         }
 
-        // Lấy ngày mặc định từ server
-        const defaultCheckIn = new Date("{{ request()->check_in ?? \Carbon\Carbon::today()->format('Y-m-d') }}");
-        const defaultCheckOut = new Date("{{ request()->check_out ?? \Carbon\Carbon::tomorrow()->format('Y-m-d') }}");
+        // Gán giá trị ban đầu khi trang tải
+        const checkInValue = document.getElementById('check_in').value;
+        const checkOutValue = document.getElementById('check_out').value;
 
-        // Đặt giá trị ban đầu cho ô input
-        const dateRangeInput = document.getElementById('date_range');
-        if (!dateRangeInput.value) {
-            dateRangeInput.value = formatDateToVietnamese(defaultCheckIn, defaultCheckOut);
+        if (checkInValue && checkOutValue) {
+            const startDate = new Date(checkInValue);
+            const endDate = new Date(checkOutValue);
+            document.getElementById('date_range').value = formatDateToVietnamese(startDate, endDate);
         }
 
-        // Initialize Flatpickr
+        // Khởi tạo Flatpickr
         flatpickr("#date_range", {
             mode: "range",
             dateFormat: "Y-m-d",
-            minDate: "today", // Vô hiệu hóa các ngày trước ngày hiện tại
-            defaultDate: [
-                "{{ request()->check_in ?? \Carbon\Carbon::today()->format('Y-m-d') }}",
-                "{{ request()->check_out ?? \Carbon\Carbon::tomorrow()->format('Y-m-d') }}"
-            ],
+            minDate: "today",
             onChange: function(selectedDates) {
                 if (selectedDates.length === 2) {
                     const startDate = new Date(selectedDates[0].getTime() - (selectedDates[0].getTimezoneOffset() * 60000));
                     const endDate = new Date(selectedDates[1].getTime() - (selectedDates[1].getTimezoneOffset() * 60000));
+
                     document.getElementById('check_in').value = startDate.toISOString().split('T')[0];
                     document.getElementById('check_out').value = endDate.toISOString().split('T')[0];
+
                     document.getElementById('date_range').value = formatDateToVietnamese(startDate, endDate);
                 }
             },

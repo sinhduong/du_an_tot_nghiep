@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\StaffRoleController;
 use App\Http\Controllers\Admin\StaffShiftController;
 use App\Http\Controllers\Admin\SystemController;
+use App\Http\Controllers\Admin\RoomTypePromotionController;
 use App\Http\Controllers\Client\BookingController as ClientBookingController;
 use App\Http\Controllers\Client\HomeController;
 use Illuminate\Support\Facades\Route;
@@ -61,7 +62,7 @@ require __DIR__ . '/auth.php';
 Route::prefix('admin')
 
     ->as('admin.')
-    // ->middleware(['auth', 'role:admin']) // Chỉ admin mới truy cập
+    ->middleware('auth')
     ->group(function () {
 
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -80,6 +81,18 @@ Route::prefix('admin')
                 Route::get('/trashed', [RoomTypeController::class, 'trashed'])->name('trashed');
                 Route::patch('{id}/restore', [RoomTypeController::class, 'restore'])->name('restore');
                 Route::delete('{id}/force-delete', [RoomTypeController::class, 'forceDelete'])->name('forceDelete');
+            });
+
+        Route::prefix('room-types-promotion')
+            ->as('room_types_promotion.')
+            ->group(function () {
+                Route::get('/', [RoomTypePromotionController::class, 'index'])->name('index');
+                Route::get('/create', [RoomTypePromotionController::class, 'create'])->name('create');
+                Route::post('/store', [RoomTypePromotionController::class, 'store'])->name('store');
+                Route::get('{id}/edit', [RoomTypePromotionController::class, 'edit'])->name('edit');
+                Route::get('{id}/show', [RoomTypePromotionController::class, 'show'])->name('show');
+                Route::put('{id}/update', [RoomTypePromotionController::class, 'update'])->name('update');
+                Route::delete('{id}/destroy', [RoomTypePromotionController::class, 'destroy'])->name('destroy');
             });
 
         Route::prefix('rooms')
@@ -104,6 +117,7 @@ Route::prefix('admin')
                 Route::get('/', [BookingController::class, 'index'])->name('index');
                 Route::get('/create', [BookingController::class, 'create'])->name('create');
                 Route::post('/store', [BookingController::class, 'store'])->name('store');
+                Route::post('/checkin/store', [BookingController::class, 'storeCheckIn'])->name('checkin.store');
                 Route::get('{id}/show', [BookingController::class, 'show'])->name('show');
                 Route::post('{id}/service-plus', [BookingController::class, 'updateServicePlus'])->name('service_plus.update');
                 Route::get('{id}/edit', [BookingController::class, 'edit'])->name('edit');
