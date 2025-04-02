@@ -79,8 +79,8 @@
                                 <h4 class="lh-room-inner-heading">Tổng giá</h4>
 
                                 <div class="d-flex justify-content-between">
-                                    <p>Giá gốc ({{ $roomQuantity }} phòng x {{ $days }} đêm)</p>
-                                    <p>VND {{ number_format($basePrice, 0, ',', '.') }}</p>
+                                    <p>Giá phòng & dịch vụ ({{ $roomQuantity }} phòng x {{ $days }} đêm)</p>
+                                    <p id="base-price-display">VND {{ number_format($basePrice + $serviceTotal, 0, ',', '.') }}</p>
                                 </div>
                                 <div class="d-flex justify-content-between">
                                     <p>Thuế và phí (8%)</p>
@@ -90,20 +90,20 @@
                                 <div id="discount-section" style="display: {{ $discountAmount > 0 ? 'block' : 'none' }};">
                                     <hr>
                                     <div class="d-flex justify-content-between">
-                                        <p>Dịch vụ bổ sung</p>
-                                        <p>VND {{ number_format($serviceTotal, 0, ',', '.') }}</p>
+                                        <p>Giảm trừ của mã giảm giá</p>
+                                        <p id="discount-amount">{{ $discountAmount > 0 ? '- VND ' . number_format($discountAmount, 0, ',', '.') : '' }}</p>
                                     </div>
                                 </div>
 
                                 <div id="after-discount-section" style="display: {{ $discountAmount > 0 ? 'block' : 'none' }};">
                                     <div class="d-flex justify-content-between">
-                                        <p>Giảm giá</p>
-                                        <p id="discount-amount">- VND {{ number_format($discountAmount, 0, ',', '.') }}</p>
+                                        <p>Giá phòng & dịch vụ (sau áp mã)</p>
+                                        <p id="after-base-price-display">VND {{ number_format($basePrice + $serviceTotal - $discountAmount, 0, ',', '.') }}</p>
                                     </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>Thuế và phí (8%)</p>
-                                    <p id="tax-fee-display">VND {{ number_format($taxFee, 0, ',', '.') }}</p>
+                                    <div class="d-flex justify-content-between">
+                                        <p>Thuế và phí (8%)</p>
+                                        <p id="tax-fee-display">VND {{ number_format($taxFee, 0, ',', '.') }}</p>
+                                    </div>
                                 </div>
 
                                 <!-- Nhập mã giảm giá và nút hủy -->
