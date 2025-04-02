@@ -36,10 +36,12 @@
                         <form method="GET" action="{{ route('admin.bookings.index') }}" id="filterForm">
                             <div class="row mb-3">
                                 <div class="col-md-3">
-                                    <label>Khoảng thời gian</label>
-                                    <input type="text" name="date_range" id="dateRangePicker" class="form-control" placeholder="Chọn khoảng thời gian" value="{{ $filterData['start_date'] && $filterData['end_date'] ? $filterData['start_date'] . ' - ' . $filterData['end_date'] : '' }}">
-                                    <input type="hidden" name="start_date" id="start_date" value="{{ $filterData['start_date'] ?? '' }}">
-                                    <input type="hidden" name="end_date" id="end_date" value="{{ $filterData['end_date'] ?? '' }}">
+                                    <label>Ngày bắt đầu</label>
+                                    <input type="date" name="start_date" class="form-control" value="{{ $filterData['start_date'] ?? '' }}">
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Ngày kết thúc</label>
+                                    <input type="date" name="end_date" class="form-control" value="{{ $filterData['end_date'] ?? '' }}">
                                 </div>
                                 <div class="col-md-3">
                                     <label>Lọc nhanh</label>
@@ -63,8 +65,10 @@
                                         <option value="refunded" {{ $filterData['status'] == 'refunded' ? 'selected' : '' }}>Đã hoàn tiền</option>
                                     </select>
                                 </div>
-                                <div class="col-md-3 d-flex align-items-end">
-                                    <button type="submit" class="btn btn-primary me-2">Áp dụng</button>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-primary">Áp dụng</button>
                                     <a href="{{ route('admin.bookings.index') }}" class="btn btn-secondary">Xóa bộ lọc</a>
                                 </div>
                             </div>
@@ -199,26 +203,9 @@
 </div>
 
 <script>
-    // Khởi tạo Flatpickr
-    flatpickr("#dateRangePicker", {
-        mode: "range",
-        dateFormat: "d/m/Y",
-        locale: "vi", // Sử dụng ngôn ngữ tiếng Việt
-        onChange: function(selectedDates, dateStr, instance) {
-            if (selectedDates.length === 2) {
-                // Chuyển định dạng ngày từ d/m/Y sang Y-m-d để gửi về server
-                const startDate = selectedDates[0].toISOString().split('T')[0];
-                const endDate = selectedDates[1].toISOString().split('T')[0];
-                document.getElementById('start_date').value = startDate;
-                document.getElementById('end_date').value = endDate;
-            }
-        }
-    });
-
     function clearDateInputs() {
-        document.getElementById('dateRangePicker').value = '';
-        document.getElementById('start_date').value = '';
-        document.getElementById('end_date').value = '';
+        document.querySelector('input[name="start_date"]').value = '';
+        document.querySelector('input[name="end_date"]').value = '';
     }
 
     function handleStatusChange(selectElement, bookingId, maxGuests) {

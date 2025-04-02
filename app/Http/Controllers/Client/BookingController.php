@@ -78,22 +78,29 @@ class BookingController extends Controller
             'service_total' => 'required|numeric|min:0',
         ]);
 
-        $checkIn = Carbon::parse($checkIn);
-        $checkOut = Carbon::parse($checkOut);
+        // Chuẩn hóa ngày nhận và trả phòng
+        $checkIn = Carbon::parse($checkIn)->startOfDay(); // Bỏ thời gian, chỉ giữ ngày
+        $checkOut = Carbon::parse($checkOut)->startOfDay(); // Bỏ thời gian, chỉ giữ ngày
         $now = Carbon::now();
 
+        // Điều chỉnh ngày nhận phòng nếu quá muộn
         if ($checkIn->lt($now->startOfDay()) || ($checkIn->isToday() && $now->hour >= 22)) {
             $checkIn = $now->copy()->addDay()->startOfDay();
             $checkOut = $checkIn->copy()->addDay();
             $request->session()->flash('warning', 'Đặt phòng vào thời điểm này sẽ được check-in từ ngày mai (' . $checkIn->format('d/m/Y') . ').');
         }
 
+        // Đảm bảo ngày trả phòng luôn sau ngày nhận phòng
         if ($checkIn->gte($checkOut)) {
             $checkOut = $checkIn->copy()->addDay();
             $request->session()->flash('warning', 'Ngày trả phòng đã được điều chỉnh để sau ngày nhận phòng.');
         }
 
+        // Tính số ngày lưu trú
         $days = $checkOut->diffInDays($checkIn);
+
+        
+
 
         $selectedRoomType = RoomType::with([
             'amenities' => function ($query) {

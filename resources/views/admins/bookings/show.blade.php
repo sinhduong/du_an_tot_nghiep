@@ -148,9 +148,18 @@
                                     <li><strong>Địa chỉ:</strong> {{ $booking->user->address ?? 'Không có' }}</li>
                                     <li><strong>Giới tính:</strong> {{ $booking->user->gender ?? 'Không xác định' }}</li>
                                     <li>
-                                        <strong>Ảnh CCCD:</strong>
+                                        <strong>Ảnh CCCD:</strong><br>
                                         @if ($booking->user->id_photo)
-                                            <img src="{{ Storage::url('id_photos/' . $booking->user->id_photo) }}" alt="Ảnh CCCD" class="id-photo" onclick="showImageModal(this.src)">
+                                            @php
+                                                $idPhotoPath = $booking->user->id_photo;
+                                                $fileName = str_contains($idPhotoPath, 'id_photos/') ? basename($idPhotoPath) : $idPhotoPath;
+                                                $fullPath = Storage::url('id_photos/' . $fileName);
+                                            @endphp
+                                            @if (Storage::disk('public')->exists('id_photos/' . $fileName))
+                                                <img style="width:150;height:80px" src="{{ $fullPath }}" alt="Ảnh CCCD" class="id-photo" onclick="showImageModal(this.src)">
+                                            @else
+                                                Không tồn tại file ảnh
+                                            @endif
                                         @else
                                             Không có
                                         @endif
