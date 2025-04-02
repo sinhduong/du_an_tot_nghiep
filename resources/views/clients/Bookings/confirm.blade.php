@@ -100,7 +100,7 @@
                                         <p>Giảm giá</p>
                                         <p id="discount-amount">- VND {{ number_format($discountAmount, 0, ',', '.') }}</p>
                                     </div>
-                                @endif
+                                </div>
                                 <div class="d-flex justify-content-between">
                                     <p>Thuế và phí (8%)</p>
                                     <p id="tax-fee-display">VND {{ number_format($taxFee, 0, ',', '.') }}</p>
