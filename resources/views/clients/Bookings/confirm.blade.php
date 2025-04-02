@@ -119,7 +119,7 @@
                                 <hr>
 
                                 <div class="d-flex justify-content-between">
-                                    <h5 class="lh-room-inner-heading">Tổng cộng</h5>
+                                    <h5 class="lh-room-inner-heading">Tổng thanh toán</h5>
                                     <h5 class="lh-room-inner-heading text-danger" id="total_price_display">VND {{ number_format($totalPrice, 0, ',', '.') }}</h5>
                                 </div>
 
