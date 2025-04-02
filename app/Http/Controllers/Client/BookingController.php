@@ -272,6 +272,7 @@ class BookingController extends Controller
                 'sub_total' => 'required|numeric|min:0',
             ]);
             $data = $request->all();
+//            dd($data);
 
             $user = Auth::user();
             if (!$user) {
@@ -294,7 +295,7 @@ class BookingController extends Controller
             $discountAmount = (float) $request->input('discount_amount', 0);
             $taxFee = (float) $request->input('tax_fee');
             $subTotal = (float) $request->input('sub_total');
-            $totalPrice = $subTotal + $taxFee;
+            $totalPrice = (float) $request->input('total_price');
 
             $booking = Booking::create([
                 'booking_code' => 'BOOK' . time(),
