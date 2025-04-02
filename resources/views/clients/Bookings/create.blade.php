@@ -73,28 +73,28 @@
                                 <h4 class="lh-room-inner-heading">Tổng giá</h4>
                                 <div class="d-flex justify-content-between">
                                     <p>Giá gốc ({{ $roomQuantity }} phòng x {{ $days }} đêm)</p>
-                                    <p>VND {{ number_format($basePrice, 0, ',', '.') }}</p>
+                                    <p>{{ \App\Helpers\FormatHelper::formatPrice($basePrice) }}</p>
                                 </div>
                                 @if ($discountAmount > 0)
                                     <div class="d-flex justify-content-between">
                                         <p>Giảm giá</p>
-                                        <p>- VND {{ number_format($discountAmount, 0, ',', '.') }}</p>
+                                        <p>- {{ \App\Helpers\FormatHelper::formatPrice($discountAmount) }}</p>
                                     </div>
                                 @endif
                                 @if ($serviceTotal > 0)
                                     <div class="d-flex justify-content-between">
                                         <p>Dịch vụ bổ sung</p>
-                                        <p>VND {{ number_format($serviceTotal, 0, ',', '.') }}</p>
+                                        <p>{{ \App\Helpers\FormatHelper::formatPrice($serviceTotal) }}</p>
                                     </div>
                                 @endif
                                 <div class="d-flex justify-content-between">
                                     <p>Thuế và phí (8%)</p>
-                                    <p>VND {{ number_format($taxFee, 0, ',', '.') }}</p>
+                                    <p>{{ \App\Helpers\FormatHelper::formatPrice($taxFee) }}</p>
                                 </div>
                                 <hr>
                                 <div class="d-flex justify-content-between">
                                     <h5 class="lh-room-inner-heading">Tổng cộng</h5>
-                                    <h5 class="lh-room-inner-heading text-danger" id="total_price_display">VND {{ number_format($totalPrice, 0, ',', '.') }}</h5>
+                                    <h5 class="lh-room-inner-heading text-danger" id="total_price_display">{{ \App\Helpers\FormatHelper::formatPrice($totalPrice) }}</h5>
                                 </div>
                                 <p class="text-muted">Đã bao gồm thuế và phí</p>
                             </div>
@@ -103,7 +103,7 @@
                                 <h4 class="lh-room-inner-heading">Thông tin thêm</h4>
                                 <p><i class="fas fa-check-circle text-success"></i> Đã bao gồm thuế VAT</p>
                                 <p><i class="fas fa-check-circle text-success"></i> 8% Thuế GTGT</p>
-                                <p>VND {{ number_format($taxFee, 0, ',', '.') }}</p>
+                                <p>{{ \App\Helpers\FormatHelper::formatPrice($taxFee) }}</p>
                             </div>
                         </div>
                     </div>

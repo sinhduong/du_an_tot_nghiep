@@ -79,23 +79,23 @@
                                 <h4 class="lh-room-inner-heading">Tổng giá</h4>
                                 <div class="d-flex justify-content-between">
                                     <p>Giá gốc ({{ $roomQuantity }} phòng x {{ $days }} đêm)</p>
-                                    <p>VND {{ number_format($basePrice, 0, ',', '.') }}</p>
+                                    <p>{{ \App\Helpers\FormatHelper::formatPrice($basePrice) }}</p>
                                 </div>
                                 @if ($serviceTotal > 0)
                                     <div class="d-flex justify-content-between">
                                         <p>Dịch vụ bổ sung</p>
-                                        <p>VND {{ number_format($serviceTotal, 0, ',', '.') }}</p>
+                                        <p>{{ \App\Helpers\FormatHelper::formatPrice($serviceTotal) }}</p>
                                     </div>
                                 @endif
                                 @if ($discountAmount > 0)
                                     <div class="d-flex justify-content-between">
                                         <p>Giảm giá</p>
-                                        <p id="discount-amount">- VND {{ number_format($discountAmount, 0, ',', '.') }}</p>
+                                        <p id="discount-amount">- {{ \App\Helpers\FormatHelper::formatPrice($discountAmount) }}</p>
                                     </div>
                                 @endif
                                 <div class="d-flex justify-content-between">
                                     <p>Thuế và phí (8%)</p>
-                                    <p id="tax-fee-display">VND {{ number_format($taxFee, 0, ',', '.') }}</p>
+                                    <p id="tax-fee-display">{{ \App\Helpers\FormatHelper::formatPrice($taxFee) }}</p>
                                 </div>
                                 <div class="d-flex justify-content-between mt-2">
                                     <input type="text" id="promotion-code" class="form-control w-50" placeholder="Nhập mã giảm giá">
@@ -105,7 +105,7 @@
                                 <hr>
                                 <div class="d-flex justify-content-between">
                                     <h5 class="lh-room-inner-heading">Tổng cộng</h5>
-                                    <h5 class="lh-room-inner-heading text-danger" id="total_price_display">VND {{ number_format($totalPrice, 0, ',', '.') }}</h5>
+                                    <h5 class="lh-room-inner-heading text-danger" id="total_price_display">{{ \App\Helpers\FormatHelper::formatPrice($totalPrice) }}</h5>
                                 </div>
                                 <input type="hidden" id="base_price" value="{{ $basePrice }}">
                                 <input type="hidden" id="service_total" value="{{ $serviceTotal }}">
@@ -160,12 +160,12 @@
                                             </div>
 
                                             <div id="online-payment-section" style="display: none; margin-left: 20px;">
-                                                <div class="form-check">
+                                                {{-- <div class="form-check">
                                                     <input class="form-check-input online-payment-method" type="radio" name="online_payment_method" id="momo" value="momo">
                                                     <label class="form-check-label" for="momo">
                                                         <img src="https://developers.momo.vn/v3/vi/assets/images/square-8c08a00f550e40a2efafea4a005b1232.png" alt="MoMo" class="payment-icon"> MoMo Thanh toán qua MoMo
                                                     </label>
-                                                </div>
+                                                </div> --}}
                                                 <div class="form-check">
                                                     <input class="form-check-input online-payment-method" type="radio" name="online_payment_method" id="vnpay" value="vnpay">
                                                     <label class="form-check-label" for="vnpay">
