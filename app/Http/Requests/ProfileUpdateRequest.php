@@ -18,6 +18,14 @@ class ProfileUpdateRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'id_number' => ['nullable', 'string', 'max:50'],
+            'id_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'birth_date' => ['nullable', 'date'],
+            'country' => ['nullable', 'string', 'max:100'],
+            'gender' => ['nullable', 'in:male,female'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'], // Validate ảnh
         ];
     }
 }

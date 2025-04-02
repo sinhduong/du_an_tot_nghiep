@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidationException;
 class LoginRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Xác định xem người dùng có quyền thực hiện yêu cầu này hay không.
      */
     public function authorize(): bool
     {
@@ -20,7 +20,7 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Quy tắc xác thực dữ liệu đầu vào.
      *
      * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
      */
@@ -33,7 +33,7 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Attempt to authenticate the request's credentials.
+     * Thử đăng nhập với thông tin đã nhập.
      *
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -45,7 +45,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'email' => 'Thông tin đăng nhập không chính xác.',
             ]);
         }
 
@@ -53,7 +53,7 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Ensure the login request is not rate limited.
+     * Đảm bảo yêu cầu đăng nhập không bị giới hạn do nhập sai quá nhiều lần.
      *
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -68,15 +68,12 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
+            'email' => "Bạn đã nhập sai quá nhiều lần. Vui lòng thử lại sau $seconds giây.",
         ]);
     }
 
     /**
-     * Get the rate limiting throttle key for the request.
+     * Lấy khóa giới hạn tốc độ cho yêu cầu.
      */
     public function throttleKey(): string
     {

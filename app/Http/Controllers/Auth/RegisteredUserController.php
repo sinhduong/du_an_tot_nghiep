@@ -16,7 +16,7 @@ use Illuminate\View\View;
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Hiển thị trang đăng ký.
      */
     public function create(): View
     {
@@ -24,16 +24,31 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Handle an incoming registration request.
+     * Xử lý yêu cầu đăng ký tài khoản.
      *
      * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255', 'unique:'.User::class],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'name' => ['required', 'string', 'max:255', 'unique:users,name'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'name.required' => 'Vui lòng nhập họ và tên.',
+            'name.string' => 'Họ và tên phải là một chuỗi ký tự.',
+            'name.max' => 'Họ và tên không được vượt quá 255 ký tự.',
+            'name.unique' => 'Họ và tên này đã được sử dụng.',
+
+            'email.required' => 'Vui lòng nhập địa chỉ email.',
+            'email.string' => 'Email phải là một chuỗi ký tự.',
+            'email.lowercase' => 'Email phải viết thường.',
+            'email.email' => 'Vui lòng nhập một địa chỉ email hợp lệ.',
+            'email.max' => 'Email không được vượt quá 255 ký tự.',
+            'email.unique' => 'Email này đã được sử dụng.',
+
+            'password.required' => 'Vui lòng nhập mật khẩu.',
+            'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
         ]);
 
         $user = User::create([
