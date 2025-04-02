@@ -99,7 +99,7 @@ class BookingController extends Controller
         // Tính số ngày lưu trú
         $days = $checkOut->diffInDays($checkIn);
 
-        
+
 
 
         $selectedRoomType = RoomType::with([
@@ -401,7 +401,7 @@ class BookingController extends Controller
                 $paymentData['method'] = 'cash';
                 $payment = Payment::create($paymentData);
                 $message = 'Đặt phòng của bạn đã hoàn tất! Thông tin chi tiết đã được gửi qua email. Vui lòng thanh toán bằng tiền mặt khi đến nhận phòng.';
-//                Mail::to($user->email)->send(new BookingSuccess($booking));
+                Mail::to($user->email)->send(new BookingSuccess($booking));
                 DB::commit();
                 return redirect()->route('bookings.show', $booking->id)->with('success', $message);
             } else {
