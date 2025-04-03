@@ -20,11 +20,7 @@ class Promotion extends Model
         'type',
         'status',
     ];
-    public function roomTypes()
-    {
-        return $this->belongsToMany(RoomType::class, 'promotion_room_type', 'promotion_id', 'room_type_id')
-            ->withTimestamps();
-    }
+
 
     public function bookings() {
         return $this->belongsToMany(Booking::class, 'booking_promotions', 'promotion_id', 'booking_id');

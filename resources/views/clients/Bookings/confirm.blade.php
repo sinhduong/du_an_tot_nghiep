@@ -80,29 +80,29 @@
 
                                 <div class="d-flex justify-content-between">
                                     <p>Giá phòng & dịch vụ ({{ $roomQuantity }} phòng x {{ $days }} đêm)</p>
-                                    <p id="base-price-display">VND {{ number_format($basePrice + $serviceTotal, 0, ',', '.') }}</p>
+                                    <p id="base-price-display"> {{ \App\Helpers\FormatHelper::formatPrice($basePrice + $serviceTotal) }}</p>
                                 </div>
                                 <div class="d-flex justify-content-between">
                                     <p>Thuế và phí (8%)</p>
-                                    <p id="initial-tax-display">VND {{ number_format(($basePrice + $serviceTotal) * 0.08, 0, ',', '.') }}</p>
+                                    <p id="initial-tax-display"> {{ \App\Helpers\FormatHelper::formatPrice(($basePrice + $serviceTotal) * 0.08) }}</p>
                                 </div>
 
                                 <div id="discount-section" style="display: {{ $discountAmount > 0 ? 'block' : 'none' }};">
                                     <hr>
                                     <div class="d-flex justify-content-between">
                                         <p>Giảm trừ của mã giảm giá</p>
-                                        <p id="discount-amount">{{ $discountAmount > 0 ? '- VND ' . number_format($discountAmount, 0, ',', '.') : '' }}</p>
+                                        <p id="discount-amount">{{ $discountAmount > 0 ? '- ' . \App\Helpers\FormatHelper::formatPrice($discountAmount) : '' }}</p>
                                     </div>
                                 </div>
 
                                 <div id="after-discount-section" style="display: {{ $discountAmount > 0 ? 'block' : 'none' }};">
                                     <div class="d-flex justify-content-between">
                                         <p>Giá phòng & dịch vụ (sau áp mã)</p>
-                                        <p id="after-base-price-display">VND {{ number_format($basePrice + $serviceTotal - $discountAmount, 0, ',', '.') }}</p>
+                                        <p id="after-base-price-display"> {{ \App\Helpers\FormatHelper::formatPrice($basePrice + $serviceTotal - $discountAmount) }}</p>
                                     </div>
                                     <div class="d-flex justify-content-between">
                                         <p>Thuế và phí (8%)</p>
-                                        <p id="tax-fee-display">VND {{ number_format($taxFee, 0, ',', '.') }}</p>
+                                        <p id="tax-fee-display"> {{ \App\Helpers\FormatHelper::formatPrice($taxFee) }}</p>
                                     </div>
                                 </div>
 
@@ -120,7 +120,7 @@
 
                                 <div class="d-flex justify-content-between">
                                     <h5 class="lh-room-inner-heading">Tổng thanh toán</h5>
-                                    <h5 class="lh-room-inner-heading text-danger" id="total_price_display">VND {{ number_format($totalPrice, 0, ',', '.') }}</h5>
+                                    <h5 class="lh-room-inner-heading text-danger" id="total_price_display"> {{ \App\Helpers\FormatHelper::formatPrice($totalPrice) }}</h5>
                                 </div>
 
                                 <input type="hidden" id="base_price" value="{{ $basePrice }}">

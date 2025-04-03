@@ -156,7 +156,7 @@
                         <i class="ri-contacts-book-line"></i><span class="condense">Khuyến mãi loại phòng <i
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
-                        <li><a href="{{ route('admin.room_types_promotion.index') }}" class="lh-page-link drop"><i
+                        <li><a href="{{ route('admin.sale-room-types.index') }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Danh sách </a></li>
                     </ul>
                 </li>

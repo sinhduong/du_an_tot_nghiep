@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\SaleRoomType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class RoomType extends Model
 {
@@ -47,9 +48,8 @@ class RoomType extends Model
     {
         return $this->belongsToMany(Amenity::class, 'room_type_amenities', 'room_type_id', 'amenity_id');
     }
-    public function promotions()
+    public function saleRoomTypes()
     {
-        return $this->belongsToMany(Promotion::class, 'promotion_room_type', 'room_type_id', 'promotion_id')
-            ->withTimestamps();
+        return $this->hasMany(SaleRoomType::class, 'room_type_id');
     }
 }

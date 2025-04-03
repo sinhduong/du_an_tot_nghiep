@@ -27,14 +27,13 @@ return new class extends Migration
             $table->integer('children_count')->default(0); // Số trẻ em
             $table->integer('room_quantity')->default(1); // Số lượng phòng được đặt
             $table->enum('status', [
-                'pending_confirmation', //chờ xác nhận
                 'confirmed', //đã xác nhận
                 'paid', //đã thanh toán
                 'check_in', //đã vào
                 'check_out', //đã ra
                 'cancelled', //dã hủy
                 'refunded' //được hoàn tiền
-            ])->default('pending_confirmation');
+            ])->default('confirmed');
             $table->bigInteger('user_id');
             $table->text('special_request')->nullable(); // Thêm trường yêu cầu đặc biệt
             $table->timestamps();

@@ -356,54 +356,54 @@
                 </div>
             </div>
 
-            <!-- Dịch vụ phát sinh & Tổng tiền -->
-            <div class="col-md-6">
-                <div class="booking-section">
-                    <div class="booking-section-header">
-                        <h5>Tổng dịch vụ phát sinh</h5>
-                        <span class="toggle-icon">▼</span>
-                    </div>
-                    <div class="booking-section-content">
-                        @if ($booking->servicePlus->isEmpty())
-                            <p>Chưa có dịch vụ phát sinh.</p>
-                        @else
-                            @php $totalServicePlusPrice = 0; @endphp
-                            <ul class="service-list">
-                                @foreach ($booking->servicePlus as $service)
-                                    @php
-                                        $totalPrice = $service->price * $service->pivot->quantity;
-                                        $totalServicePlusPrice += $totalPrice;
-                                    @endphp
-                                    <li>{{ $service->name }} ({{ $service->pivot->quantity }} x {{ \App\Helpers\FormatHelper::formatPrice($service->price) }}) = {{ \App\Helpers\FormatHelper::formatPrice($totalPrice) }}</li>
-                                @endforeach
-                            </ul>
-                            <p><strong>Tổng cộng:</strong> {{ \App\Helpers\FormatHelper::formatPrice($totalServicePlusPrice) }}</p>
-                            <div class="mt-2">
-                                <label>Trạng thái:</label>
-                                <select class="form-control service-plus-status" data-booking-id="{{ $booking->id }}" {{ $booking->service_plus_status === 'paid' ? 'disabled' : '' }}>
-                                    <option value="not_yet_paid" {{ $booking->service_plus_status === 'not_yet_paid' ? 'selected' : '' }}>Chưa thanh toán</option>
-                                    <option value="paid" {{ $booking->service_plus_status === 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
-                                </select>
-                            </div>
-                        @endif
-                    </div>
+<!-- Dịch vụ phát sinh & Tổng tiền -->
+<div class="col-md-6">
+    <div class="booking-section">
+        <div class="booking-section-header">
+            <h5>Tổng dịch vụ phát sinh</h5>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="booking-section-content">
+            @php $totalServicePlusPrice = 0; @endphp <!-- Initialize the variable here -->
+            @if ($booking->servicePlus->isEmpty())
+                <p>Chưa có dịch vụ phát sinh.</p>
+            @else
+                <ul class="service-list">
+                    @foreach ($booking->servicePlus as $service)
+                        @php
+                            $totalPrice = $service->price * $service->pivot->quantity;
+                            $totalServicePlusPrice += $totalPrice;
+                        @endphp
+                        <li>{{ $service->name }} ({{ $service->pivot->quantity }} x {{ \App\Helpers\FormatHelper::formatPrice($service->price) }}) = {{ \App\Helpers\FormatHelper::formatPrice($totalPrice) }}</li>
+                    @endforeach
+                </ul>
+                <p><strong>Tổng cộng:</strong> {{ \App\Helpers\FormatHelper::formatPrice($totalServicePlusPrice) }}</p>
+                <div class="mt-2">
+                    <label>Trạng thái:</label>
+                    <select class="form-control service-plus-status" data-booking-id="{{ $booking->id }}" {{ $booking->service_plus_status === 'paid' ? 'disabled' : '' }}>
+                        <option value="not_yet_paid" {{ $booking->service_plus_status === 'not_yet_paid' ? 'selected' : '' }}>Chưa thanh toán</option>
+                        <option value="paid" {{ $booking->service_plus_status === 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
+                    </select>
                 </div>
-            </div>
+            @endif
+        </div>
+    </div>
+</div>
 
-            <div class="col-md-6">
-                <div class="booking-section">
-                    <div class="booking-section-header">
-                        <h5>Tổng tiền</h5>
-                        <span class="toggle-icon">▼</span>
-                    </div>
-                    <div class="booking-section-content">
-                        @php $totalAmount = $booking->total_price + $totalServicePlusPrice; @endphp
-                        <p><strong>Tổng tiền đơn đặt phòng:</strong> <span>{{ \App\Helpers\FormatHelper::formatPrice($booking->total_price) }}</span></p>
-                        <p><strong>Tổng tiền dịch vụ phát sinh:</strong> <span>{{ \App\Helpers\FormatHelper::formatPrice($totalServicePlusPrice) }}</span></p>
-                        <p><strong>Tổng tiền:</strong> <span>{{ \App\Helpers\FormatHelper::formatPrice($totalAmount) }}</span></p>
-                    </div>
-                </div>
-            </div>
+<div class="col-md-6">
+    <div class="booking-section">
+        <div class="booking-section-header">
+            <h5>Tổng tiền</h5>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="booking-section-content">
+            @php $totalAmount = $booking->total_price + $totalServicePlusPrice; @endphp
+            <p><strong>Tổng tiền đơn đặt phòng:</strong> <span>{{ \App\Helpers\FormatHelper::formatPrice($booking->total_price) }}</span></p>
+            <p><strong>Tổng tiền dịch vụ phát sinh:</strong> <span>{{ \App\Helpers\FormatHelper::formatPrice($totalServicePlusPrice) }}</span></p>
+            <p><strong>Tổng tiền:</strong> <span>{{ \App\Helpers\FormatHelper::formatPrice($totalAmount) }}</span></p>
+        </div>
+    </div>
+</div>
         </div>
 
         <div class="mt-4 text-center">

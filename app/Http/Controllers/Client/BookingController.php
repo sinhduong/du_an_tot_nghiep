@@ -272,7 +272,6 @@ class BookingController extends Controller
                 'sub_total' => 'required|numeric|min:0',
             ]);
             $data = $request->all();
-//            dd($data);
 
             $user = Auth::user();
             if (!$user) {
@@ -350,6 +349,11 @@ class BookingController extends Controller
                                 ->where('check_out', '>=', $checkOut);
                         });
                 })
+                ->where(function ($q) use ($checkIn) {
+                    $q->whereNull('actual_check_out')
+                        ->orWhere('actual_check_out', '>=', $checkIn);
+                })
+                ->whereNotIn('status', ['cancelled', 'refunded'])
                 ->with('rooms')
                 ->get()
                 ->flatMap(function ($booking) {
@@ -365,7 +369,6 @@ class BookingController extends Controller
                 $booking->delete();
                 return redirect()->route('home')->with('error', 'Không đủ phòng trống để đặt.');
             }
-
             $selectedRooms = $availableRooms->take($roomQuantity);
             $booking->rooms()->attach($selectedRooms->pluck('id'));
 
@@ -535,9 +538,6 @@ class BookingController extends Controller
                     return redirect($vnp_Url);
                 }
             }
-
-
-
         } catch (\Exception $exception) {
             DB::rollBack();
             dd($exception->getMessage());
@@ -795,5 +795,4 @@ class BookingController extends Controller
                 ->with('error', 'Thanh toán không thành công! Mã lỗi: ' . $vnp_ResponseCode);
         }
     }
-
 }

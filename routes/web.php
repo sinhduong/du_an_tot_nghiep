@@ -1,34 +1,35 @@
 <?php
 
-use App\Http\Controllers\Admin\AboutController;
-use App\Http\Controllers\Admin\AmenityController;
-use App\Http\Controllers\Admin\BannerController;
-use App\Http\Controllers\Admin\BookingController;
-use App\Http\Controllers\Admin\ContactsController;
-use App\Http\Controllers\Admin\CustomerController;
-use App\Http\Controllers\Admin\DashboardController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\FaqController;
-use App\Http\Controllers\Admin\IntroductionController;
-use App\Http\Controllers\Admin\PaymentController;
-use App\Http\Controllers\Admin\PolicyController;
-use App\Http\Controllers\Admin\ProfileController;
-use App\Http\Controllers\Admin\PromotionController;
-use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\Admin\RoomController;
-use App\Http\Controllers\Admin\RoomTypeController;
-use App\Http\Controllers\Admin\RulesAndRegulationController;
-use App\Http\Controllers\Admin\ServiceController;
-use App\Http\Controllers\Admin\ServicePlusController;
-use App\Http\Controllers\Admin\StaffAttendanceController;
+use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\PolicyController;
+use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Admin\SystemController;
+use App\Http\Controllers\Admin\AmenityController;
+use App\Http\Controllers\Admin\BookingController;
+use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\ContactsController;
+use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\RoomTypeController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\StaffRoleController;
 use App\Http\Controllers\Admin\StaffShiftController;
-use App\Http\Controllers\Admin\SystemController;
+use App\Http\Controllers\Admin\ServicePlusController;
+use App\Http\Controllers\Admin\IntroductionController;
+use App\Http\Controllers\Admin\SaleRoomTypeController;
+use App\Http\Controllers\Admin\StaffAttendanceController;
 use App\Http\Controllers\Admin\RoomTypePromotionController;
+use App\Http\Controllers\Admin\RulesAndRegulationController;
 use App\Http\Controllers\Client\BookingController as ClientBookingController;
-use App\Http\Controllers\Client\HomeController;
-use Illuminate\Support\Facades\Route;
 
 // client
 
@@ -274,6 +275,7 @@ Route::prefix('admin')
         Route::resource('faqs', FaqController::class);
         Route::resource('payments', PaymentController::class);
         Route::resource('customers', CustomerController::class);
+        Route::resource('sale-room-types', SaleRoomTypeController::class);
         Route::prefix('admin')->group(function () {
             Route::get('/contacts', [ContactsController::class, 'index'])->name('contacts.index');
             Route::get('/contacts/{contact}', [ContactsController::class, 'show'])->name('contacts.show');
@@ -287,8 +289,6 @@ Route::prefix('admin')
 // client
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-// Route::get('/', [HomeController::class, 'systems'])->name('home');
-// Route cho trang chi tiết phòng
 Route::get('/room/{id}', [HomeController::class, 'show'])->name('room.details');
 Route::get('/room', [HomeController::class, 'room_view'])->name('room.view');
 
