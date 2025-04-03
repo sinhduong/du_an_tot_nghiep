@@ -48,7 +48,7 @@
                     @foreach ($roomTypes as $index => $roomType)
                         <button class="nav-link {{ $index == 0 ? 'active' : '' }}" id="nav-{{ $roomType->id }}-tab" data-bs-toggle="tab"
                                 data-bs-target="#nav-{{ $roomType->id }}" type="button" role="tab" aria-controls="nav-{{ $roomType->id }}"
-                                aria-selected="{{ $index == 0 ? 'true' : 'false' }}" >
+                                aria-selected="{{ $index == 0 ? 'true' : 'false' }}">
                             @php
                                 $mainImage = $roomType->roomTypeImages->where('is_main', true)->first();
                                 $imagePath = $mainImage ? asset('storage/' . $mainImage->image) : asset('assets/client/assets/img/room/' . ($index + 1) . '.jpg');
@@ -57,7 +57,7 @@
                                 <img src="{{ $imagePath }}" alt="{{ $roomType->name }}">
                                 @if ($roomType->promotion_info)
                                     <span class="discount-badge">
-                                        Giảm {{ $roomType->promotion_info['value'] }}%
+                                        Giảm {{ $roomType->promotion_info['value'] }}{{ $roomType->promotion_info['type'] === 'percent' ? '%' : ' VND' }}
                                     </span>
                                 @endif
                             </div>
@@ -86,7 +86,7 @@
                                                     @if ($roomType->promotion_info)
                                                         <p class="discount-info">
                                                             <i class="ri-coupon-3-line"></i>
-                                                            Mã: {{ $roomType->promotion_info['code'] }} - Giảm {{ round($roomType->promotion_info['value'], 2) }}%
+                                                            {{ $roomType->promotion_info['name'] }} - Giảm {{ $roomType->promotion_info['value'] }}{{ $roomType->promotion_info['type'] === 'percent' ? '%' : ' VND' }}
                                                         </p>
                                                     @endif
                                                 @else

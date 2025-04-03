@@ -8,7 +8,7 @@ class FormatHelper
 {
     public static function formatPrice($price)
     {
-        return number_format($price, 0, ',', '.') . ' VND';
+        return number_format($price, 0, ',', '.') . 'VND';
     }
 
     public static function formatDate($date)

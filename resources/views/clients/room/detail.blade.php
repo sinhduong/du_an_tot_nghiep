@@ -91,7 +91,7 @@
                                 <div class="lh-side-reservation-from">
                                     <label>Ngày nhận phòng - trả phòng</label>
                                     <div class="calendar">
-                                        <input type="text" id="booking_date_range" class="reservation-form-control" value="{{ $formattedDateRange }}" readonly>
+                                        <input type="text" id="booking_date_range" class="reservation-form-control" value="{{ $checkIn }} - {{ $checkOut }}" readonly>
                                         <i class="ri-calendar-line"></i>
                                         <input type="hidden" name="check_in" id="booking_check_in" value="{{ $checkIn }}">
                                         <input type="hidden" name="check_out" id="booking_check_out" value="{{ $checkOut }}">
@@ -151,7 +151,7 @@
                                     @endif
                                 </div>
 
-                                <div class="lh-side-reservation-from">
+                               <div class="lh-side-reservation-from">
                                     <h4>Chi Tiết Giá</h4>
                                     @php
                                         $basePrice = $roomType->total_original_price;
@@ -164,26 +164,26 @@
                                     @endphp
                                     <div class="d-flex justify-content-between">
                                         <p>Giá gốc ({{ $roomCount }} phòng x {{ $nights }} đêm)</p>
-                                        <p>VND <span id="base-price-display">{{ number_format($basePrice, 0, ',', '.') }}</span></p>
+                                        <p><span id="base-price-display">{{ \App\Helpers\FormatHelper::FormatPrice($basePrice)}}</span></p>
                                     </div>
-                                    @if ($discountedPrice < $basePrice)
-                                        <div class="d-flex justify-content-between">
-                                            <p>Giảm giá (Mã: {{ $roomType->promotion_info['code'] }} - {{ $roomType->promotion_info['value'] }}%)</p>
-                                            <p>- VND <span id="discount-amount-display">{{ number_format($discountAmount, 0, ',', '.') }}</span></p>
+                                    @if ($discountedPrice < $basePrice && $roomType->promotion_info)
+                                        <div class="d-flex justify-content-between gap-2">
+                                            <p>Chương trình: {{ $roomType->promotion_info['name'] }} (Giảm {{ $roomType->promotion_info['value'] }}{{ $roomType->promotion_info['type'] === 'percent' ? '%' : ' VND' }})</p>
+                                            <p>-<span id="discount-amount-display ">{{ \App\Helpers\FormatHelper::FormatPrice($discountAmount) }}</span></p>
                                         </div>
                                     @endif
                                     <div class="d-flex justify-content-between" id="service-total" style="display: none;">
                                         <p>Dịch vụ bổ sung</p>
-                                        <p>VND <span id="service-total-amount">0</span></p>
+                                        <p> <span id="service-total-amount">0</span></p>
                                     </div>
                                     <div class="d-flex justify-content-between">
                                         <p>Thuế và phí (8%)</p>
-                                        <p>VND <span id="tax-fee-display">{{ number_format($taxFee, 0, ',', '.') }}</span></p>
+                                        <p><span id="tax-fee-display">{{ \App\Helpers\FormatHelper::FormatPrice($taxFee) }}</span></p>
                                     </div>
                                     <hr>
                                     <div class="d-flex justify-content-between">
                                         <h4>Tổng cộng</h4>
-                                        <h5 class="text-danger" id="total-price-display">VND {{ number_format($totalPrice, 0, ',', '.') }}</h5>
+                                        <h5 class="text-danger" id="total-price-display"> {{ \App\Helpers\FormatHelper::FormatPrice($totalPrice) }}</h5>
                                     </div>
                                     <p class="text-muted">Đã bao gồm thuế và phí</p>
                                 </div>
@@ -209,6 +209,7 @@
         </div>
     </section>
 
+    <!-- Thêm Flatpickr và Slick theme -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
@@ -227,70 +228,59 @@
     </style>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        if (typeof flatpickr !== 'undefined') {
-                function formatDateToVietnamese(startDate, endDate) {
-                    if (!startDate || !endDate) return ""; // Tránh lỗi nếu ngày chưa được chọn
-
-                    const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-                    const months = [
-                        'tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6',
-                        'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'
-                    ];
-
-                    const startDay = days[startDate.getDay()];
-                    const startDateNum = startDate.getDate();
-                    const startMonth = months[startDate.getMonth()];
-
-                    const endDay = days[endDate.getDay()];
-                    const endDateNum = endDate.getDate();
-                    const endMonth = months[endDate.getMonth()];
-
-                    return `${startDay}, ${startDateNum} ${startMonth} - ${endDay}, ${endDateNum} ${endMonth}`;
-                }
-
-                // Gán giá trị ban đầu khi trang tải
-                const checkInValue = document.getElementById('booking_check_in').value;
-                const checkOutValue = document.getElementById('booking_check_out').value;
-
-                if (checkInValue && checkOutValue) {
-                    const startDate = new Date(checkInValue);
-                    const endDate = new Date(checkOutValue);
-                    document.getElementById('booking_date_range').value = formatDateToVietnamese(startDate, endDate);
-                }
-
-                // Khởi tạo Flatpickr
-                flatpickr("#booking_date_range", {
-                    mode: "range",
-                    dateFormat: "Y-m-d",
-                    minDate: "today",
-                    onChange: function(selectedDates) {
-                        if (selectedDates.length === 2) {
-                            const startDate = new Date(selectedDates[0].getTime() - (selectedDates[0].getTimezoneOffset() * 60000));
-                            const endDate = new Date(selectedDates[1].getTime() - (selectedDates[1].getTimezoneOffset() * 60000));
-
-                            document.getElementById('booking_check_in').value = startDate.toISOString().split('T')[0];
-                            document.getElementById('booking_check_out').value = endDate.toISOString().split('T')[0];
-
-                            document.getElementById('booking_date_range').value = formatDateToVietnamese(startDate, endDate);
-                        }
-                    },
-                    locale: {
-                        firstDayOfWeek: 1,
-                        weekdays: {
-                            shorthand: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
-                            longhand: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
-                        },
-                        months: {
-                            shorthand: ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'],
-                            longhand: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12']
-                        }
-                    },
-                    showMonths: 2
-                });
-            } else {
-                console.warn('Flatpickr không được tải.');
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof flatpickr !== 'undefined') {
+            function formatDateToVietnamese(startDate, endDate) {
+                if (!startDate || !endDate) return "";
+                const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+                const months = ['tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6', 'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'];
+                const startDay = days[startDate.getDay()];
+                const startDateNum = startDate.getDate();
+                const startMonth = months[startDate.getMonth()];
+                const endDay = days[endDate.getDay()];
+                const endDateNum = endDate.getDate();
+                const endMonth = months[endDate.getMonth()];
+                return `${startDay}, ${startDateNum} ${startMonth} - ${endDay}, ${endDateNum} ${endMonth}`;
             }
+
+            const checkInValue = document.getElementById('booking_check_in').value;
+            const checkOutValue = document.getElementById('booking_check_out').value;
+            if (checkInValue && checkOutValue) {
+                const startDate = new Date(checkInValue);
+                const endDate = new Date(checkOutValue);
+                document.getElementById('booking_date_range').value = formatDateToVietnamese(startDate, endDate);
+            }
+
+            flatpickr("#booking_date_range", {
+                mode: "range",
+                dateFormat: "Y-m-d",
+                minDate: "today",
+                onChange: function(selectedDates) {
+                    if (selectedDates.length === 2) {
+                        const startDate = new Date(selectedDates[0].getTime() - (selectedDates[0].getTimezoneOffset() * 60000));
+                        const endDate = new Date(selectedDates[1].getTime() - (selectedDates[1].getTimezoneOffset() * 60000));
+                        document.getElementById('booking_check_in').value = startDate.toISOString().split('T')[0];
+                        document.getElementById('booking_check_out').value = endDate.toISOString().split('T')[0];
+                        document.getElementById('booking_date_range').value = formatDateToVietnamese(startDate, endDate);
+                        updatePrice();
+                    }
+                },
+                locale: {
+                    firstDayOfWeek: 1,
+                    weekdays: {
+                        shorthand: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+                        longhand: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
+                    },
+                    months: {
+                        shorthand: ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'],
+                        longhand: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12']
+                    }
+                },
+                showMonths: 2
+            });
+        } else {
+            console.warn('Flatpickr không được tải.');
+        }
 
         if (jQuery.fn.slick) {
             try {
@@ -314,114 +304,117 @@
             }
         }
 
-        const CHILDREN_FREE_LIMIT = {{ $roomType->children_free_limit }};
-        const ORIGINAL_PRICE_PER_NIGHT = {{ $roomType->price }};
-        const DISCOUNTED_PRICE_PER_NIGHT = {{ $roomType->discounted_price_per_night ?? $roomType->price }};
-        const MAX_CAPACITY = {{ $roomType->max_capacity }};
-        const MAX_ROOMS = {{ $roomType->available_rooms }};
+            const CHILDREN_FREE_LIMIT = {{ $roomType->children_free_limit }};
+            const ORIGINAL_PRICE_PER_NIGHT = {{ $roomType->price }};
+            const DISCOUNTED_PRICE_PER_NIGHT = {{ $roomType->discounted_price_per_night ?? $roomType->price }};
+            const MAX_CAPACITY = {{ $roomType->max_capacity }};
+            const MAX_ROOMS = {{ $roomType->available_rooms }};
 
-        function updatePrice() {
-            const checkIn = new Date(document.getElementById('booking_check_in').value);
-            const checkOut = new Date(document.getElementById('booking_check_out').value);
-            const days = Math.max(1, Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24)));
-            const roomCount = parseInt(document.querySelector('input[name="room_quantity"]').value) || 1;
-            const totalGuests = parseInt(document.querySelector('input[name="total_guests"]').value) || 1;
-            const childrenCount = parseInt(document.querySelector('input[name="children_count"]').value) || 0;
-
-            const basePrice = ORIGINAL_PRICE_PER_NIGHT * roomCount * days;
-            const discountedPrice = DISCOUNTED_PRICE_PER_NIGHT * roomCount * days;
-            const discountAmount = basePrice - discountedPrice;
-
-            let serviceTotal = 0;
-            const checkedServices = document.querySelectorAll('#booking-form .service-checkbox:checked');
-            checkedServices.forEach(function(checkbox) {
-                const price = parseFloat(checkbox.getAttribute('data-price')) || 0;
-                if (!isNaN(price)) {
-                    serviceTotal += price;
-                }
-            });
-
-            const subTotal = discountedPrice + serviceTotal;
-            const taxFee = subTotal * 0.08;
-            const totalPrice = subTotal + taxFee;
-
-            document.getElementById('base-price-display').textContent = basePrice.toLocaleString('vi-VN');
-            const discountDisplay = document.getElementById('discount-amount-display');
-            if (discountDisplay) {
-                discountDisplay.textContent = discountAmount.toLocaleString('vi-VN');
-            }
-            document.getElementById('service-total-amount').textContent = serviceTotal.toLocaleString('vi-VN');
-            document.getElementById('service-total').style.display = serviceTotal > 0 ? 'flex' : 'none';
-            document.getElementById('tax-fee-display').textContent = taxFee.toLocaleString('vi-VN');
-            document.getElementById('total-price-display').textContent = 'VND ' + totalPrice.toLocaleString('vi-VN');
-
-            document.getElementById('base-price-input').value = basePrice;
-            document.getElementById('discounted-price-input').value = discountedPrice;
-            document.getElementById('discount-amount-input').value = discountAmount;
-            document.getElementById('service-total-input').value = serviceTotal;
-            document.getElementById('tax-fee-input').value = taxFee;
-            document.getElementById('total-price-input').value = totalPrice;
-        }
-
-        const counterButtons = document.querySelectorAll('.counter-btn');
-        counterButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                const target = this.getAttribute('data-target');
-                const input = document.querySelector(`input[name="${target}"]`);
-                let value = parseInt(input.value) || 0;
-
-                const totalGuests = parseInt(document.querySelector('input[name="total_guests"]').value) || 0;
+            function updatePrice() {
+                const checkIn = new Date(document.getElementById('booking_check_in').value);
+                const checkOut = new Date(document.getElementById('booking_check_out').value);
+                const days = Math.max(1, Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24))); // Đảm bảo ít nhất 1 ngày
+                const roomCount = parseInt(document.querySelector('input[name="room_quantity"]').value) || 1;
+                const totalGuests = parseInt(document.querySelector('input[name="total_guests"]').value) || 1;
                 const childrenCount = parseInt(document.querySelector('input[name="children_count"]').value) || 0;
-                const totalPeople = totalGuests + childrenCount;
 
-                if (this.classList.contains('plus')) {
-                    if (target === 'total_guests' || target === 'children_count') {
-                        if (totalPeople < MAX_CAPACITY) {
-                            value++;
-                        } else {
-                            alert('Tổng số người vượt quá sức chứa tối đa của loại phòng này (' + MAX_CAPACITY + ' người).');
+                const basePrice = ORIGINAL_PRICE_PER_NIGHT * roomCount * days;
+                const discountedPrice = DISCOUNTED_PRICE_PER_NIGHT * roomCount * days;
+                const discountAmount = basePrice - discountedPrice;
+
+                let serviceTotal = 0;
+                const checkedServices = document.querySelectorAll('#booking-form .service-checkbox:checked');
+                checkedServices.forEach(function(checkbox) {
+                    const price = parseFloat(checkbox.getAttribute('data-price')) || 0;
+                    if (!isNaN(price)) {
+                        serviceTotal += price;
+                    }
+                });
+
+                const subTotal = discountedPrice + serviceTotal;
+                const taxFee = subTotal * 0.08;
+                const totalPrice = subTotal + taxFee;
+
+                document.getElementById('base-price-display').textContent = basePrice.toLocaleString('vi-VN');
+                const discountDisplay = document.getElementById('discount-amount-display');
+                if (discountDisplay) {
+                    discountDisplay.textContent = discountAmount.toLocaleString('vi-VN');
+                }
+                document.getElementById('service-total-amount').textContent = serviceTotal.toLocaleString('vi-VN');
+                document.getElementById('service-total').style.display = serviceTotal > 0 ? 'flex' : 'none';
+                document.getElementById('tax-fee-display').textContent = taxFee.toLocaleString('vi-VN');
+                document.getElementById('total-price-display').textContent = 'VND ' + totalPrice.toLocaleString('vi-VN');
+
+                document.getElementById('base-price-input').value = basePrice;
+                document.getElementById('discounted-price-input').value = discountedPrice;
+                document.getElementById('discount-amount-input').value = discountAmount;
+                document.getElementById('service-total-input').value = serviceTotal;
+                document.getElementById('tax-fee-input').value = taxFee;
+                document.getElementById('total-price-input').value = totalPrice;
+
+                console.log('Days:', days, 'Room Count:', roomCount, 'Service Total:', serviceTotal, 'Sub Total:', subTotal, 'Tax Fee:', taxFee, 'Total Price:', totalPrice);
+            }
+
+            const counterButtons = document.querySelectorAll('.counter-btn');
+            counterButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    const input = document.querySelector(`input[name="${target}"]`);
+                    let value = parseInt(input.value) || 0;
+
+                    const totalGuests = parseInt(document.querySelector('input[name="total_guests"]').value) || 0;
+                    const childrenCount = parseInt(document.querySelector('input[name="children_count"]').value) || 0;
+                    const totalPeople = totalGuests + childrenCount;
+
+                    if (this.classList.contains('plus')) {
+                        if (target === 'total_guests' || target === 'children_count') {
+                            if (totalPeople < MAX_CAPACITY) {
+                                value++;
+                            } else {
+                                alert('Tổng số người vượt quá sức chứa tối đa của loại phòng này (' + MAX_CAPACITY + ' người).');
+                            }
+                        } else if (target === 'room_quantity') {
+                            if (value < MAX_ROOMS) {
+                                value++;
+                            } else {
+                                alert('Không đủ số phòng còn trống. Hiện tại chỉ còn ' + MAX_ROOMS + ' phòng.');
+                            }
                         }
-                    } else if (target === 'room_quantity') {
-                        if (value < MAX_ROOMS) {
-                            value++;
-                        } else {
-                            alert('Không đủ số phòng còn trống. Hiện tại chỉ còn ' + MAX_ROOMS + ' phòng.');
+                    } else if (this.classList.contains('minus')) {
+                        if (target === 'children_count' && value > 0) {
+                            value--;
+                        } else if ((target === 'total_guests' || target === 'room_quantity') && value > 1) {
+                            value--;
                         }
                     }
-                } else if (this.classList.contains('minus')) {
-                    if (target === 'children_count' && value > 0) {
-                        value--;
-                    } else if ((target === 'total_guests' || target === 'room_quantity') && value > 1) {
-                        value--;
+
+                    input.value = value;
+
+                    if (target === 'children_count' && value > CHILDREN_FREE_LIMIT) {
+                        alert(`Số trẻ em vượt quá giới hạn miễn phí (${CHILDREN_FREE_LIMIT}). Phí bổ sung có thể được áp dụng.`);
                     }
-                }
 
-                input.value = value;
-
-                if (target === 'children_count' && value > CHILDREN_FREE_LIMIT) {
-                    alert(`Số trẻ em vượt quá giới hạn miễn phí (${CHILDREN_FREE_LIMIT}). Phí bổ sung có thể được áp dụng.`);
-                }
-
-                updatePrice();
+                    updatePrice();
+                });
             });
-        });
 
-        const serviceCheckboxes = document.querySelectorAll('#booking-form .service-checkbox');
-        serviceCheckboxes.forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                updatePrice();
+            const serviceCheckboxes = document.querySelectorAll('#booking-form .service-checkbox');
+            serviceCheckboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    console.log('Service Checkbox Changed:', this.checked, 'Price:', this.getAttribute('data-price'));
+                    updatePrice();
+                });
             });
-        });
 
-        document.getElementById('booking-form').addEventListener('submit', function(e) {
-            @if (!Auth::check())
-            e.preventDefault();
-            alert('Vui lòng đăng nhập để đặt phòng!');
-            window.location.href = '{{ route("login") }}';
-            @endif
-        });
+            document.getElementById('booking-form').addEventListener('submit', function(e) {
+                @if (!Auth::check())
+                e.preventDefault();
+                alert('Vui lòng đăng nhập để đặt phòng!');
+                window.location.href = '{{ route("login") }}';
+                @endif
+            });
 
-        updatePrice();
-    });
+            updatePrice();
+        });
     </script>
 @endsection
