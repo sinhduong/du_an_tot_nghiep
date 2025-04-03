@@ -45,39 +45,8 @@
                     <div class="lh-side-room">
                         <div class="lh-side-reservation">
                             <div class="lh-check-block-content mb-3">
-                                <h4 class="lh-room-inner-heading">Chi tiết đặt phòng của bạn</h4>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <p><strong>Nhận phòng:</strong> {{ \App\Helpers\FormatHelper::FormatDate($checkIn) }}</p>
-                                        <p>14:00 - 22:00</p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <p><strong>Trả phòng:</strong> {{ \App\Helpers\FormatHelper::FormatDate($checkOut) }}</p>
-                                        <p>06:00 - 12:00</p>
-                                    </div>
-                                </div>
-                                <p><strong>Tổng thời gian lưu trú:</strong> {{ $days }} đêm</p>
-                            </div>
-
-                            <div class="lh-check-block-content mb-3">
-                                <h4 class="lh-room-inner-heading">Bạn đã chọn</h4>
-                                <p>{{ $roomQuantity }} phòng cho {{ $totalGuests }} người lớn và {{ $childrenCount }} trẻ em</p>
-                                <p>{{ $roomQuantity }} x {{ $roomType->name }}</p>
-                                @if (!empty($selectedServices))
-                                    <p><strong>Dịch vụ bổ sung:</strong></p>
-                                    @foreach ($selectedServices as $service)
-                                        @php
-                                            $quantity = $serviceQuantities[$service->id] ?? 1;
-                                            $servicePrice = $service->price * $quantity;
-                                        @endphp
-                                        <p>{{ $service->name }} ({{ $quantity }} x {{ \App\Helpers\FormatHelper::FormatPrice($service->price) }}) = {{ \App\Helpers\FormatHelper::FormatPrice($servicePrice) }}</p>
-                                    @endforeach
-                                @endif
-                            </div>
-
-                            <div class="lh-check-block-content mb-3">
                                 <h4 class="lh-room-inner-heading">Tổng giá</h4>
-
+                                <small class="text-danger">(*) mặc định</small>
                                 <div class="d-flex justify-content-between">
                                     <p>Giá phòng & dịch vụ ({{ $roomQuantity }} phòng x {{ $days }} đêm)</p>
                                     <p id="base-price-display"> {{ \App\Helpers\FormatHelper::formatPrice($basePrice + $serviceTotal) }}</p>
@@ -89,9 +58,19 @@
 
                                 <div id="discount-section" style="display: {{ $discountAmount > 0 ? 'block' : 'none' }};">
                                     <hr>
+                                    <small class="text-danger">(*) sau khi áp dụng chương trình giảm giá</small>
                                     <div class="d-flex justify-content-between">
                                         <p>Giảm trừ của mã giảm giá</p>
                                         <p id="discount-amount">{{ $discountAmount > 0 ? '- ' . \App\Helpers\FormatHelper::formatPrice($discountAmount) : '' }}</p>
+                                    </div>
+                                </div>
+
+                                <div id="voucher-section" style="display: none;">
+                                    <hr>
+                                    <small class="text-success">(*) sau khi áp dụng mã voucher</small>
+                                    <div class="d-flex justify-content-between">
+                                        <p>Giảm trừ của mã voucher</p>
+                                        <p id="voucher-amount"></p>
                                     </div>
                                 </div>
 
@@ -106,12 +85,11 @@
                                     </div>
                                 </div>
 
-                                <!-- Nhập mã giảm giá và nút hủy -->
                                 <div class="d-flex justify-content-between mt-2">
                                     <input type="text" id="promotion-code" class="form-control w-50" placeholder="Nhập mã giảm giá">
                                     <div>
                                         <button type="button" id="apply-promotion-btn" class="btn btn-outline-primary">Áp dụng</button>
-                                        <button type="button" id="cancel-promotion-btn" class="btn btn-outline-danger" style="display: {{ $discountAmount > 0 ? 'inline-block' : 'none' }};">Hủy</button>
+                                        <button type="button" id="cancel-promotion-btn" class="btn btn-outline-danger" style="display: none;">Hủy</button>
                                     </div>
                                 </div>
                                 <div id="promotion-message" class="mt-2"></div>
@@ -128,6 +106,8 @@
                                 <input type="hidden" id="total_price" value="{{ $totalPrice }}">
                                 <input type="hidden" id="tax_fee" value="{{ $taxFee }}">
                                 <input type="hidden" id="sub_total" value="{{ $subTotal }}">
+                                <input type="hidden" id="default_discount" value="{{ $discountAmount }}">
+                                <input type="hidden" id="sub_total_after_default" value="{{ $basePrice + $serviceTotal - $discountAmount }}">
                             </div>
                         </div>
                     </div>
@@ -218,10 +198,25 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        // dùng đoạn này nếu khi áp voucher, trừ tiền từ giá sau khi được giảm từ chương trình sale
         $(document).ready(function () {
-            const initialBasePrice = parseFloat($('#base_price').val()) + parseFloat($('#service_total').val());
-            const initialTax = initialBasePrice * 0.08;
-            const initialTotal = initialBasePrice + initialTax;
+            const basePrice = parseFloat($('#base_price').val());
+            const serviceTotal = parseFloat($('#service_total').val());
+            const defaultDiscount = parseFloat($('#default_discount').val()) || 0;
+            const initialBasePrice = basePrice + serviceTotal;
+            const subTotalAfterDefault = parseFloat($('#sub_total_after_default').val());
+            const initialTax = subTotalAfterDefault * 0.08;
+            const initialTotal = subTotalAfterDefault + initialTax;
+
+            let voucherDiscount = 0;
+
+            $('#base-price-display').text('VND ' + initialBasePrice.toLocaleString('vi-VN'));
+            $('#initial-tax-display').text('VND ' + initialTax.toLocaleString('vi-VN'));
+            $('#total_price_display').text('VND ' + initialTotal.toLocaleString('vi-VN'));
+            if (defaultDiscount > 0) {
+                $('#after-base-price-display').text('VND ' + subTotalAfterDefault.toLocaleString('vi-VN'));
+                $('#tax-fee-display').text('VND ' + initialTax.toLocaleString('vi-VN'));
+            }
 
             $('#confirm-button').prop('disabled', false);
 
@@ -239,30 +234,30 @@
                     data: {
                         _token: '{{ csrf_token() }}',
                         code: code,
-                        base_price: parseFloat($('#base_price').val()),
-                        service_total: parseFloat($('#service_total').val())
+                        base_price: subTotalAfterDefault,
+                        service_total: 0
                     },
                     success: function (response) {
                         if (response.success) {
-                            const discountAmount = response.discount_amount;
-                            const newTotalPrice = response.new_total_price;
-                            const taxFee = response.tax_fee;
+                            voucherDiscount = response.discount_amount;
                             const promotionId = response.promotion_id;
-                            const afterDiscountBasePrice = initialBasePrice - discountAmount;
 
-                            $('#discount-amount').text('- VND ' + discountAmount.toLocaleString('vi-VN'));
-                            $('#discount-section').show();
+                            const subTotalAfterVoucher = subTotalAfterDefault - voucherDiscount;
+                            const taxAfterVoucher = subTotalAfterVoucher * 0.08;
+                            const totalAfterVoucher = subTotalAfterVoucher + taxAfterVoucher;
 
-                            $('#after-base-price-display').text('VND ' + afterDiscountBasePrice.toLocaleString('vi-VN'));
-                            $('#tax-fee-display').text('VND ' + taxFee.toLocaleString('vi-VN'));
+                            $('#voucher-amount').text('- VND ' + voucherDiscount.toLocaleString('vi-VN'));
+                            $('#voucher-section').show();
+
+                            $('#after-base-price-display').text('VND ' + subTotalAfterVoucher.toLocaleString('vi-VN'));
+                            $('#tax-fee-display').text('VND ' + taxAfterVoucher.toLocaleString('vi-VN'));
                             $('#after-discount-section').show();
 
-                            $('#total_price_display').text('VND ' + newTotalPrice.toLocaleString('vi-VN'));
+                            $('#total_price_display').text('VND ' + totalAfterVoucher.toLocaleString('vi-VN'));
 
-                            $('#total_price_input').val(newTotalPrice);
-                            $('#tax_fee_input').val(taxFee);
-                            $('#discount_amount_input').val(discountAmount);
-                            $('#discount_amount_form').val(discountAmount);
+                            $('#total_price_input').val(totalAfterVoucher);
+                            $('#tax_fee_input').val(taxAfterVoucher);
+                            $('#discount_amount_input').val(defaultDiscount + voucherDiscount);
                             $('#promotion_id').val(promotionId);
 
                             $('#confirm-button').prop('disabled', false);
@@ -272,39 +267,155 @@
                         } else {
                             $('#promotion_id').val('');
                             $('#confirm-button').prop('disabled', true);
-                            $('#discount-section').hide();
-                            $('#after-discount-section').hide();
-                            $('#cancel-promotion-btn').show();
+                            $('#voucher-section').hide();
                             $('#promotion-message').html('<p class="text-danger">' + response.message + '</p>');
                         }
                     },
                     error: function () {
-                        $('#discount-section').hide();
-                        $('#after-discount-section').hide();
-                        $('#cancel-promotion-btn').show();
+                        $('#voucher-section').hide();
                         $('#promotion-message').html('<p class="text-danger">Đã có lỗi xảy ra. Vui lòng thử lại.</p>');
                     }
                 });
             });
 
             $('#cancel-promotion-btn').on('click', function () {
-                $('#discount-section').hide();
-                $('#after-discount-section').hide();
+                $('#voucher-section').hide();
                 $('#cancel-promotion-btn').hide();
                 $('#promotion-code').val('');
                 $('#promotion-message').html('');
                 $('#confirm-button').prop('disabled', false);
 
-                $('#base-price-display').text('VND ' + initialBasePrice.toLocaleString('vi-VN'));
-                $('#initial-tax-display').text('VND ' + initialTax.toLocaleString('vi-VN'));
-                $('#total_price_display').text('VND ' + initialTotal.toLocaleString('vi-VN'));
+                const afterDefaultTax = subTotalAfterDefault * 0.08;
+                const afterDefaultTotal = subTotalAfterDefault + afterDefaultTax;
 
-                $('#total_price_input').val(initialTotal);
-                $('#tax_fee_input').val(initialTax);
-                $('#discount_amount_input').val(0);
-                $('#discount_amount_form').val(0);
+                if (defaultDiscount > 0) {
+                    $('#after-base-price-display').text('VND ' + subTotalAfterDefault.toLocaleString('vi-VN'));
+                    $('#tax-fee-display').text('VND ' + afterDefaultTax.toLocaleString('vi-VN'));
+                    $('#after-discount-section').show();
+                } else {
+                    $('#after-discount-section').hide();
+                }
+
+                $('#total_price_display').text('VND ' + afterDefaultTotal.toLocaleString('vi-VN'));
+
+                $('#total_price_input').val(afterDefaultTotal);
+                $('#tax_fee_input').val(afterDefaultTax);
+                $('#discount_amount_input').val(defaultDiscount);
+
+                $('#promotion_id').val('');
+                voucherDiscount = 0;
             });
         });
+    </script>
+    <script>
+        //  // dùng đoạn này nếu khi áp voucher, trừ tiền từ giá gốc
+        {{--$(document).ready(function () {--}}
+        {{--    const basePrice = parseFloat($('#base_price').val());--}}
+        {{--    const serviceTotal = parseFloat($('#service_total').val());--}}
+        {{--    const defaultDiscount = parseFloat($('#default_discount').val()) || 0;--}}
+        {{--    const initialBasePrice = basePrice + serviceTotal;--}}
+        {{--    const initialSubTotal = initialBasePrice - defaultDiscount;--}}
+        {{--    const initialTax = initialSubTotal * 0.08;--}}
+        {{--    const initialTotal = initialSubTotal + initialTax;--}}
+
+        {{--    let voucherDiscount = 0;--}}
+
+        {{--    $('#base-price-display').text('VND ' + initialBasePrice.toLocaleString('vi-VN'));--}}
+        {{--    $('#initial-tax-display').text('VND ' + initialTax.toLocaleString('vi-VN'));--}}
+        {{--    $('#total_price_display').text('VND ' + initialTotal.toLocaleString('vi-VN'));--}}
+        {{--    if (defaultDiscount > 0) {--}}
+        {{--        $('#after-base-price-display').text('VND ' + initialSubTotal.toLocaleString('vi-VN'));--}}
+        {{--        $('#tax-fee-display').text('VND ' + initialTax.toLocaleString('vi-VN'));--}}
+        {{--    }--}}
+
+        {{--    $('#confirm-button').prop('disabled', false);--}}
+
+        {{--    $('#apply-promotion-btn').on('click', function () {--}}
+        {{--        const code = $('#promotion-code').val();--}}
+
+        {{--        if (!code) {--}}
+        {{--            $('#promotion-message').html('<p class="text-danger">Vui lòng nhập mã giảm giá.</p>');--}}
+        {{--            return;--}}
+        {{--        }--}}
+
+        {{--        $.ajax({--}}
+        {{--            url: '{{ route("bookings.check-promotion") }}',--}}
+        {{--            method: 'POST',--}}
+        {{--            data: {--}}
+        {{--                _token: '{{ csrf_token() }}',--}}
+        {{--                code: code,--}}
+        {{--                base_price: basePrice,--}}
+        {{--                service_total: serviceTotal--}}
+        {{--            },--}}
+        {{--            success: function (response) {--}}
+        {{--                if (response.success) {--}}
+        {{--                    voucherDiscount = response.discount_amount;--}}
+        {{--                    const promotionId = response.promotion_id;--}}
+
+        {{--                    const subTotalAfterVoucher = initialBasePrice - defaultDiscount - voucherDiscount;--}}
+        {{--                    const taxAfterVoucher = subTotalAfterVoucher * 0.08;--}}
+        {{--                    const totalAfterVoucher = subTotalAfterVoucher + taxAfterVoucher;--}}
+
+        {{--                    $('#voucher-amount').text('- VND ' + voucherDiscount.toLocaleString('vi-VN'));--}}
+        {{--                    $('#voucher-section').show();--}}
+
+        {{--                    $('#after-base-price-display').text('VND ' + subTotalAfterVoucher.toLocaleString('vi-VN'));--}}
+        {{--                    $('#tax-fee-display').text('VND ' + taxAfterVoucher.toLocaleString('vi-VN'));--}}
+        {{--                    $('#after-discount-section').show();--}}
+
+        {{--                    $('#total_price_display').text('VND ' + totalAfterVoucher.toLocaleString('vi-VN'));--}}
+
+        {{--                    $('#total_price_input').val(totalAfterVoucher);--}}
+        {{--                    $('#tax_fee_input').val(taxAfterVoucher);--}}
+        {{--                    $('#discount_amount_input').val(defaultDiscount + voucherDiscount);--}}
+        {{--                    $('#promotion_id').val(promotionId);--}}
+
+        {{--                    $('#confirm-button').prop('disabled', false);--}}
+        {{--                    $('#cancel-promotion-btn').show();--}}
+
+        {{--                    $('#promotion-message').html('<p class="text-success">' + response.message + '</p>');--}}
+        {{--                } else {--}}
+        {{--                    $('#promotion_id').val('');--}}
+        {{--                    $('#confirm-button').prop('disabled', true);--}}
+        {{--                    $('#voucher-section').hide();--}}
+        {{--                    $('#promotion-message').html('<p class="text-danger">' + response.message + '</p>');--}}
+        {{--                }--}}
+        {{--            },--}}
+        {{--            error: function () {--}}
+        {{--                $('#voucher-section').hide();--}}
+        {{--                $('#promotion-message').html('<p class="text-danger">Đã có lỗi xảy ra. Vui lòng thử lại.</p>');--}}
+        {{--            }--}}
+        {{--        });--}}
+        {{--    });--}}
+
+        {{--    $('#cancel-promotion-btn').on('click', function () {--}}
+        {{--        $('#voucher-section').hide();--}}
+        {{--        $('#cancel-promotion-btn').hide();--}}
+        {{--        $('#promotion-code').val('');--}}
+        {{--        $('#promotion-message').html('');--}}
+        {{--        $('#confirm-button').prop('disabled', false);--}}
+
+        {{--        const afterDefaultSubTotal = initialBasePrice - defaultDiscount;--}}
+        {{--        const afterDefaultTax = afterDefaultSubTotal * 0.08;--}}
+        {{--        const afterDefaultTotal = afterDefaultSubTotal + afterDefaultTax;--}}
+
+        {{--        if (defaultDiscount > 0) {--}}
+        {{--            $('#after-base-price-display').text('VND ' + afterDefaultSubTotal.toLocaleString('vi-VN'));--}}
+        {{--            $('#tax-fee-display').text('VND ' + afterDefaultTax.toLocaleString('vi-VN'));--}}
+        {{--            $('#after-discount-section').show();--}}
+        {{--        } else {--}}
+        {{--            $('#after-discount-section').hide();--}}
+        {{--        }--}}
+
+        {{--        $('#total_price_display').text('VND ' + afterDefaultTotal.toLocaleString('vi-VN'));--}}
+
+        {{--        $('#total_price_input').val(afterDefaultTotal);--}}
+        {{--        $('#tax_fee_input').val(afterDefaultTax);--}}
+        {{--        $('#discount_amount_input').val(defaultDiscount);--}}
+        {{--        $('#promotion_id').val('');--}}
+        {{--        voucherDiscount = 0;--}}
+        {{--    });--}}
+        {{--});--}}
         $(document).ready(function () {
             $('.payment-method').on('change', function () {
                 const method = $(this).val();
