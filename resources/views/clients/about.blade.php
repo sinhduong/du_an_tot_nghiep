@@ -79,24 +79,39 @@
                                 possimus!</p> --}}
                         </div>
                         <div class="lh-contact-touch-inner-form">
-                            <form action="#">
+                            @if (session('success'))
+                                <div class="alert alert-success">
+                                    {{ session('success') }}
+                                </div>
+                            @endif
+                    
+                            <form action="{{ route('contact.send') }}" method="POST">
+                                @csrf
                                 <div class="lh-contact-touch-inner-form-warp">
-                                    <input type="text" name="firstname" placeholder="Your Name*"
-                                        class="lh-form-control mr-30" required="">
-                                    <input type="email" name="email" placeholder="Your Email*" class="lh-form-control"
-                                        required="">
+                                    <input type="text" name="name" placeholder="Your Name*" class="lh-form-control mr-30" value="{{ old('name') }}" required>
+                                    @error('name')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                    
+                                    <input type="email" name="email" placeholder="Your Email*" class="lh-form-control" value="{{ old('email') }}" required>
+                                    @error('email')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                                 <div class="lh-contact-touch-inner-form-warp">
-                                    <input type="text" name="firstname" placeholder="Your Subject*"
-                                        class="lh-form-control" required="">
+                                    <input type="text" name="subject" placeholder="Your Subject*" class="lh-form-control" value="{{ old('subject') }}" required>
+                                    @error('subject')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                                 <div class="lh-contact-touch-inner-form-warp">
-                                    <textarea class="lh-form-control" placeholder="Message*"></textarea>
+                                    <textarea class="lh-form-control" name="message" placeholder="Message*" required>{{ old('message') }}</textarea>
+                                    @error('message')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                                 <div class="lh-contact-touch-inner-form-button">
-                                    <button class="lh-buttons result-placeholder" type="submit">
-                                        Send Message
-                                    </button>
+                                    <button class="lh-buttons result-placeholder" type="submit">Send Message</button>
                                 </div>
                             </form>
                         </div>
