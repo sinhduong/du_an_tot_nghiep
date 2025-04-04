@@ -25,7 +25,7 @@
 
                             <form class="theme-form theme-form-2 mega-form"
                                   action="{{ isset($faq) ? route('admin.faqs.update', $faq) : route('admin.faqs.store') }}"
-                                  method="post">
+                                  method="post" enctype="multipart/form-data">
                                 @csrf
                                 @if(isset($faq))
                                     @method('PUT')
@@ -53,7 +53,25 @@
                                         @enderror
                                     </div>
                                 </div>
-
+                                <div class="mb-4 row align-items-center">
+                                    <label class="form-label-title col-sm-3 mb-0">Hình ảnh</label>
+                                    <div class="col-sm-9">
+                                        <input class="form-control" type="file" name="image">
+                                        @if(isset($faq) && $faq->image)
+                                            <div class="mt-2">
+                                                <img src="{{ asset('storage/' . $faq->image) }}" alt="{{ $faq->question }}" style="max-width: 200px; height: auto;">
+                                                <div class="mt-2">
+                                                    <label>
+                                                        <input type="checkbox" name="delete_image"> Xóa hình ảnh hiện tại
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        @endif
+                                        @error('image')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
                                 <div class="mb-4 row align-items-center">
                                     <label class="form-label-title col-sm-3 mb-0">Trạng thái</label>
                                     <div class="col-sm-9">

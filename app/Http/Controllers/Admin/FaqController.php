@@ -7,6 +7,7 @@ use App\Http\Requests\StoreFaqRequest;
 use App\Http\Requests\UpdateFaqRequest;
 use App\Models\Faq;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class FaqController extends Controller
 {
@@ -41,13 +42,16 @@ class FaqController extends Controller
      */
     public function store(StoreFaqRequest $request)
     {
-        $validated = $request->validate([
-            'question' => 'required|string|max:255',
-            'answer' => 'required|string',
-            'is_active' => 'boolean'
-        ]);
+        if ($request->isMethod('POST')) {
+            $data = $request->except('_token', 'image');
 
-        Faq::create($validated);
+            // Xử lý upload hình ảnh
+            if ($request->hasFile('image')) {
+                $data['image'] = $request->file('image')->store('faqs', 'public');
+            }
+
+            Faq::create($data);
+        }
 
         return redirect()->route('admin.faqs.index')
             ->with('success', 'Tạo mới "Câu hỏi thường gặp" thành công');
@@ -74,13 +78,29 @@ class FaqController extends Controller
      */
     public function update(UpdateFaqRequest $request, Faq $faq)
     {
-        $validated = $request->validate([
-            'question' => 'required|string|max:255',
-            'answer' => 'required|string',
-            'is_active' => 'boolean'
-        ]);
+        if ($request->isMethod('POST') || $request->isMethod('PUT')) {
+            $data = $request->except('_token', '_method', 'image', 'delete_image');
 
-        $faq->update($validated);
+            // Xử lý upload hình ảnh
+            if ($request->hasFile('image')) {
+                // Xóa hình ảnh cũ nếu có
+                if ($faq->image) {
+                    Storage::disk('public')->delete($faq->image);
+                }
+                if ($request->hasFile('image')) {
+                    $data['image'] = $request->file('image')->store('banners', 'public');
+                }
+        
+                // Upload hình ảnh mới
+                
+            } elseif ($request->has('delete_image') && $faq->image) {
+                // Xóa hình ảnh nếu checkbox delete_image được chọn
+                Storage::disk('public')->delete($faq->image);
+                $data['image'] = null;
+            }
+
+            $faq->update($data);
+        }
 
         return redirect()->route('admin.faqs.index')
             ->with('success', 'Cập nhật "Câu hỏi thường gặp" thành công');
@@ -91,6 +111,10 @@ class FaqController extends Controller
      */
     public function destroy(Faq $faq)
     {
+        if ($faq->image) {
+            Storage::disk('public')->delete($faq->image);
+        }
+
         $faq->delete();
         return redirect()->route('admin.faqs.index')
             ->with('success', 'Xóa bỏ "Câu hỏi thường gặp" thành công');
