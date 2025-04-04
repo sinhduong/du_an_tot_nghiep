@@ -296,6 +296,8 @@ Route::get('/cau-hoi-thuong-gap', [HomeController::class, 'faqs'])->name('faqs')
 Route::get('/dich-vu', [HomeController::class, 'services'])->name('services');
 Route::get('/ve-chung-toi', [HomeController::class, 'abouts'])->name('abouts');
 Route::get('/gioi-thieu', [HomeController::class, 'introductions'])->name('introductions');
+// Route::post('/sendmail', [HomeController::class, 'sendmail']);
+Route::post('/ve-chung-toi', [HomeController::class, 'send'])->name('contact.send');
 
 // Route::resource('services', ServiceController::class);
 Route::prefix('bookings')

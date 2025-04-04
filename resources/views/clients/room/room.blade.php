@@ -41,9 +41,9 @@
                         <h3>{{ $roomType->name }}</h3>
                         <span>{{ number_format($roomType->price, 0, ',', '.') }} / Night</span>                        <ul>
                             <ul>
-                                <li><i class="ri-group-line"></i>{{ $roomType->max_capacity }} Persons</li>
-                                <li><i class="ri-hotel-bed-line"></i>1 Double Bed</li> <!-- Có thể thêm trường bed_type trong RoomType nếu cần -->
-                                <li><i class="ri-restaurant-2-line"></i>Breakfast</li> <!-- Có thể thêm trường has_breakfast nếu cần -->
+                                <li><i class="ri-group-line"></i>{{ $roomType->max_capacity }} Người</li>
+                                {{-- <li><i class="ri-hotel-bed-line"></i>1 Double Bed</li> <!-- Có thể thêm trường bed_type trong RoomType nếu cần -->
+                                <li><i class="ri-restaurant-2-line"></i>Breakfast</li> <!-- Có thể thêm trường has_breakfast nếu cần --> --}}
                                 @if($roomType->amenities->contains('name', 'Swimming Pool'))
                                     <li><i class="mdi mdi-pool"></i>Swimming Pool</li>
                                 @endif

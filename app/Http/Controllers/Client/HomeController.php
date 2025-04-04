@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Client;
-
+use App\Mail\ContactEmail;
 use App\Models\Amenity;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +20,8 @@ use App\Helpers\FormatHelper;
 use App\Http\Controllers\Controller;
 use App\Models\RulesAndRegulation;
 use App\Models\System;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ContactEmtail;
 
 class HomeController extends Controller
 {
@@ -279,6 +281,30 @@ class HomeController extends Controller
         $systems = System::orderBy('id', 'desc')->first();
         $about = About::where('is_use', 1)->first() ?? new About(['about' => 'Chưa có nội dung nào được thiết lập.']);
         return view('clients.about', compact('about', 'systems'));
+    }
+    public function send(Request $request)
+    {
+        // Validate dữ liệu từ form
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        // Dữ liệu từ form
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+            'subject' => $request->subject,
+            'message' => $request->message,
+        ];
+
+        // Gửi email từ email của khách hàng đến hainamkid@gmail.com
+        Mail::to('hainamkid@gmail.com') // Địa chỉ nhận là email khách sạn
+            ->send(new ContactEmail($data, $request->email));
+
+        return redirect()->back()->with('success', 'Your message has been sent successfully!');
     }
 
     public function introductions()
