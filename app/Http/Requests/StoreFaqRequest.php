@@ -24,6 +24,17 @@ class StoreFaqRequest extends FormRequest
         return [
             'question' => 'required',
             'answer' => 'required',
+            // 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ];
+    }
+    public function messages()
+    {
+        return [
+            'question.required' => 'Câu hỏi không được để trống.',
+            'answer.required' => 'Trả lời không được để trống.',
+            'image.image' => 'File phải là hình ảnh.',
+            'image.mimes' => 'Hình ảnh phải có định dạng: jpeg, png, jpg, gif.',
+            'image.max' => 'Hình ảnh không được lớn hơn 2MB.',
         ];
     }
 }

@@ -168,13 +168,14 @@ class HomeController extends Controller
 
             return $availableRooms >= $roomCount;
         })->sortBy([['total_discounted_price', 'asc'], ['available_rooms', 'desc']])->values();
+        $systems = System::orderBy('id', 'desc')->first();
 
         $promotions = Promotion::where('status', 'active')
             ->where('type', 'percent')
             ->where('end_date', '>=', now())
             ->get();
 
-        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights', 'promotions'));
+        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights', 'promotions','systems'));
     }
 
     private function calculateDiscountedPrice($originalPrice, $saleRoomType, $nights, $roomCount)
