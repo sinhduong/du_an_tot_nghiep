@@ -11,12 +11,7 @@
                         <li>Chi tiết</li>
                     </ul>
                 </div>
-                <div class="lh-tools">
-                    <a href="javascript:void(0)" title="Refresh" class="refresh"><i class="ri-refresh-line"></i></a>
-                    <div id="pagedate">
-                        <div class="lh-date-range" title="Date"><span></span></div>
-                    </div>
-                </div>
+                
             </div>
             <div class="row">
                 <div class="col-xl-12 col-md-12">
@@ -58,7 +53,15 @@
                                     <label class="col-md-2 col-12 fw-bold">Trạng thái:</label>
                                     <div class="col-md-10 col-12">
                                         <span class="text-{{ $contact->status == 'approved' ? 'success' : ($contact->status == 'rejected' ? 'danger' : 'warning') }}">
-                                            {{ ucfirst($contact->status) }}
+                                            @if ($contact->status == 'pending')
+                                                Đang chờ
+                                            @elseif ($contact->status == 'approved')
+                                                Đã duyệt
+                                            @elseif ($contact->status == 'rejected')
+                                                Đã từ chối
+                                            @else
+                                                {{ ucfirst($contact->status) }} <!-- Giữ nguyên nếu có trạng thái khác -->
+                                            @endif
                                         </span>
                                     </div>
                                 </div>

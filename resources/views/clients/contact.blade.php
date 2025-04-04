@@ -6,7 +6,7 @@
         <div class="banner-overlay"></div>
         <div class="banner-section">
             <div class="lh-banner-contain">
-                <h2>về chúng tôi</h2>
+                <h2>Liên hệ với chúng tôi</h2>
                 <div class="lh-breadcrumb">
                     <h5>
                         <span class="lh-inner-breadcrumb">
@@ -14,7 +14,7 @@
                         </span>
                         <span> / </span>
                         <span>
-                            <a href="javascript:void(0)">về chúng tôi</a>
+                            <a href="javascript:void(0)">Liên hệ với chúng tôi</a>
                         </span>
                     </h5>
                 </div>
@@ -34,7 +34,7 @@
                             <h4 class="lh-contact-detalis-heading">Gọi cho chúng tôi </h4>
                             <p>Bạn cần hỗ trợ ngay? Hãy liên hệ với chúng tôi qua số điện thoại dưới đây. Đội ngũ của chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7!</p>
                             <div class="lh-contact-detalis-buttons">
-                                <a href="#">{{$systems->phone}}</a>
+                                <a href="#">{{$system->phone}}</a>
                             </div>
                         </div>
                     </div>
@@ -48,7 +48,7 @@
                             <h4 class="lh-contact-detalis-heading">Gửi Mail Cho Chúng Tôi</h4>
                             <p>Có thắc mắc hoặc cần thêm thông tin? Đừng ngần ngại gửi email cho chúng tôi. Chúng tôi sẽ phản hồi bạn trong vòng 24 giờ!</p>
                             <div class="lh-contact-detalis-buttons">
-                                <a href="#">{{$systems->email}}</a>
+                                <a href="#">{{$system->email}}</a>
                             </div>
                         </div>
                     </div>
@@ -60,7 +60,7 @@
                         </div>
                         <div class="lh-contact-detalis">
                             <h4 class="lh-contact-detalis-heading">Địa chỉ</h4>
-                            <p> <a href="#">{{$systems->address}}</a></p>
+                            <p> <a href="#">{{$system->address}}</a></p>
                             <div class="lh-contact-detalis-buttons">
                                 <p class="main">Việt Nam</p>
                             </div>
@@ -74,9 +74,6 @@
                     <div class="lh-contact-touch-inner">
                         <div class="lh-contact-touch-contain">
                             <h4 class="lh-contact-touch-contain-heading">Liên hệ với chúng tôi. Hãy thoải mái viết thư cho chúng tôi</h4>
-                            {{-- <p>This is the dolor consectetur adpisicing elit. Deleniti quam exercitationem a
-                                expedita natus quisquam. Deleniti Facere exercitationem ratione nihil Deleniti delectus
-                                possimus!</p> --}}
                         </div>
                         <div class="lh-contact-touch-inner-form">
                             @if (session('success'))
@@ -84,34 +81,40 @@
                                     {{ session('success') }}
                                 </div>
                             @endif
-                    
+
                             <form action="{{ route('contact.send') }}" method="POST">
                                 @csrf
                                 <div class="lh-contact-touch-inner-form-warp">
-                                    <input type="text" name="name" placeholder="Your Name*" class="lh-form-control mr-30" value="{{ old('name') }}" required>
+                                    <input type="text" name="name" placeholder="Tên của bạn*" class="lh-form-control mr-30" value="{{ old('name') }}" required>
                                     @error('name')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
-                    
-                                    <input type="email" name="email" placeholder="Your Email*" class="lh-form-control" value="{{ old('email') }}" required>
+
+                                    <input type="email" name="email" placeholder="Email của bạn*" class="lh-form-control" value="{{ old('email') }}" required>
                                     @error('email')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="lh-contact-touch-inner-form-warp">
-                                    <input type="text" name="subject" placeholder="Your Subject*" class="lh-form-control" value="{{ old('subject') }}" required>
+                                    <input type="text" name="phone" placeholder="Số điện thoại" class="lh-form-control" value="{{ old('phone') }}">
+                                    @error('phone')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="lh-contact-touch-inner-form-warp">
+                                    <input type="text" name="subject" placeholder="Chủ đề*" class="lh-form-control" value="{{ old('subject') }}" required>
                                     @error('subject')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="lh-contact-touch-inner-form-warp">
-                                    <textarea class="lh-form-control" name="message" placeholder="Message*" required>{{ old('message') }}</textarea>
+                                    <textarea class="lh-form-control" name="message" placeholder="Nội dung tin nhắn*" required>{{ old('message') }}</textarea>
                                     @error('message')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="lh-contact-touch-inner-form-button">
-                                    <button class="lh-buttons result-placeholder" type="submit">Send Message</button>
+                                    <button class="lh-buttons result-placeholder" type="submit">Gửi tin nhắn</button>
                                 </div>
                             </form>
                         </div>
@@ -120,7 +123,7 @@
                 <div class="col-lg-6 rs-pb-24">
                     <div class="lh-contact-touch-ifrem">
                         <iframe
-                            src="{{$systems->map}} "
+                            src="{{$system->map}} "
                             style="border:0;"></iframe>
                     </div>
                 </div>

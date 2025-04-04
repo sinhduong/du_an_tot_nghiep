@@ -7,34 +7,29 @@ use App\Http\Requests\StoreRoom_typeRequest;
 use App\Http\Requests\UpdateRoom_typeRequest;
 use App\Models\RoomType;
 use App\Models\RoomTypeImage;
+use App\Models\SaleRoomType;
+use App\Models\Booking; // Giả sử bạn có model Booking
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class RoomTypeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
         $title = 'Danh sách loại phòng';
-        $room_types = RoomType::orderBy('is_active', 'desc')->get();
+        $query = RoomType::orderBy('is_active', 'desc');
+
+        $room_types = $query->get();
         return view('admins.room-type.index', compact('title', 'room_types'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $title = 'Thêm loại phòng';
         return view('admins.room-type.create', compact('title'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreRoom_typeRequest $request)
     {
         if ($request->isMethod('POST')) {
@@ -65,9 +60,6 @@ class RoomTypeController extends Controller
         ], 400);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $title = 'Chi tiết loại phòng';
@@ -75,9 +67,6 @@ class RoomTypeController extends Controller
         return view('admins.room-type.detail', compact('roomType', 'title'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $title = 'Sửa loại phòng';
@@ -85,9 +74,6 @@ class RoomTypeController extends Controller
         return view('admins.room-type.edit', compact('roomType', 'title'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateRoom_typeRequest $request, string $id)
     {
         try {
@@ -159,14 +145,29 @@ class RoomTypeController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage (Soft Delete).
-     */
     public function destroy(Request $request, $id)
     {
         try {
             $roomType = RoomType::findOrFail($id);
-            $roomType->delete(); // Xóa mềm
+
+            // Kiểm tra xem loại phòng có đang được sử dụng trong đặt phòng không
+            $bookingCount = Booking::where('room_type_id', $roomType->id)->count();
+            if ($bookingCount > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không thể xóa loại phòng này vì đang có ' . $bookingCount . ' đặt phòng liên quan.'
+                ], 400);
+            }
+
+            // Xóa mềm các dữ liệu liên quan
+            // 1. Xóa mềm các hình ảnh liên quan (RoomTypeImage)
+            $roomType->roomTypeImages()->delete();
+
+            // 2. Nếu có các khuyến mãi liên quan (SaleRoomType), xóa mềm chúng
+            SaleRoomType::where('room_type_id', $roomType->id)->delete();
+
+            // Xóa mềm RoomType
+            $roomType->delete();
 
             return response()->json([
                 'success' => true,
@@ -182,24 +183,27 @@ class RoomTypeController extends Controller
         }
     }
 
-    /**
-     * Display a listing of trashed resources.
-     */
     public function trashed()
     {
-        $title = 'Loại phòng đã xóa';
+        $title = 'Thùng rác';
         $room_types = RoomType::onlyTrashed()->get();
         return view('admins.room-type.trashed', compact('title', 'room_types'));
     }
 
-    /**
-     * Restore the specified resource from trash.
-     */
     public function restore(Request $request, $id)
     {
         try {
             $roomType = RoomType::onlyTrashed()->findOrFail($id);
-            $roomType->restore(); // Khôi phục
+
+            // Khôi phục các dữ liệu liên quan
+            // 1. Khôi phục hình ảnh liên quan
+            $roomType->roomTypeImages()->restore();
+
+            // 2. Khôi phục các khuyến mãi liên quan
+            SaleRoomType::where('room_type_id', $roomType->id)->restore();
+
+            // Khôi phục RoomType
+            $roomType->restore();
 
             return response()->json([
                 'success' => true,
@@ -215,25 +219,36 @@ class RoomTypeController extends Controller
         }
     }
 
-    /**
-     * Permanently delete the specified resource from storage (Force Delete).
-     */
     public function forceDelete(Request $request, $id)
     {
         try {
             $roomType = RoomType::onlyTrashed()->findOrFail($id);
 
-            // Xóa tất cả ảnh liên quan trước khi xóa vĩnh viễn
+            // Kiểm tra xem loại phòng có đang được sử dụng trong đặt phòng không
+            $bookingCount = Booking::where('room_type_id', $roomType->id)->count();
+            if ($bookingCount > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không thể xóa vĩnh viễn loại phòng này vì đang có ' . $bookingCount . ' đặt phòng liên quan.'
+                ], 400);
+            }
+
+            // Xóa các dữ liệu liên quan
+            // 1. Xóa hình ảnh liên quan
             $images = $roomType->roomTypeImages;
             foreach ($images as $image) {
                 if (Storage::disk('public')->exists($image->image)) {
                     Storage::disk('public')->delete($image->image);
                     Log::info("Deleted image before force delete: {$image->image}");
                 }
-                $image->delete();
+                $image->forceDelete();
             }
 
-            $roomType->forceDelete(); // Xóa vĩnh viễn
+            // 2. Xóa các khuyến mãi liên quan
+            SaleRoomType::where('room_type_id', $roomType->id)->forceDelete();
+
+            // Xóa vĩnh viễn RoomType
+            $roomType->forceDelete();
 
             return response()->json([
                 'success' => true,
