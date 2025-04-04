@@ -11,7 +11,8 @@ class SaleRoomTypeController extends Controller
 {
     public function index()
     {
-        $saleRoomTypes = SaleRoomType::with('roomType')->get();
+        // Lấy tất cả các bản ghi SaleRoomType và nhóm theo name để hiển thị nhiều loại phòng
+        $saleRoomTypes = SaleRoomType::with('roomType')->get()->groupBy('name');
         $title = 'Danh sách mối quan hệ Loại phòng - Khuyến mãi';
         return view('admins.sale-roomType.index', compact('saleRoomTypes', 'title'));
     }
@@ -24,7 +25,21 @@ class SaleRoomTypeController extends Controller
 
     public function store(SaleRoomTypeRequest $request)
     {
-        SaleRoomType::create($request->validated());
+        $validated = $request->validated();
+
+        // Tạo một bản ghi SaleRoomType cho mỗi room_type_id
+        foreach ($validated['room_type_ids'] as $roomTypeId) {
+            SaleRoomType::create([
+                'name' => $validated['name'],
+                'value' => $validated['value'],
+                'type' => $validated['type'],
+                'room_type_id' => $roomTypeId,
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'],
+                'status' => $validated['status'],
+            ]);
+        }
+
         return redirect()->route('admin.sale-room-types.index')
             ->with('success', 'Thêm mới thành công');
     }
@@ -37,27 +52,42 @@ class SaleRoomTypeController extends Controller
     public function edit(SaleRoomType $saleRoomType)
     {
         $roomTypes = RoomType::all();
-        return view('admins.sale-roomType.edit', compact('saleRoomType', 'roomTypes'));
+        // Lấy tất cả các bản ghi SaleRoomType có cùng name để hiển thị các loại phòng đã chọn
+        $relatedSaleRoomTypes = SaleRoomType::where('name', $saleRoomType->name)->pluck('room_type_id')->toArray();
+        return view('admins.sale-roomType.edit', compact('saleRoomType', 'roomTypes', 'relatedSaleRoomTypes'));
     }
 
     public function update(SaleRoomTypeRequest $request, SaleRoomType $saleRoomType)
     {
-        
-        $saleRoomType->update($request->validated());
+        $validated = $request->validated();
+
+        // Xóa các bản ghi cũ có cùng name
+        SaleRoomType::where('name', $saleRoomType->name)->delete();
+
+        // Tạo lại các bản ghi mới cho mỗi room_type_id
+        foreach ($validated['room_type_ids'] as $roomTypeId) {
+            SaleRoomType::create([
+                'name' => $validated['name'],
+                'value' => $validated['value'],
+                'type' => $validated['type'],
+                'room_type_id' => $roomTypeId,
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'],
+                'status' => $validated['status'],
+            ]);
+        }
+
         return redirect()->route('admin.sale-room-types.index')
             ->with('success', 'Cập nhật thành công');
     }
 
     public function destroy(SaleRoomType $saleRoomType)
     {
-        $saleRoomType->delete();
+        // Xóa tất cả các bản ghi có cùng name
+        SaleRoomType::where('name', $saleRoomType->name)->delete();
         return redirect()->route('admin.sale-room-types.index')
             ->with('success', 'Xóa thành công');
     }
 
-    public function toggleStatus(SaleRoomTypeRequest $request, SaleRoomType $saleRoomType)
-    {
-        $saleRoomType->update(['status' => $request->validated()['status']]);
-        return response()->json(['success' => true, 'status' => $saleRoomType->status]);
-    }
+
 }

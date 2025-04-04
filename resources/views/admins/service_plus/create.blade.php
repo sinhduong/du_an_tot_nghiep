@@ -18,6 +18,11 @@
                 <div class="lh-card" id="bookingtbl">
                     <div class="lh-card-header">
                         <h4 class="lh-card-title">{{ $title }}</h4>
+                        <div class="header-tools">
+                            <a href="javascript:void(0)" class="lh-full-card"><i class="ri-fullscreen-line"
+                                    data-bs-toggle="tooltip" aria-label="Full Screen"
+                                    data-bs-original-title="Full Screen"></i></a>
+                        </div>
                         <!-- Giữ nguyên header-tools -->
                     </div>
                     <div class="lh-card-content card-booking">
@@ -31,7 +36,7 @@
                                                 <strong>Tên dịch vụ <span class="text-danger">*</span>: </strong>
                                                 <div class="form-group">
                                                     <input type="text" name="name" placeholder="Tên dịch vụ"
-                                                        class="form-control" value="{{ old('name') }}" required>
+                                                        class="form-control" value="{{ old('name') }}" >
                                                     @error('name')
                                                         <p class="text-danger">{{ $message }}</p>
                                                     @enderror
@@ -42,7 +47,7 @@
                                                 <div class="form-group">
                                                     <input type="number" name="price" placeholder="Giá dịch vụ"
                                                         class="form-control" step="0.01" min="0"
-                                                        value="{{ old('price') }}" required>
+                                                        value="{{ old('price') }}" >
                                                     @error('price')
                                                         <p class="text-danger">{{ $message }}</p>
                                                     @enderror
@@ -51,9 +56,9 @@
                                             <li>
                                                 <strong>Trạng thái <span class="text-danger">*</span>: </strong>
                                                 <div class="form-group">
-                                                    <select name="is_active" class="form-control" required>
-                                                        <option value="1" {{ old('is_active', 1) == 1 ? 'selected' : '' }}>Hoạt động</option>
-                                                        <option value="0" {{ old('is_active', 0) == 0 ? 'selected' : '' }}>Không hoạt động</option>
+                                                    <select name="is_active" class="form-control" >
+                                                        <option value="1" {{ old('is_active') == 0 ? 'selected' : '' }}>Hoạt động</option>
+                                                        <option value="0" {{ old('is_active') == 1 ? 'selected' : '' }}>Không hoạt động</option>
                                                     </select>
                                                     @error('is_active')
                                                         <p class="text-danger">{{ $message }}</p>

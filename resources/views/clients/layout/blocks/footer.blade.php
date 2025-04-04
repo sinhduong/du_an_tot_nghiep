@@ -15,7 +15,7 @@
                         </li>
                         <li>
                             <code>*</code>
-                            <a href="{{route('abouts')}}">Về chúng tôi</a>
+                            <a href="{{route('contacts')}}">Liên hệ</a>
                         </li>
                         <li>
                             <code>*</code>

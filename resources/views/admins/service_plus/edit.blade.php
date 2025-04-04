@@ -5,33 +5,13 @@
         <!-- Page title & breadcrumb -->
         <div class="lh-page-title">
             <div class="lh-breadcrumb">
-                <h5>Dịch vụ bổ sung</h5>
+                <h5>Dịch vụ phát sinh</h5>
                 <ul>
                     <li><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
-                    <li>Quản lý dịch vụ bổ sung</li>
+                    <li>Quản lý dịch vụ phát sinh</li>
                 </ul>
             </div>
-            <div class="lh-tools">
-                <a href="javascript:void(0)" title="Refresh" class="refresh"><i class="ri-refresh-line"></i></a>
-                <div id="pagedate">
-                    <div class="lh-date-range" title="Date">
-                        <span></span>
-                    </div>
-                </div>
-                <div class="filter">
-                    <div class="dropdown" title="Filter">
-                        <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="ri-sound-module-line"></i>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item" href="#">Booking</a></li>
-                            <li><a class="dropdown-item" href="#">Revenue</a></li>
-                            <li><a class="dropdown-item" href="#">Expence</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+
         </div>
         <div class="row">
             <div class="col-xxl-12 col-xl-8 col-md-12">
@@ -52,7 +32,7 @@
                                         <ul>
                                             <li><strong>Tên dịch vụ *: </strong>
                                                 <div class="form-group">
-                                                    <input type="text" name="name" placeholder="Nhập tên" value="{{ $service->name }}">
+                                                    <input type="text" name="name" placeholder="Nhập tên" value="{{ old('name', $service->name) }}" class="form-control">
                                                     @error('name')
                                                         <p class="text-danger">{{ $message }}</p>
                                                     @enderror
@@ -60,9 +40,9 @@
                                             </li>
                                             <li><strong>Giá dịch vụ *: </strong>
                                                 <div class="form-group">
-                                                    <input type="text" name="price" placeholder="Nhập giá" value="{{ $service->price }}">
+                                                    <input type="number" name="price" placeholder="Nhập giá" value="{{ old('price', $service->price) }}" class="form-control" step="0.01">
                                                     @error('price')
-                                                    <p class="text-danger">{{ $message }}</p>
+                                                        <p class="text-danger">{{ $message }}</p>
                                                     @enderror
                                                 </div>
                                             </li>
@@ -97,25 +77,4 @@
         </div>
     </div>
 </div>
-<!-- Thêm SweetAlert để hiển thị thông báo -->
-@if (session('success'))
-    <script>
-        Swal.fire({
-            icon: 'success',
-            title: 'Thành công',
-            text: '{{ session('success') }}',
-            confirmButtonText: 'OK'
-        });
-    </script>
-@endif
-@if (session('error'))
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Lỗi',
-            text: '{{ session('error') }}',
-            confirmButtonText: 'OK'
-        });
-    </script>
-@endif
 @endsection

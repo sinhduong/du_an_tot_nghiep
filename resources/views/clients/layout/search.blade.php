@@ -48,7 +48,7 @@
                                     </div>
                                 </div>
                                 <small class="note">
-                                    <a href="#">Đọc thêm về chính sách đặt vé và lịch cùng với trẻ em</a>
+                                    <a href="#">Trẻ em dưới 12 tuổi miễn phí, trên 12 xem như người lớn</a>
                                 </small>
                                 <button type="button" class="done-btn">Xong</button>
                             </div>

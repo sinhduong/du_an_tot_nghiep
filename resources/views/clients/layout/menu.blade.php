@@ -12,15 +12,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('home') }}">Trang Chủ</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            Danh Sách Khách Sạn <i class="ri-arrow-down-s-line"></i>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Danh sách 1</a></li>
-                            <li><a class="dropdown-item" href="#">Danh sách 2</a></li>
-                        </ul>
-                    </li>
+
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             Danh sách loại phòng <i class="ri-arrow-down-s-line"></i>
@@ -35,10 +27,16 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('introductions') }}">Giới thiệu</a></li>
-                            <li><a class="dropdown-item" href="{{ route('abouts') }}">Về chúng tôi</a></li>
+                            {{-- <li><a class="dropdown-item" href="{{ route('abouts') }}">Về chúng tôi</a></li> --}}
                             <li><a class="dropdown-item" href="{{ route('faqs') }}">Câu hỏi thường gặp</a></li>
                             <li><a class="dropdown-item" href="{{ route('services') }}">Dịch vụ</a></li>
                         </ul>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link " href="{{ route('contacts') }}" >
+                            Liên hệ với cúng tôi
+                        </a>
+
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">

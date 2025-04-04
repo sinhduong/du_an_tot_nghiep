@@ -13,37 +13,51 @@ class ReviewController extends Controller
      */
     public function index()
     {
-        $reviews = Review::with(['user', 'room'])->latest()->get();
-        return view('admins.reviews.index', compact('reviews'));
+        $title="Danh sách đánh giá";
+        $reviews = Review::with(['user', 'booking'])->latest()->get();
+        return view('admins.reviews.index', compact('reviews','title'));
     }
 
+    /**
+     * Show the specified review.
+     */
     public function show(Review $review)
     {
+        $review->load(['user', 'booking']);
         return view('admins.reviews.show', compact('review'));
     }
 
+    /**
+     * Respond to a review.
+     */
     public function response(Request $request, Review $review)
     {
         $request->validate(['response' => 'required|string']);
-        $review->update(['response' => $request->response]);
 
         try {
+            $review->update(['response' => $request->response]);
             return redirect()
                 ->route('admin.reviews.index')
                 ->with('success', 'Phản hồi đã được cập nhật.');
         } catch (\Throwable $th) {
-
             return back()
-                ->with('success', true)
-                ->with('error', $th->getMessage());
+                ->with('error', 'Đã có lỗi xảy ra: ' . $th->getMessage());
         }
     }
 
-
-
+    /**
+     * Remove the specified review.
+     */
     public function destroy(Review $review)
     {
-        $review->delete();
-        return redirect()->route('admin.reviews.index')->with('success', 'Đánh giá đã bị xóa.');
+        try {
+            $review->delete();
+            return redirect()
+                ->route('admin.reviews.index')
+                ->with('success', 'Đánh giá đã bị xóa.');
+        } catch (\Throwable $th) {
+            return back()
+                ->with('error', 'Đã có lỗi xảy ra: ' . $th->getMessage());
+        }
     }
 }

@@ -203,41 +203,22 @@ Route::prefix('admin')
                 Route::get('/trashed', [RulesAndRegulationController::class, 'trashed'])->name('trashed'); // Danh sách phòng đã xóa mềm
                 Route::patch('/{id}/restore', [RulesAndRegulationController::class, 'restore'])->name('restore'); // Khôi phục phòng đã xóa mềm
                 Route::delete('/{id}/force-delete', [RulesAndRegulationController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
-                // Thêm Quy Tắc Vào Phòng
-                Route::get('/create_room', [RulesAndRegulationController::class, 'create_room'])->name('create_room'); // Form thêm mới
-                Route::get('/room_index', [RulesAndRegulationController::class, 'room_index'])->name('room_index'); // Form thêm mới
-                Route::post('/room_store', [RulesAndRegulationController::class, 'room_store'])->name('room_store'); // Lưu loại phòng
-
-                Route::get('{id}/view_room', [RulesAndRegulationController::class, 'view_room'])->name('view_room'); // Form thêm mới
-                Route::delete('{id}/destroy_room', [RulesAndRegulationController::class, 'destroy_room'])->name('destroy_room'); // Xóa loại phòng
-                Route::get('/trashed_room', [RulesAndRegulationController::class, 'trashed_room'])->name('trashed_room'); // Danh sách phòng đã xóa mềm
-                Route::patch('/{id}/restore_room', [RulesAndRegulationController::class, 'restore_room'])->name('restore_room'); // Khôi phục phòng đã xóa mềm
-                Route::delete('/{id}/force-delete_room', [RulesAndRegulationController::class, 'forceDelete_room'])->name('forceDelete_room'); // Xóa vĩnh viễn
 
             });
+
         Route::prefix('amenities') // Đặt tên theo số nhiều chuẩn RESTful
             ->as('amenities.') // Tên route để sử dụng dễ dàng trong view/controller
             ->group(function () {
                 Route::get('/', [AmenityController::class, 'index'])->name('index'); // Danh sách loại phòng
                 Route::get('/create', [AmenityController::class, 'create'])->name('create'); // Form thêm mới
                 Route::post('/store', [AmenityController::class, 'store'])->name('store'); // Lưu loại phòng
+                Route::get('{id}/show', [AmenityController::class, 'show'])->name('show'); // Form chỉnh sửa
                 Route::get('{id}/edit', [AmenityController::class, 'edit'])->name('edit'); // Form chỉnh sửa
                 Route::put('{id}/update', [AmenityController::class, 'update'])->name('update'); // Cập nhật
                 Route::delete('{id}/destroy', [AmenityController::class, 'destroy'])->name('destroy'); // Xóa loại phòng
                 Route::get('/trashed', [AmenityController::class, 'trashed'])->name('trashed'); // Danh sách phòng đã xóa mềm
                 Route::patch('/{id}/restore', [AmenityController::class, 'restore'])->name('restore'); // Khôi phục phòng đã xóa mềm
                 Route::delete('/{id}/force-delete', [AmenityController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
-
-
-                Route::get('/create_room', [AmenityController::class, 'create_room'])->name('create_room'); // Form thêm mới
-                Route::get('/room_index', [AmenityController::class, 'room_index'])->name('room_index'); // Form thêm mới
-                Route::post('/room_store', [AmenityController::class, 'room_store'])->name('room_store'); // Lưu loại phòng
-
-                Route::get('{id}/view_room', [AmenityController::class, 'view_room'])->name('view_room'); // Form thêm mới
-                Route::delete('{id}/destroy_room', [AmenityController::class, 'destroy_room'])->name('destroy_room'); // Xóa loại phòng
-                Route::get('/trashed_room', [AmenityController::class, 'trashed_room'])->name('trashed_room'); // Danh sách phòng đã xóa mềm
-                Route::patch('/{id}/restore_room', [AmenityController::class, 'restore_room'])->name('restore_room'); // Khôi phục phòng đã xóa mềm
-                Route::delete('/{id}/force-delete_room', [AmenityController::class, 'forceDelete_room'])->name('forceDelete_room'); // Xóa vĩnh viễn
             });
 
         Route::prefix('bookings')
@@ -264,8 +245,41 @@ Route::prefix('admin')
                 Route::delete('{id}/destroy', [SystemController::class, 'destroy'])->name('destroy');
             });
 
-        Route::resource('services', ServiceController::class);
-        Route::resource('service_plus', ServicePlusController::class);
+        Route::prefix('contacts')
+        ->as('contacts.')
+        ->group(function () {
+            Route::get('/contacts', [ContactsController::class, 'index'])->name('index');
+            Route::get('/contacts/{contact}', [ContactsController::class, 'show'])->name('show');
+            Route::post('/contacts/{contact}/reply', [ContactsController::class, 'reply'])->name('reply');
+        });
+
+        Route::prefix('services') // Đặt tên theo số nhiều chuẩn RESTful
+        ->as('services.') // Tên route để sử dụng dễ dàng trong view/controller
+        ->group(function () {
+            Route::get('/', [ServiceController::class, 'index'])->name('index'); // Danh sách loại phòng
+            Route::get('/create', [ServiceController::class, 'create'])->name('create'); // Form thêm mới
+            Route::post('/store', [ServiceController::class, 'store'])->name('store'); // Lưu loại phòng
+            Route::get('{id}/show', [ServiceController::class, 'show'])->name('show'); // Form chỉnh sửa
+            Route::get('{id}/edit', [ServiceController::class, 'edit'])->name('edit'); // Form chỉnh sửa
+            Route::put('{id}/update', [ServiceController::class, 'update'])->name('update'); // Cập nhật
+            Route::delete('{id}/destroy', [ServiceController::class, 'destroy'])->name('destroy'); // Xóa loại phòng
+            Route::get('/trashed', [ServiceController::class, 'trashed'])->name('trashed'); // Danh sách phòng đã xóa mềm
+            Route::patch('/{id}/restore', [ServiceController::class, 'restore'])->name('restore'); // Khôi phục phòng đã xóa mềm
+            Route::delete('/{id}/force-delete', [ServiceController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
+        });
+
+        Route::prefix('service_plus') // Đặt tên theo số nhiều chuẩn RESTful
+        ->as('service_plus.') // Tên route để sử dụng dễ dàng trong view/controller
+        ->group(function () {
+            Route::get('/', [ServicePlusController::class, 'index'])->name('index'); // Danh sách loại phòng
+            Route::get('/create', [ServicePlusController::class, 'create'])->name('create'); // Form thêm mới
+            Route::post('/store', [ServicePlusController::class, 'store'])->name('store'); // Lưu loại phòng
+            Route::get('{id}/show', [ServicePlusController::class, 'show'])->name('show'); // Form chỉnh sửa
+            Route::get('{id}/edit', [ServicePlusController::class, 'edit'])->name('edit'); // Form chỉnh sửa
+            Route::put('{id}/update', [ServicePlusController::class, 'update'])->name('update'); // Cập nhật
+            Route::delete('{id}/destroy', [ServicePlusController::class, 'destroy'])->name('destroy'); // Xóa loại phòng
+        });
+
         Route::resource('promotions', PromotionController::class);
         Route::resource('roles', RoleController::class);
         Route::resource('abouts', AboutController::class);
@@ -276,11 +290,6 @@ Route::prefix('admin')
         Route::resource('payments', PaymentController::class);
         Route::resource('customers', CustomerController::class);
         Route::resource('sale-room-types', SaleRoomTypeController::class);
-        Route::prefix('admin')->group(function () {
-            Route::get('/contacts', [ContactsController::class, 'index'])->name('contacts.index');
-            Route::get('/contacts/{contact}', [ContactsController::class, 'show'])->name('contacts.show');
-            Route::post('/contacts/{contact}/reply', [ContactsController::class, 'reply'])->name('contacts.reply');
-        });
     });
 
 
@@ -294,10 +303,10 @@ Route::get('/room', [HomeController::class, 'room_view'])->name('room.view');
 
 Route::get('/cau-hoi-thuong-gap', [HomeController::class, 'faqs'])->name('faqs');
 Route::get('/dich-vu', [HomeController::class, 'services'])->name('services');
-Route::get('/ve-chung-toi', [HomeController::class, 'abouts'])->name('abouts');
 Route::get('/gioi-thieu', [HomeController::class, 'introductions'])->name('introductions');
 // Route::post('/sendmail', [HomeController::class, 'sendmail']);
-Route::post('/ve-chung-toi', [HomeController::class, 'send'])->name('contact.send');
+Route::get('/lien-he-voi-chung-toi', [HomeController::class, 'contacts'])->name('contacts');
+Route::post('/lien-he-voi-chung-toi', [HomeController::class, 'send'])->name('contact.send');
 
 // Route::resource('services', ServiceController::class);
 Route::prefix('bookings')

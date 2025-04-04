@@ -7,17 +7,11 @@ use Illuminate\Validation\Rule;
 
 class SaleRoomTypeRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true; // Cho phép tất cả người dùng (có thể thêm logic phân quyền nếu cần)
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     */
     public function rules(): array
     {
         // Quy tắc chung
@@ -29,7 +23,8 @@ class SaleRoomTypeRequest extends FormRequest
             ],
             'value' => 'required|numeric',
             'type' => 'required|string|in:percent,fixed',
-            'room_type_id' => 'required|exists:room_types,id',
+            'room_type_ids' => 'required|array', // Validate mảng room_type_ids
+            'room_type_ids.*' => 'exists:room_types,id', // Kiểm tra từng ID trong mảng
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
             'status' => 'required|in:active,inactive',
@@ -39,10 +34,13 @@ class SaleRoomTypeRequest extends FormRequest
         if ($this->route()->getName() === 'admin.sale-room-types.store') {
             // Khi tạo mới: không được trùng với bất kỳ bản ghi nào
             $rules['name'][] = 'unique:sale_room_types,name';
-        } elseif ($this->route()->getName() === 'admins.sale-room-types.update') {
+        } elseif ($this->route()->getName() === 'admin.sale-room-types.update') {
             // Khi cập nhật: không được trùng với các bản ghi khác, trừ bản ghi hiện tại
-            $saleRoomTypeId = $this->route('saleRoomType')->id;
-            $rules['name'][] = Rule::unique('sale_room_types', 'name')->ignore($saleRoomTypeId);
+            $saleRoomType = $this->route('saleRoomType');
+            if ($saleRoomType) {
+                $saleRoomTypeId = $saleRoomType->id;
+                $rules['name'][] = Rule::unique('sale_room_types', 'name')->ignore($saleRoomTypeId);
+            }
         }
 
         // Nếu là toggleStatus, chỉ cần validate status
@@ -55,9 +53,6 @@ class SaleRoomTypeRequest extends FormRequest
         return $rules;
     }
 
-    /**
-     * Get custom messages for validation errors.
-     */
     public function messages(): array
     {
         return [
@@ -69,8 +64,9 @@ class SaleRoomTypeRequest extends FormRequest
             'value.numeric' => 'Giá trị khuyến mãi phải là số.',
             'type.required' => 'Loại khuyến mãi là bắt buộc.',
             'type.in' => 'Loại khuyến mãi phải là "Phần trăm" hoặc "Số tiền cố định".',
-            'room_type_id.required' => 'Loại phòng là bắt buộc.',
-            'room_type_id.exists' => 'Loại phòng không tồn tại.',
+            'room_type_ids.required' => 'Loại phòng là bắt buộc.',
+            'room_type_ids.array' => 'Loại phòng phải là một mảng.',
+            'room_type_ids.*.exists' => 'Loại phòng không tồn tại.',
             'start_date.required' => 'Ngày giờ bắt đầu là bắt buộc.',
             'start_date.date' => 'Ngày giờ bắt đầu không hợp lệ.',
             'end_date.required' => 'Ngày giờ kết thúc là bắt buộc.',

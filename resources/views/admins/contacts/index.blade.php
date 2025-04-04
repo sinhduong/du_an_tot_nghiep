@@ -10,16 +10,10 @@
                         <li>Liên hệ</li>
                     </ul>
                 </div>
-                <div class="lh-tools">
-                    <a href="javascript:void(0)" title="Refresh" class="refresh"><i class="ri-refresh-line"></i></a>
-                    <div id="pagedate">
-                        <div class="lh-date-range" title="Date"><span></span></div>
-                    </div>
-                </div>
             </div>
             <div class="row">
                 <div class="col-xl-12 col-md-12">
-                    <div class="lh-card">
+                    <div class="lh-card" id="bookingtbl">
                         <div class="lh-card-header">
                             <h4 class="lh-card-title">Danh sách Liên hệ</h4>
                         </div>
@@ -31,7 +25,7 @@
                         @endif
                         <div class="lh-card-content card-default">
                             <div class="table-responsive" style="min-height: 200px">
-                                <table class="table table-striped table-hover">
+                                <table id="booking_table" class="table table-striped table-hover">
                                     <thead class="table-dark">
                                     <tr>
                                         <th class="text-center">STT</th>
@@ -51,9 +45,17 @@
                                             <td>{{ $contact->email }}</td>
                                             <td>{{ $contact->phone }}</td>
                                             <td>
-                                                    <span class="text-{{ $contact->status == 'approved' ? 'success' : ($contact->status == 'rejected' ? 'danger' : 'warning') }}">
-                                                        {{ ucfirst($contact->status) }}
-                                                    </span>
+                                                <span class="text-{{ $contact->status == 'approved' ? 'success' : ($contact->status == 'rejected' ? 'danger' : 'warning') }}">
+                                                    @if ($contact->status == 'pending')
+                                                        Đang chờ
+                                                    @elseif ($contact->status == 'approved')
+                                                        Đã duyệt
+                                                    @elseif ($contact->status == 'rejected')
+                                                        Đã từ chối
+                                                    @else
+                                                        {{ ucfirst($contact->status) }} <!-- Giữ nguyên nếu có trạng thái khác -->
+                                                    @endif
+                                                </span>
                                             </td>
                                             <td>{{ $contact->created_at->diffForHumans() }}</td>
                                             <td>

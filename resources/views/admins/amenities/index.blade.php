@@ -5,32 +5,11 @@
         <!-- Page title & breadcrumb -->
         <div class="lh-page-title">
             <div class="lh-breadcrumb">
-                <h5>Loại Tiện nghi</h5>
+                <h5> Tiện nghi loại phòng</h5>
                 <ul>
-                    <li><a href="index.html">Trang chủ</a></li>
-                    <li>Dashboard</li>
+                    <li><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                    <li> Tiện nghi</li>
                 </ul>
-            </div>
-            <div class="lh-tools">
-                <a href="javascript:void(0)" title="Refresh" class="refresh"><i class="ri-refresh-line"></i></a>
-                <div id="pagedate">
-                    <div class="lh-date-range" title="Date">
-                        <span></span>
-                    </div>
-                </div>
-                <div class="filter">
-                    <div class="dropdown" title="Filter">
-                        <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="ri-sound-module-line"></i>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item" href="#">Booking</a></li>
-                            <li><a class="dropdown-item" href="#">Revenue</a></li>
-                            <li><a class="dropdown-item" href="#">Expence</a></li>
-                        </ul>
-                    </div>
-                </div>
             </div>
         </div>
         <div class="row">
@@ -41,20 +20,24 @@
                         <div class="header-tools">
                             <a href="javascript:void(0)" class="m-r-10 lh-full-card"><i
                                     class="ri-fullscreen-line" title="Full Screen"></i></a>
-                            <div class="lh-date-range dots">
-                                <span></span>
-                            </div>
                             <button class="btn btn-primary ms-2" onclick="window.location.href='{{ route('admin.amenities.create') }}'">
                                 Tạo mới
                             </button>
                         </div>
                     </div>
-                    @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    @endif
+                    <!-- Thêm phần hiển thị thông báo -->
+@if (session('success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ session('success') }}
+    <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+@if (session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ session('error') }}
+    <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
                     <div class="lh-card-content card-default">
                         <div class="booking-table">
                             <div class="table-responsive">
@@ -88,7 +71,7 @@
                                                 <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-danger' }}">
                                                     {{ $item->is_active ? 'Hoạt động' : 'Không hoạt động' }}
                                                 </span>
-                                            </td>  
+                                            </td>
                                             <td>
                                                 <div class="btn-group">
                                                     <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
@@ -98,6 +81,11 @@
                                                         <li>
                                                             <a class="dropdown-item" href="{{ route('admin.amenities.edit', $item->id) }}">
                                                                 <i class="ri-edit-line"></i> Sửa
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="{{ route('admin.amenities.show', $item->id) }}">
+                                                                <i class="ri-eye-line"></i> Chi tiết
                                                             </a>
                                                         </li>
                                                         <li>

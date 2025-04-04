@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreAmenityRequest;
-use App\Http\Requests\UpdateAmenityRequest;
 use App\Models\Amenity;
 use App\Models\RoomType;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\AmenityRequest;
 
 class AmenityController extends Controller
 {
-
     public function index()
     {
         $title = 'Danh Sách Tiện nghi';
@@ -26,24 +25,32 @@ class AmenityController extends Controller
         return view('admins.amenities.create', compact('title', 'roomTypes'));
     }
 
-
-    public function store(StoreAmenityRequest $request)
+    public function store(AmenityRequest $request)
     {
-
         try {
             DB::beginTransaction();
-            $service = Amenity::create($request->all());
+            $amenity = Amenity::create($request->all());
             if ($request->has('roomTypes')) {
-                $service->roomTypes()->sync($request->roomTypes);
+                $amenity->roomTypes()->sync($request->roomTypes);
             }
             DB::commit();
-            return redirect()->route('admin.amenities.index')->with('success', 'Thêm dịch vụ thành công');
+            return redirect()->route('admin.amenities.index')
+                ->with('success', "Thêm tiện nghi thành công! Tiện nghi {$amenity->name} đã được thêm.");
         } catch (\Exception $exception) {
             DB::rollBack();
-            throw $exception;
+            Log::error('Error in AmenityController@store: ' . $exception->getMessage());
+            return redirect()->back()
+                ->with('error', 'Thêm tiện nghi thất bại! Có lỗi xảy ra: ' . $exception->getMessage())
+                ->withInput();
         }
     }
 
+    public function show(string $id)
+    {
+        $title = 'Chi tiết Tiện nghi';
+        $amenity = Amenity::with('roomTypes')->findOrFail($id);
+        return view('admins.amenities.show', compact('amenity', 'title'));
+    }
 
     public function edit(string $id)
     {
@@ -51,38 +58,42 @@ class AmenityController extends Controller
         $amenity = Amenity::findOrFail($id);
         $roomTypes = RoomType::all();
         $selectedRoomTypes = $amenity->roomTypes->pluck('id')->toArray();
-
-        return view('admins.amenities.edit', compact('amenity', 'title', 'roomTypes','selectedRoomTypes'));
-
+        return view('admins.amenities.edit', compact('amenity', 'title', 'roomTypes', 'selectedRoomTypes'));
     }
 
-    public function update(UpdateAmenityRequest $request, string $id)
+    public function update(AmenityRequest $request, string $id)
     {
-
         try {
             DB::beginTransaction();
-            $service = Amenity::findOrFail($id);
-
-            $service->update($request->all());
-
+            $amenity = Amenity::findOrFail($id);
+            $amenity->update($request->all());
             if ($request->has('roomTypes')) {
-                $service->roomTypes()->sync($request->roomTypes);
+                $amenity->roomTypes()->sync($request->roomTypes);
             }
             DB::commit();
-            return redirect()->route('admin.amenities.index')->with('success', 'Cập nhật dịch vụ thành công');
+            return redirect()->route('admin.amenities.index')
+                ->with('success', "Cập nhật tiện nghi thành công! Tiện nghi {$amenity->name} đã được cập nhật.");
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
+            Log::error('Error in AmenityController@update: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Cập nhật tiện nghi thất bại! Có lỗi xảy ra: ' . $e->getMessage())
+                ->withInput();
         }
-
     }
-
 
     public function destroy($id)
     {
-        $amenity = Amenity::findOrFail($id);
-        $amenity->delete();
-        return redirect()->route('admin.amenities.index')->with('success', 'Tiện nghi đã được xóa mềm');
+        try {
+            $amenity = Amenity::findOrFail($id);
+            $amenity->delete();
+            return redirect()->route('admin.amenities.trashed')
+                ->with('success', "Xóa tiện nghi thành công! Tiện nghi {$amenity->name} đã được xóa mềm.");
+        } catch (\Exception $e) {
+            Log::error('Error in AmenityController@destroy: ' . $e->getMessage());
+            return redirect()->route('admin.amenities.index')
+                ->with('error', 'Xóa tiện nghi thất bại! Có lỗi xảy ra: ' . $e->getMessage());
+        }
     }
 
     public function trashed()
@@ -94,16 +105,29 @@ class AmenityController extends Controller
 
     public function restore($id)
     {
-        $amenity = Amenity::onlyTrashed()->findOrFail($id);
-        $amenity->restore();
-        return redirect()->route('admin.amenities.index')->with('success', 'Khôi phục tiện nghi thành công');
+        try {
+            $amenity = Amenity::onlyTrashed()->findOrFail($id);
+            $amenity->restore();
+            return redirect()->route('admin.amenities.index')
+                ->with('success', "Khôi phục tiện nghi thành công! Tiện nghi {$amenity->name} đã được khôi phục.");
+        } catch (\Exception $e) {
+            Log::error('Error in AmenityController@restore: ' . $e->getMessage());
+            return redirect()->route('admin.amenities.trashed')
+                ->with('error', 'Khôi phục tiện nghi thất bại! Có lỗi xảy ra: ' . $e->getMessage());
+        }
     }
-
 
     public function forceDelete($id)
     {
-        $amenity = Amenity::onlyTrashed()->findOrFail($id);
-        $amenity->forceDelete();
-        return redirect()->route('admin.amenities.trashed')->with('success', 'Xóa vĩnh viễn tiện nghi thành công');
+        try {
+            $amenity = Amenity::onlyTrashed()->findOrFail($id);
+            $amenity->forceDelete();
+            return redirect()->route('admin.amenities.trashed')
+                ->with('success', "Xóa vĩnh viễn tiện nghi thành công! Tiện nghi {$amenity->name} đã được xóa vĩnh viễn.");
+        } catch (\Exception $e) {
+            Log::error('Error in AmenityController@forceDelete: ' . $e->getMessage());
+            return redirect()->route('admin.amenities.trashed')
+                ->with('error', 'Xóa vĩnh viễn tiện nghi thất bại! Có lỗi xảy ra: ' . $e->getMessage());
+        }
     }
 }

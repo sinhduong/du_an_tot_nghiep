@@ -1,27 +1,30 @@
 <?php
 
 namespace App\Http\Controllers\Client;
-use App\Mail\ContactEmail;
-use App\Models\Amenity;
-use App\Models\Payment;
-use Illuminate\Support\Facades\Auth;
+
 use Log;
 use Carbon\Carbon;
 use App\Models\Faq;
 use App\Models\About;
+use App\Models\System;
+use App\Models\Amenity;
 use App\Models\Booking;
+use App\Models\Payment;
 use App\Models\Service;
+use App\Models\Contacts;
 use App\Models\RoomType;
 use App\Models\Promotion;
+use App\Mail\ContactEmail;
+use App\Mail\ContactEmtail;
 use App\Models\Introduction;
 use App\Models\SaleRoomType;
 use Illuminate\Http\Request;
 use App\Helpers\FormatHelper;
-use App\Http\Controllers\Controller;
 use App\Models\RulesAndRegulation;
-use App\Models\System;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\ContactEmtail;
 
 class HomeController extends Controller
 {
@@ -34,6 +37,7 @@ class HomeController extends Controller
         $checkOutDate = Carbon::parse($checkOut)->endOfDay();
 
         $totalRooms = $roomType->rooms()->where('status', 'available')->count();
+        Log::info("Total rooms for {$roomType->name}: {$totalRooms}");
 
         $bookedRooms = Booking::whereHas('rooms', function ($query) use ($roomType) {
             $query->where('room_type_id', $roomType->id);
@@ -55,6 +59,8 @@ class HomeController extends Controller
             })
             ->count();
 
+        Log::info("Booked rooms for {$roomType->name}: {$bookedRooms}, Check-in: {$checkInDate}, Check-out: {$checkOutDate}");
+
         return max(0, $totalRooms - $bookedRooms);
     }
 
@@ -63,6 +69,7 @@ class HomeController extends Controller
         Carbon::setLocale('vi');
         date_default_timezone_set('Asia/Ho_Chi_Minh');
 
+        // Giá trị mặc định cho check_in và check_out
         $checkIn = $request->input('check_in', Carbon::today()->setHour(14)->setMinute(0)->setSecond(0)->toDateTimeString());
         $checkOut = $request->input('check_out', Carbon::tomorrow()->setHour(12)->setMinute(0)->setSecond(0)->toDateTimeString());
         $totalGuests = (int) $request->input('total_guests', 2);
@@ -74,22 +81,35 @@ class HomeController extends Controller
             $checkOutDate = Carbon::parse($checkOut);
             $now = Carbon::now();
 
-            if ($checkInDate->lt($now) || ($checkInDate->isToday() && $now->hour >= 21)) {
+            // Kiểm tra nếu ngày nhận phòng là ngày hiện tại
+            // if ($checkInDate->isToday()) {
+            //     // Nếu thời gian hiện tại từ 21:00 đến 23:59:59, đẩy ngày nhận phòng sang ngày hôm sau
+            //     if ($now->hour >= 21 && $now->hour < 24) {
+            //         $checkInDate = $now->copy()->addDay()->setHour(14)->setMinute(0)->setSecond(0);
+            //         $checkIn = $checkInDate->toDateTimeString();
+            //     }
+            // }
+            if ($checkInDate->lt($now) || ($checkInDate->isToday() && $now->hour >= 21 )) {
                 $checkInDate = $now->copy()->addDay()->setHour(14)->setMinute(0)->setSecond(0);
                 $checkOutDate = $checkInDate->copy()->addDay()->setHour(12)->setMinute(0)->setSecond(0);
                 $checkIn = $checkInDate->toDateTimeString();
                 $checkOut = $checkOutDate->toDateTimeString();
             }
 
+            // Đảm bảo ngày trả phòng luôn sau ngày nhận phòng
             if ($checkInDate->gte($checkOutDate)) {
                 $checkOutDate = $checkInDate->copy()->addDay()->setHour(12)->setMinute(0)->setSecond(0);
                 $checkOut = $checkOutDate->toDateTimeString();
-                $request->session()->flash('info', 'Ngày trả phòng đã được điều chỉnh để sau ngày nhận phòng.');
+                // $request->session()->flash('info', 'Ngày trả phòng đã được điều chỉnh để sau ngày nhận phòng.');
+            } else {
+                // Giữ nguyên ngày trả phòng nếu nó đã hợp lệ (sau ngày nhận phòng)
+                $checkOut = $checkOutDate->toDateTimeString();
             }
 
             $nights = $checkInDate->diffInDays($checkOutDate);
-            if ($nights < 1)
+            if ($nights < 1) {
                 $nights = 1;
+            }
 
             $days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
             $months = ['tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6', 'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'];
@@ -190,22 +210,30 @@ class HomeController extends Controller
             $checkOutDate = Carbon::parse($checkOut);
             $now = Carbon::now();
 
-            if ($checkInDate->lt($now) || ($checkInDate->isToday() && $now->hour >= 21)) {
-                $checkInDate = $now->copy()->addDay()->setHour(14)->setMinute(0)->setSecond(0);
-                $checkOutDate = $checkInDate->copy()->addDay()->setHour(12)->setMinute(0)->setSecond(0);
-                $checkIn = $checkInDate->toDateTimeString();
-                $checkOut = $checkOutDate->toDateTimeString();
+            // Kiểm tra nếu ngày nhận phòng là ngày hiện tại
+            if ($checkInDate->isToday()) {
+                // Nếu thời gian hiện tại từ 21:00 đến 23:59:59, đẩy ngày nhận phòng sang ngày hôm sau
+                if ($now->hour >= 21 && $now->hour < 24) {
+                    $checkInDate = $now->copy()->addDay()->setHour(14)->setMinute(0)->setSecond(0);
+                    $checkIn = $checkInDate->toDateTimeString();
+                    // $request->session()->flash('info', 'Đặt phòng sau 21:00, ngày nhận phòng đã được điều chỉnh sang ngày mai.');
+                }
             }
 
+            // Đảm bảo ngày trả phòng luôn sau ngày nhận phòng
             if ($checkInDate->gte($checkOutDate)) {
                 $checkOutDate = $checkInDate->copy()->addDay()->setHour(12)->setMinute(0)->setSecond(0);
                 $checkOut = $checkOutDate->toDateTimeString();
-                $request->session()->flash('info', 'Ngày trả phòng đã được điều chỉnh để sau ngày nhận phòng.');
+                // $request->session()->flash('info', 'Ngày trả phòng đã được điều chỉnh để sau ngày nhận phòng.');
+            } else {
+                // Giữ nguyên ngày trả phòng nếu nó đã hợp lệ (sau ngày nhận phòng)
+                $checkOut = $checkOutDate->toDateTimeString();
             }
 
             $nights = $checkInDate->diffInDays($checkOutDate);
-            if ($nights < 1)
+            if ($nights < 1) {
                 $nights = 1;
+            }
 
             $days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
             $months = ['tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6', 'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'];
@@ -257,11 +285,10 @@ class HomeController extends Controller
             'type' => $bestSaleRoomType->type,
         ] : null;
 
-        \Log::info("Room: {$roomType->name}, Price: {$roomType->price}, Nights: $nights, RoomCount: $roomCount, Original: {$roomType->total_original_price}, Discounted: {$roomType->total_discounted_price}, SaleRoomType: " . json_encode($bestSaleRoomType ? $bestSaleRoomType->toArray() : null));
+        Log::info("Room: {$roomType->name}, Price: {$roomType->price}, Nights: $nights, RoomCount: $roomCount, Original: {$roomType->total_original_price}, Discounted: {$roomType->total_discounted_price}, SaleRoomType: " . json_encode($bestSaleRoomType ? $bestSaleRoomType->toArray() : null));
 
         return view('clients.room.detail', compact('roomType', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights', 'systems', 'room_rule', 'amenities'));
     }
-
     public function faqs()
     {
         $systems = System::orderBy('id', 'desc')->first();
@@ -276,35 +303,40 @@ class HomeController extends Controller
         return view('clients.service', compact('services', 'systems'));
     }
 
-    public function abouts()
+    public function contacts()
     {
-        $systems = System::orderBy('id', 'desc')->first();
-        $about = About::where('is_use', 1)->first() ?? new About(['about' => 'Chưa có nội dung nào được thiết lập.']);
-        return view('clients.about', compact('about', 'systems'));
+        $contact = Contacts::orderBy('id', 'desc')->first(); // Có thể bỏ nếu không dùng
+        $system = System::orderBy('id', 'desc')->first(); // Lấy thông tin từ admin
+        return view('clients.contact', compact('contact', 'system'));
     }
+
     public function send(Request $request)
     {
-        // Validate dữ liệu từ form
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'subject' => 'required|string|max:255',
-            'message' => 'required|string',
-        ]);
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'subject' => 'required|string|max:255',
+                'message' => 'required|string',
+                'phone' => 'nullable|string|max:20',
+            ]);
 
-        // Dữ liệu từ form
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'subject' => $request->subject,
-            'message' => $request->message,
-        ];
+            $data = [
+                'title' => $request->subject,
+                'phone' => $request->phone ?? '',
+                'email' => $request->email,
+                'content' => $request->message,
+                'status' => 'pending',
+            ];
 
-        // Gửi email từ email của khách hàng đến hainamkid@gmail.com
-        Mail::to('hainamkid@gmail.com') // Địa chỉ nhận là email khách sạn
-            ->send(new ContactEmail($data, $request->email));
+            Contacts::create($data);
 
-        return redirect()->back()->with('success', 'Your message has been sent successfully!');
+            return redirect()->back()->with('success', 'Bạn đã liên hệ, đợi chúng tôi trả lời nhe iuuu !');
+        } catch (\Exception $e) {
+            Log::error('Lỗi: ' . $e->getMessage());
+            dd($e->getMessage()); // Xem lỗi cụ thể
+            return redirect()->back()->with('error', 'Có lỗi xảy ra!');
+        }
     }
 
     public function introductions()

@@ -27,16 +27,16 @@ class ServicePlusController extends Controller
     {
         try {
             $data = $request->validated();
-            // Debug dữ liệu
-            Log::info('Validated data:', $data); // Hoặc dd($data);
+            Log::info('Validated data:', $data);
 
-            ServicePlus::create($data);
+            $service = ServicePlus::create($data);
 
-            alert()->success('Thành công', 'Dịch vụ đã được thêm thành công!');
-            return redirect()->route('admin.service_plus.index');
+            return redirect()->route('admin.service_plus.index')
+                ->with('success', "Thêm dịch vụ thành công! Dịch vụ {$service->name} đã được thêm.");
         } catch (\Exception $exception) {
-            alert()->error('Lỗi', 'Có lỗi xảy ra khi thêm dịch vụ: ' . $exception->getMessage());
-            return redirect()->back()->withInput();
+            return redirect()->back()
+                ->with('error', 'Thêm dịch vụ thất bại! Có lỗi xảy ra: ' . $exception->getMessage())
+                ->withInput();
         }
     }
 
@@ -47,23 +47,21 @@ class ServicePlusController extends Controller
         return view('admins.service_plus.edit', compact('service', 'title'));
     }
 
-    public function update(ServicePlusFormRequest $request, string $id)
+    public function update(ServicePlusFormRequest $request, $id)
     {
         try {
             DB::beginTransaction();
             $service = ServicePlus::findOrFail($id);
-            $service->update([
-                'name' => $request->input('name'),
-                'price' => $request->input('price'),
-                'is_active' => $request->input('is_active', 1),
-            ]);
+            $service->update($request->validated()); // Sử dụng dữ liệu đã validate
             DB::commit();
-            alert()->success('Thành công', 'Dịch vụ đã được cập nhật thành công!');
-            return redirect()->route('admin.service_plus.index');
+
+            return redirect()->route('admin.service_plus.index')
+                ->with('success', "Cập nhật dịch vụ thành công! Dịch vụ {$service->name} đã được cập nhật.");
         } catch (\Exception $e) {
             DB::rollBack();
-            alert()->error('Lỗi', 'Có lỗi xảy ra khi cập nhật dịch vụ: ' . $e->getMessage());
-            return redirect()->back()->withInput();
+            return redirect()->back()
+                ->with('error', 'Cập nhật dịch vụ thất bại! Có lỗi xảy ra: ' . $e->getMessage())
+                ->withInput();
         }
     }
 
@@ -72,11 +70,12 @@ class ServicePlusController extends Controller
         try {
             $service = ServicePlus::findOrFail($id);
             $service->delete();
-            alert()->success('Thành công', 'Dịch vụ đã được xóa !');
-            return redirect()->route('admin.service_plus.index');
+
+            return redirect()->route('admin.service_plus.index')
+                ->with('success', "Xóa dịch vụ thành công! Dịch vụ {$service->name} đã được xóa.");
         } catch (\Exception $e) {
-            alert()->error('Lỗi', 'Có lỗi xảy ra khi xóa dịch vụ: ' . $e->getMessage());
-            return redirect()->back();
+            return redirect()->back()
+                ->with('error', 'Xóa dịch vụ thất bại! Có lỗi xảy ra: ' . $e->getMessage());
         }
     }
 }

@@ -1,6 +1,20 @@
 @extends('layouts.admin')
 <style>
-
+    .header-tools .btn-primary {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    .header-tools .btn-link {
+        line-height: 1;
+    }
+    .filter-form .form-control {
+        height: 35px;
+        font-size: 0.875rem;
+    }
+    .filter-form .btn {
+        height: 35px;
+        font-size: 0.875rem;
+    }
 </style>
 @section('content')
 <div class="lh-main-content">
@@ -34,6 +48,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             @endif
+
+    
 
             <div class="lh-card-content">
                 <div class="table-responsive">
@@ -112,16 +128,6 @@
     </div>
 </div>
 
-<style>
-    .header-tools .btn-primary {
-        padding: 0.375rem 0.75rem; /* Đảm bảo kích thước hợp lý */
-        font-size: 0.875rem; /* Kích thước chữ nhỏ hơn */
-    }
-    .header-tools .btn-link {
-        line-height: 1; /* Căn chỉnh icon cho đồng đều */
-    }
-</style>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -134,7 +140,7 @@ $(document).ready(function() {
 
         Swal.fire({
             title: 'Bạn có chắc chắn?',
-            text: 'Loại phòng này sẽ được xóa mềm!',
+            text: 'Loại phòng này sẽ được xóa mềm và các dữ liệu liên quan cũng sẽ bị xóa mềm!',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Xóa',
@@ -155,6 +161,12 @@ $(document).ready(function() {
                                 showConfirmButton: false
                             }).then(() => {
                                 window.location.href = response.redirect;
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: response.message
                             });
                         }
                     },

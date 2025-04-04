@@ -4,10 +4,10 @@
     <div class="container-fluid">
         <div class="lh-page-title">
             <div class="lh-breadcrumb">
-                <h5>Loại Tiện Ích</h5>
+                <h5>Tiện nghi loại phòng</h5>
                 <ul>
                     <li><a href="index.html">Trang chủ</a></li>
-                    <li>Dashboard</li>
+                    <li>Sửa tiện nghi</li>
                 </ul>
             </div>
         </div>
@@ -36,7 +36,7 @@
                                             <li><strong>Áp dụng cho *: </strong>
                                                 <div class="form-group">
                                                     <select name="roomTypes[]" multiple="multiple" class="form-select">
-                                                        <option value="">Chọn nhiều loại phòng</option>
+
                                                         @foreach($roomTypes as $roomType)
                                                             <option value="{{ $roomType->id }}"
                                                                 {{ in_array($roomType->id, old('roomTypes', $selectedRoomTypes ?? [])) ? 'selected' : '' }}>
@@ -63,49 +63,11 @@
                                         </ul>
                                     </div>
                                 </div>
-                                {{-- <div class="col-md-6 col-sm-12">
-                                    <div class="lh-user-detail">
-                                        <ul>
-                                            <li><strong>City : </strong>
-                                                <div class="form-group">
-                                                    <input name="city" type="text" class="form-control" placeholder="Enter city" value="{{ $rooms->city }}">
-                                                </div>
-                                            </li>
-                                            <li><strong>Description : </strong>
-                                                <input name="description" type="text" class="form-control" placeholder="Enter description" value="{{ $rooms->description }}">
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <div class="lh-user-detail">
-                                        <ul>
-                                            <li><strong>Price form *: </strong>
-                                                <input name="price_min" type="text" class="form-control" placeholder="Enter price form" value="{{ $rooms->price_min }}">
-                                                @error('price_min')
-                                                <p class="text-danger">{{ $message }}</p>
-                                                @enderror
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <div class="lh-user-detail">
-                                        <ul>
-                                            <li><strong>Price to *: </strong>
-                                                <input name="price_max" type="text" class="form-control" placeholder="Enter price to" value="{{ $rooms->price_max }}">
-                                                @error('price_max')
-                                                <p class="text-danger">{{ $message }}</p>
-                                            @enderror
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div> --}}
                                 <div class="col-md-6 col-sm-12">
                                     <div class="lh-user-detail">
                                         <ul>
                                             <li>
-                                                <button type="submit" class="lh-btn-primary">Submit</button>
+                                                <button type="submit" class="lh-btn-primary">Cập nhật</button>
                                             </li>
                                         </ul>
                                     </div>

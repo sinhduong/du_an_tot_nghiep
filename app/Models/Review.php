@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Review extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'room_id', 'rating', 'comment', 'response'];
+
+    protected $fillable = ['user_id', 'booking_id', 'rating', 'comment', 'response'];
+
     public static function boot()
     {
         parent::boot();
@@ -25,9 +27,9 @@ class Review extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Quan hệ với Room
-    public function room()
+    // Quan hệ với Booking (thay vì Room)
+    public function booking()
     {
-        return $this->belongsTo(Room::class);
+        return $this->belongsTo(Booking::class);
     }
 }

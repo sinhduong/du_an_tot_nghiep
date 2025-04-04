@@ -58,14 +58,18 @@
                                 <div class="mb-3 row align-items-center">
                                     <label class="form-label-title col-sm-3 mb-0">Loại phòng</label>
                                     <div class="col-sm-9">
-                                        <select name="room_type_id" class="form-control">
+                                        <select name="room_type_ids[]" class="form-control" multiple>
                                             @foreach ($roomTypes as $roomType)
-                                                <option value="{{ $roomType->id }}" {{ old('room_type_id', $saleRoomType->room_type_id) == $roomType->id ? 'selected' : '' }}>
+                                                <option value="{{ $roomType->id }}"
+                                                    {{ in_array($roomType->id, old('room_type_ids', $relatedSaleRoomTypes)) ? 'selected' : '' }}>
                                                     {{ $roomType->name }}
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error('room_type_id')
+                                        @error('room_type_ids')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                        @error('room_type_ids.*')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
