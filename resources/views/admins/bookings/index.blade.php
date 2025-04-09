@@ -146,17 +146,19 @@
                                                         </select>
                                                     </form>
                                                 </td>
-                                                <td class="text-center">
-                                                    <a href="{{ route('admin.bookings.show', $booking->id) }}" class="btn btn-sm btn-primary">
-                                                        <i class="mdi mdi-eye fs-5"></i>
-                                                    </a>
-                                                    <form action="{{ route('admin.bookings.destroy', $booking->id) }}" method="POST" style="display:inline;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Xóa đơn đặt phòng?')">
-                                                            <i class="ri-delete-bin-5-fill fs-5"></i>
+                                                <td >
+                                                    <div class="btn-group">
+                                                        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                                            <i class="ri-settings-3-line"></i>
                                                         </button>
-                                                    </form>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <a class="dropdown-item" href="{{ route('admin.bookings.show', $booking->id) }}">
+                                                                    <i class="ri-eye-line"></i> Chi tiết
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @endforeach

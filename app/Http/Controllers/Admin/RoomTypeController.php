@@ -15,6 +15,18 @@ use Illuminate\Support\Facades\Storage;
 
 class RoomTypeController extends Controller
 {
+    // public function __construct()
+    // {
+    //     // Áp dụng middleware phân quyền cho các phương thức
+    //     $this->middleware('middleware:permission:room_types.list')->only(['index']);
+    //     $this->middleware('middleware:permission:room_types.create')->only(['create', 'store']);
+    //     $this->middleware('middleware:permission:room_types.detail')->only(['show']);
+    //     $this->middleware('middleware:permission:room_types.update')->only(['edit', 'update']);
+    //     $this->middleware('middleware:permission:room_types.delete')->only(['destroy']);
+    //     $this->middleware('middleware:permission:room_types.trashed')->only(['trashed']);
+    //     $this->middleware('middleware:permission:room_types.restore')->only(['restore']);
+    //     $this->middleware('middleware:permission:room_types.force_delete')->only(['forceDelete']);
+    // }
     public function index(Request $request)
     {
         $title = 'Danh sách loại phòng';

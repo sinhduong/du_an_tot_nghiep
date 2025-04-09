@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\BookingRoomTypeService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Booking extends Model
 {
@@ -25,7 +26,7 @@ class Booking extends Model
         'room_quantity',
         'status',
         'user_id',
-        'room_id',
+        // 'room_id',
         'guest_id',
         'special_request',
         'service_plus_status', // Thêm trường này
@@ -75,5 +76,18 @@ class Booking extends Model
 
     public function Promotions() {
         return $this->belongsToMany(Promotion::class, 'booking_promotions', 'booking_id', 'promotion_id');
+    }
+
+    // Quan hệ với BookingRoomTypeService (dịch vụ liên quan đến loại phòng)
+    public function bookingRoomTypeServices()
+    {
+        return $this->hasMany(BookingRoomTypeService::class, 'booking_id');
+    }
+
+    public function services()
+    {
+        return $this->belongsToMany(RoomTypeService::class, 'booking_room_type_services', 'booking_id', 'room_type_service_id')
+                    ->withPivot('quantity', 'price')
+                    ->withTimestamps();
     }
 }

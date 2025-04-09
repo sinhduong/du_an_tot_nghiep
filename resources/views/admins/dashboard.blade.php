@@ -49,7 +49,7 @@
                             <p class="card-groth {{ $visitorGrowth >= 0 ? 'up' : 'down' }}">
                                 <i class="ri-arrow-{{ $visitorGrowth >= 0 ? 'up' : 'down' }}-line"></i>
                                 {{ abs(round($visitorGrowth, 1)) }}%
-                                <span>Tháng Trước</span>
+                                <span>Tháng N</span>
                             </p>
                             <div class="mini-chart">
                                 <div id="userNumbers"></div>
@@ -70,7 +70,7 @@
                             <p class="card-groth {{ $bookingGrowth >= 0 ? 'up' : 'down' }}">
                                 <i class="ri-arrow-{{ $bookingGrowth >= 0 ? 'up' : 'down' }}-line"></i>
                                 {{ abs(round($bookingGrowth, 1)) }}%
-                                <span>Tháng Trước</span>
+                                <span>Tháng N</span>
                             </p>
                             <div class="mini-chart">
                                 <div id="bookingNumbers"></div>
@@ -86,12 +86,11 @@
                                     <h4>Doanh Thu</h4>
                                     <h5>{{ number_format($revenueTotal) }} VND</h5>
                                 </div>
-                                <span class="icon"><i class="ri-money-dollar-circle-line"></i></span>
                             </div>
                             <p class="card-groth {{ $revenueGrowth >= 0 ? 'up' : 'down' }}">
                                 <i class="ri-arrow-{{ $revenueGrowth >= 0 ? 'up' : 'down' }}-line"></i>
                                 {{ abs(round($revenueGrowth, 1)) }}%
-                                <span>Tháng Trước</span>
+                                <span>Tháng N</span>
                             </p>
                             <div class="mini-chart">
                                 <div id="revenueNumbers"></div>
@@ -113,7 +112,7 @@
                             <p class="card-groth up">
                                 <i class="ri-arrow-up-line"></i>
                                 9%
-                                <span>Tháng Trước</span>
+                                <span>Tháng N</span>
                             </p>
                             <div class="mini-chart">
                                 <div id="expensesNumbers"></div>

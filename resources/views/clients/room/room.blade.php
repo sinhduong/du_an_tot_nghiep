@@ -55,10 +55,10 @@
                     </div>
                 </div>
             </div>
-            @endforeach 
+            @endforeach
 
 
-{{-- 
+{{--
             <div class="col-xl-4 col-md-6" data-aos="fade-up" data-aos-duration="1500">
                 <div class="rooms-card">
                     <img src="{{ asset('assets/client/assets/img/room/7.jpg')}}" alt="room">

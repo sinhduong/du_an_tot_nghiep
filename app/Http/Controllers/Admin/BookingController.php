@@ -17,58 +17,66 @@ use App\Http\Requests\UpdatebookingRequest;
 
 class BookingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // public function __construct()
+    // {
+    //     // Gán middleware để kiểm soát quyền truy cập cho các phương thức
+    //     $this->middleware('middleware:permission:booking_list')->only(['index']);
+    //     $this->middleware('middleware:permission:bookings_create')->only(['create', 'store']);
+    //     $this->middleware('middleware:permission:bookings_detail')->only(['show']);
+    //     $this->middleware('middleware:permission:bookings_update')->only(['edit', 'update']);
+    //     $this->middleware('middleware:permission:bookings_delete')->only(['destroy']);
+    //     $this->middleware('middleware:permission:bookings_checkin')->only(['storeCheckIn']);
+    //     $this->middleware('middleware:permission:bookings_service_plus')->only(['updateServicePlus']);
+    // }
     public function index(Request $request)
-{
-    $title = 'Đơn đặt phòng mới nhất';
+    {
+        $title = 'Đơn đặt phòng mới nhất';
 
-    // Khởi tạo query
-    $query = Booking::with('user', 'rooms')->latest();
+        // Khởi tạo query
+        $query = Booking::with('user', 'rooms')->latest();
 
-    // Lọc theo khoảng thời gian
-    if ($request->has('start_date') && $request->has('end_date')) {
-        $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
-        $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
-        $query->whereBetween('created_at', [$startDate, $endDate]);
-    } elseif ($request->has('filter')) {
-        switch ($request->input('filter')) {
-            case 'today':
-                $query->whereDate('created_at', Carbon::today());
-                break;
-            case 'this_week':
-                $query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
-                break;
-            case 'this_month':
-                $query->whereMonth('created_at', Carbon::now()->month)
-                      ->whereYear('created_at', Carbon::now()->year);
-                break;
-            case 'last_month':
-                $query->whereMonth('created_at', Carbon::now()->subMonth()->month)
-                      ->whereYear('created_at', Carbon::now()->subMonth()->year);
-                break;
+        // Lọc theo khoảng thời gian
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+            $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($request->has('filter')) {
+            switch ($request->input('filter')) {
+                case 'today':
+                    $query->whereDate('created_at', Carbon::today());
+                    break;
+                case 'this_week':
+                    $query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+                    break;
+                case 'this_month':
+                    $query->whereMonth('created_at', Carbon::now()->month)
+                        ->whereYear('created_at', Carbon::now()->year);
+                    break;
+                case 'last_month':
+                    $query->whereMonth('created_at', Carbon::now()->subMonth()->month)
+                        ->whereYear('created_at', Carbon::now()->subMonth()->year);
+                    break;
+            }
         }
+
+        // Lọc theo trạng thái (nếu có)
+        if ($request->has('status') && $request->input('status') !== '') {
+            $query->where('status', $request->input('status'));
+        }
+
+        // Phân trang
+        $bookings = $query->paginate(10);
+
+        // Truyền thêm dữ liệu lọc để hiển thị lại trên giao diện
+        $filterData = [
+            'start_date' => $request->input('start_date'),
+            'end_date' => $request->input('end_date'),
+            'filter' => $request->input('filter'),
+            'status' => $request->input('status'),
+        ];
+
+        return view('admins.bookings.index', compact('bookings', 'title', 'filterData'));
     }
-
-    // Lọc theo trạng thái (nếu có)
-    if ($request->has('status') && $request->input('status') !== '') {
-        $query->where('status', $request->input('status'));
-    }
-
-    // Phân trang
-    $bookings = $query->paginate(10);
-
-    // Truyền thêm dữ liệu lọc để hiển thị lại trên giao diện
-    $filterData = [
-        'start_date' => $request->input('start_date'),
-        'end_date' => $request->input('end_date'),
-        'filter' => $request->input('filter'),
-        'status' => $request->input('status'),
-    ];
-
-    return view('admins.bookings.index', compact('bookings', 'title', 'filterData'));
-}
 
     /**
      * Show the form for creating a new resource.

@@ -75,26 +75,21 @@ class HomeController extends Controller
         $totalGuests = (int) $request->input('total_guests', 2);
         $childrenCount = (int) $request->input('children_count', 0);
         $roomCount = (int) $request->input('room_count', 1);
-
+// dd( $checkOut );
         try {
             $checkInDate = Carbon::parse($checkIn);
             $checkOutDate = Carbon::parse($checkOut);
             $now = Carbon::now();
 
             // Kiểm tra nếu ngày nhận phòng là ngày hiện tại
-            // if ($checkInDate->isToday()) {
-            //     // Nếu thời gian hiện tại từ 21:00 đến 23:59:59, đẩy ngày nhận phòng sang ngày hôm sau
-            //     if ($now->hour >= 21 && $now->hour < 24) {
-            //         $checkInDate = $now->copy()->addDay()->setHour(14)->setMinute(0)->setSecond(0);
-            //         $checkIn = $checkInDate->toDateTimeString();
-            //     }
-            // }
-            if ($checkInDate->lt($now) || ($checkInDate->isToday() && $now->hour >= 21 )) {
-                $checkInDate = $now->copy()->addDay()->setHour(14)->setMinute(0)->setSecond(0);
-                $checkOutDate = $checkInDate->copy()->addDay()->setHour(12)->setMinute(0)->setSecond(0);
-                $checkIn = $checkInDate->toDateTimeString();
-                $checkOut = $checkOutDate->toDateTimeString();
+            if ($checkInDate->isToday()) {
+                // Nếu thời gian hiện tại từ 21:00 đến 23:59:59, đẩy ngày nhận phòng sang ngày hôm sau
+                if ($now->hour >= 21 && $now->hour < 24) {
+                    $checkInDate = $now->copy()->addDay()->setHour(14)->setMinute(0)->setSecond(0);
+                    $checkIn = $checkInDate->toDateTimeString();
+                }
             }
+
 
             // Đảm bảo ngày trả phòng luôn sau ngày nhận phòng
             if ($checkInDate->gte($checkOutDate)) {
@@ -217,7 +212,6 @@ class HomeController extends Controller
                 if ($now->hour >= 21 && $now->hour < 24) {
                     $checkInDate = $now->copy()->addDay()->setHour(14)->setMinute(0)->setSecond(0);
                     $checkIn = $checkInDate->toDateTimeString();
-                    // $request->session()->flash('info', 'Đặt phòng sau 21:00, ngày nhận phòng đã được điều chỉnh sang ngày mai.');
                 }
             }
 

@@ -23,6 +23,7 @@
     .discount-info i {
         margin-right: 5px;
     }
+
 </style>
 
 <section class="section-room padding-tb-100" data-aos="fade-up" data-aos-duration="2000" id="rooms">

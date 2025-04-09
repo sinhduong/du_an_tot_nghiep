@@ -8,6 +8,7 @@
                         <h4 class="heading">Nhận phòng - Trả phòng</h4>
                         <div class="calendar">
                             <i class="ri-calendar-2-line"></i>
+                            {{-- <?php dd($checkIn) ?> --}}
                             <input type="text" id="date_range" class="lh-book-form-control" placeholder="Chọn ngày" value="{{ $formattedDateRange ?? '' }}" required>
                             <input type="hidden" name="check_in" id="check_in" value="{{ $checkIn ?? \Carbon\Carbon::today()->setHour(14)->setMinute(0)->toDateTimeString() }}">
                             <input type="hidden" name="check_out" id="check_out" value="{{ $checkOut ?? \Carbon\Carbon::tomorrow()->setHour(12)->setMinute(0)->toDateTimeString() }}">
