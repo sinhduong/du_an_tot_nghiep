@@ -52,4 +52,9 @@ class RoomType extends Model
     {
         return $this->hasMany(SaleRoomType::class, 'room_type_id');
     }
+    // Định nghĩa mối quan hệ với RoomTypeService
+    public function roomTypeServices()
+    {
+        return $this->hasMany(RoomTypeService::class, 'room_type_id');
+    }
 }

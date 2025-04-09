@@ -65,8 +65,8 @@
                                             <li><strong>Trạng thái *: </strong>
                                                 <div class="form-group">
                                                     <select name="is_active" class="form-control">
-                                                        <option value="0" {{ old('is_active') == 0 ? 'selected' : '' }}>Hoạt động</option>
-                                                        <option value="1" {{ old('is_active') == 1 ? 'selected' : '' }}>Không hoạt động</option>
+                                                        <option value="1" {{ old('is_active') == 1 ? 'selected' : '' }}>Hoạt động</option>
+                                                        <option value="0" {{ old('is_active') == 0 ? 'selected' : '' }}>Không hoạt động</option>
                                                     </select>
                                                     @error('is_active')
                                                         <p class="text-danger">{{ $message }}</p>

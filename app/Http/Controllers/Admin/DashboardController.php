@@ -11,14 +11,20 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
+        // Các biến hiện có
         $visitorCount = User::count();
         $bookingCount = Booking::count();
         $revenueTotal = Booking::sum('total_price');
+
+        $servicePlusRevenue = Booking::with('servicePlus')->get()->sum(function ($booking) {
+            return $booking->servicePlus->sum(function ($service) {
+                return $service->price * $service->pivot->quantity;
+            });
+        });
+
+        $revenueTotal = $revenueTotal + $servicePlusRevenue;
         $roomsAvailable = Room::where('status', 'available')->count();
         $roomsTotal = Room::count();
 
@@ -56,58 +62,36 @@ class DashboardController extends Controller
             $overviewData['labels'][] = $month->format('M Y');
         }
 
+        // Thêm logic để tính tổng giá theo khoảng thời gian được lọc
+        $filteredTotalPrice = 0;
+        $dateRange = $request->input('date_range');
+
+        if ($dateRange) {
+            // Tách khoảng thời gian từ input (định dạng: DD/MM/YYYY - DD/MM/YYYY)
+            $dates = explode(' - ', $dateRange);
+            if (count($dates) === 2) {
+                $startDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
+                $endDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
+
+                // Tính tổng giá trong khoảng thời gian
+                $filteredTotalPrice = Booking::whereBetween('created_at', [$startDate, $endDate])
+                    ->sum('total_price');
+            }
+        }
+
         return view('admins.dashboard', compact(
-            'visitorCount', 'bookingCount', 'revenueTotal', 'roomsAvailable', 'roomsTotal',
-            'visitorGrowth', 'bookingGrowth', 'revenueGrowth',
-            'miniChartData', 'overviewData'
+            'visitorCount',
+            'bookingCount',
+            'revenueTotal',
+            'roomsAvailable',
+            'roomsTotal',
+            'visitorGrowth',
+            'bookingGrowth',
+            'revenueGrowth',
+            'miniChartData',
+            'overviewData',
+            'filteredTotalPrice',
+            'dateRange'
         ));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

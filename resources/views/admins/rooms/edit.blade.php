@@ -62,7 +62,7 @@
                                     </div>
 
                                     <!-- Manager ID -->
-                                    <div class="col-md-6">
+                                    {{-- <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Nhân viên quản lý *</label>
                                             <select name="manager_id" class="form-control">
@@ -78,7 +78,7 @@
                                                 <p class="text-danger">{{ $message }}</p>
                                             @enderror
                                         </div>
-                                    </div>
+                                    </div> --}}
 
 
                                     <!-- Status -->

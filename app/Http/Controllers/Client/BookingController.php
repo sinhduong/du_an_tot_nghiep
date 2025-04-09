@@ -3,22 +3,24 @@
 namespace App\Http\Controllers\Client;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\BookingSuccess;
-use Illuminate\Http\JsonResponse;
 use App\Models\User;
 use App\Models\Guest;
 use App\Models\Booking;
+use App\Models\Payment;
 use App\Models\RoomType;
 use App\Models\Promotion;
-use App\Models\Payment;
 use App\Models\ServicePlus;
+use App\Mail\BookingSuccess;
 use Illuminate\Http\Request;
+use App\Models\RoomTypeService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use App\Models\BookingRoomTypeService;
 use Illuminate\Support\Facades\Storage;
 
 class BookingController extends Controller
@@ -54,7 +56,7 @@ class BookingController extends Controller
         $totalGuests = (int) $request->input('total_guests', 2);
         $childrenCount = (int) $request->input('children_count', 0);
         $roomQuantity = (int) $request->input('room_quantity', 1);
-        $services = $request->input('services', []);
+        $services = $request->input('services', []); // Mảng chứa service_id => quantity
 
         $basePrice = (float) $request->input('base_price');
         $discountedPrice = (float) $request->input('discounted_price');
@@ -79,28 +81,22 @@ class BookingController extends Controller
         ]);
 
         // Chuẩn hóa ngày nhận và trả phòng
-        $checkIn = Carbon::parse($checkIn)->startOfDay(); // Bỏ thời gian, chỉ giữ ngày
-        $checkOut = Carbon::parse($checkOut)->startOfDay(); // Bỏ thời gian, chỉ giữ ngày
+        $checkIn = Carbon::parse($checkIn)->startOfDay();
+        $checkOut = Carbon::parse($checkOut)->startOfDay();
         $now = Carbon::now();
 
-        // Điều chỉnh ngày nhận phòng nếu quá muộn
         if ($checkIn->lt($now->startOfDay()) || ($checkIn->isToday() && $now->hour >= 22)) {
             $checkIn = $now->copy()->addDay()->startOfDay();
             $checkOut = $checkIn->copy()->addDay();
             $request->session()->flash('warning', 'Đặt phòng vào thời điểm này sẽ được check-in từ ngày mai (' . $checkIn->format('d/m/Y') . ').');
         }
 
-        // Đảm bảo ngày trả phòng luôn sau ngày nhận phòng
         if ($checkIn->gte($checkOut)) {
             $checkOut = $checkIn->copy()->addDay();
             $request->session()->flash('warning', 'Ngày trả phòng đã được điều chỉnh để sau ngày nhận phòng.');
         }
 
-        // Tính số ngày lưu trú
         $days = $checkOut->diffInDays($checkIn);
-
-
-
 
         $selectedRoomType = RoomType::with([
             'amenities' => function ($query) {
@@ -148,6 +144,24 @@ class BookingController extends Controller
         $selectedRooms = $availableRooms->take($roomQuantity);
         $user = Auth::user();
 
+        $selectedServicesWithQuantity = [];
+        $selectedServiceIds = array_keys(array_filter($services, fn($quantity) => $quantity > 0));
+        $selectedServices = $selectedRoomType->services->whereIn('id', $selectedServiceIds);
+
+        foreach ($selectedServices as $service) {
+            $quantity = $services[$service->id] ?? 0;
+            if ($quantity > 0) {
+                $selectedServicesWithQuantity[] = [
+                    'id' => $service->id,
+                    'name' => $service->name,
+                    'price' => $service->price,
+                    'quantity' => $quantity,
+                ];
+            }
+        }
+
+        $request->session()->put('selected_services', $selectedServicesWithQuantity);
+
         return view('clients.bookings.create', [
             'roomType' => $selectedRoomType,
             'checkIn' => $checkIn->toDateString(),
@@ -155,7 +169,7 @@ class BookingController extends Controller
             'totalGuests' => $totalGuests,
             'childrenCount' => $childrenCount,
             'roomQuantity' => $roomQuantity,
-            'selectedServices' => $selectedRoomType->services->whereIn('id', $services),
+            'selectedServices' => $selectedServicesWithQuantity,
             'selectedRooms' => $selectedRooms,
             'availableRoomCount' => $availableRoomCount,
             'days' => $days,
@@ -186,9 +200,7 @@ class BookingController extends Controller
                 'guest.country' => 'required|string|max:255',
                 'guest.relationship' => 'nullable|string|max:50',
                 'services' => 'nullable|array',
-                'service_quantity_*' => 'nullable|integer|min:1',
                 'discount_amount' => 'nullable|numeric|min:0',
-                'total_price' => 'required|numeric|min:0',
                 'base_price' => 'required|numeric|min:0',
                 'service_total' => 'required|numeric|min:0',
             ]);
@@ -199,24 +211,48 @@ class BookingController extends Controller
             $days = $checkOut->diffInDays($checkIn);
 
             $basePrice = (float) $request->base_price;
-            $serviceTotal = (float) $request->service_total;
             $discountAmount = (float) $request->discount_amount;
             $totalGuests = (int) $request->total_guests;
             $childrenCount = (int) $request->children_count;
             $roomQuantity = (int) $request->room_quantity;
+            $serviceTotal = (float) $request->service_total;
 
-            $subTotal = $basePrice + $serviceTotal - $discountAmount;
-            $taxFee = $subTotal * 0.08;
-            $totalPrice = $subTotal + $taxFee;
+            // Debug dữ liệu services
+            \Log::info('Services received in confirm:', $request->services);
 
+            // Lấy danh sách dịch vụ từ request
             $selectedServices = [];
             $serviceQuantities = [];
             if (!empty($request->services)) {
-                $selectedServices = $roomType->services->whereIn('id', $request->services)->all();
+                // Lấy danh sách id từ mảng services
+                $serviceIds = array_map(function ($service) {
+                    return $service['id'];
+                }, $request->services);
+
+                // Truy vấn lại các dịch vụ từ database
+                $selectedServices = $roomType->services->whereIn('id', $serviceIds)->all();
+
+                // Lấy số lượng và giá từ request
+                foreach ($request->services as $serviceData) {
+                    $serviceId = $serviceData['id'];
+                    $quantity = (int) $serviceData['quantity'];
+                    $serviceQuantities[$serviceId] = $quantity;
+                }
+
+                // Tính lại service_total để đảm bảo chính xác
+                $serviceTotal = 0;
                 foreach ($selectedServices as $service) {
-                    $serviceQuantities[$service->id] = $request->input("service_quantity_{$service->id}", 1);
+                    $quantity = $serviceQuantities[$service->id] ?? 1;
+                    $serviceTotal += ($service->price ?? 0) * $quantity;
                 }
             }
+
+            // Debug selected services
+            \Log::info('Selected services in confirm:', ['selectedServices' => $selectedServices, 'serviceQuantities' => $serviceQuantities]);
+
+            $subTotal = $basePrice + $serviceTotal;
+            $taxFee = $subTotal * 0.08; // Thuế 8%
+            $totalPrice = $subTotal + $taxFee - $discountAmount;
 
             $guestData = $request->input('guest');
 
@@ -245,8 +281,11 @@ class BookingController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request);
         try {
             DB::beginTransaction();
+
+            // Validate dữ liệu từ request
             $validated = $request->validate([
                 'check_in' => 'required|date|after_or_equal:today',
                 'check_out' => 'required|date|after:check_in',
@@ -261,19 +300,19 @@ class BookingController extends Controller
                 'guests.*.country' => 'required|string|max:255',
                 'guests.*.relationship' => 'nullable|string|max:50',
                 'services' => 'nullable|array',
-                'service_quantity_*' => 'nullable|integer|min:1',
                 'discount_amount' => 'nullable|numeric|min:0',
-                'total_price' => 'required|numeric|min:0',
                 'payment_method' => 'required|in:cash,online',
                 'online_payment_method' => 'required_if:payment_method,online|in:momo,vnpay',
                 'base_price' => 'required|numeric|min:0',
                 'service_total' => 'required|numeric|min:0',
                 'tax_fee' => 'required|numeric|min:0',
                 'sub_total' => 'required|numeric|min:0',
+                'total_price' => 'required|numeric|min:0',
             ]);
-            $data = $request->all();
 
+            $data = $request->all();
             $user = Auth::user();
+
             if (!$user) {
                 return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để đặt phòng.');
             }
@@ -284,18 +323,24 @@ class BookingController extends Controller
                 return redirect()->back()->with('error', 'Vui lòng chọn một cổng thanh toán (MoMo hoặc VNPay).');
             }
 
+            // Debug dữ liệu services nhận được
+            \Log::info('Services received in store:', $request->services);
+
+            // Xử lý thời gian check-in và check-out
             $checkIn = Carbon::parse($validated['check_in'])->setTime(14, 0, 0);
             $checkOut = Carbon::parse($validated['check_out'])->setTime(12, 0, 0);
             $days = $checkOut->diffInDays($checkIn);
 
+            // Lấy thông tin room type
             $roomType = RoomType::findOrFail($validated['room_type_id']);
             $basePrice = (float) $request->input('base_price');
-            $serviceTotal = (float) $request->input('service_total');
             $discountAmount = (float) $request->input('discount_amount', 0);
+            $serviceTotal = (float) $request->input('service_total');
             $taxFee = (float) $request->input('tax_fee');
             $subTotal = (float) $request->input('sub_total');
             $totalPrice = (float) $request->input('total_price');
 
+            // Tạo bản ghi Booking
             $booking = Booking::create([
                 'booking_code' => 'BOOK' . time(),
                 'check_in' => $checkIn,
@@ -317,6 +362,40 @@ class BookingController extends Controller
                 'status' => 'confirmed',
             ]);
 
+            if (!empty($validated['services']) && is_array($validated['services'])) {
+                foreach ($validated['services'] as $serviceId => $serviceData) {
+                    if (!is_array($serviceData) || !isset($serviceData['id'])) {
+                        \Log::warning('Dữ liệu dịch vụ không hợp lệ trong store:', ['serviceId' => $serviceId, 'serviceData' => $serviceData]);
+                        continue;
+                    }
+
+                    $serviceId = (int) $serviceData['id'];
+                    $quantity = (int) ($serviceData['quantity'] ?? 1);
+                    $price = (float) ($serviceData['price'] ?? 0);
+
+                    if ($serviceId <= 0 || $quantity <= 0) {
+                        continue;
+                    }
+
+                    \Log::info('Lưu dịch vụ:', [
+                        'booking_id' => $booking->id,
+                        'room_type_service_id' => $serviceId,
+                        'quantity' => $quantity,
+                        'price' => $price,
+                    ]);
+
+                    BookingRoomTypeService::create([
+                        'booking_id' => $booking->id,
+                        'room_type_service_id' => $serviceId,
+                        'quantity' => $quantity,
+                        'price' => $price,
+                    ]);
+                }
+            } else {
+                \Log::info('Không có dịch vụ hợp lệ để lưu cho booking:', ['booking_id' => $booking->id]);
+            }
+
+            // Xử lý mã giảm giá (promotion)
             if (!empty($data['promotion_id'])) {
                 $promotion = Promotion::findOrFail($data['promotion_id']);
                 $hasUsedPromotion = DB::table('booking_promotions')
@@ -326,16 +405,19 @@ class BookingController extends Controller
                     ->exists();
 
                 if ($hasUsedPromotion) {
-                    return redirect()->route('home')->with('error', 'Đã từng sử dụng mã này rồi !');
+                    DB::rollBack();
+                    return redirect()->route('home')->with('error', 'Đã từng sử dụng mã này rồi!');
                 }
                 if ($promotion->quantity > 0) {
                     $promotion->decrement('quantity');
-                    $booking->promotions()->sync(['promotion_id' => $promotion->id]);
+                    $booking->promotions()->attach($promotion->id);
                 } else {
+                    DB::rollBack();
                     return redirect()->route('home')->with('error', 'Đã hết mã giảm giá này.');
                 }
             }
 
+            // Kiểm tra và gán phòng
             $allRooms = $roomType->rooms;
             $bookedRoomIds = Booking::whereHas('rooms', function ($query) use ($roomType) {
                 $query->where('room_type_id', $roomType->id);
@@ -366,21 +448,14 @@ class BookingController extends Controller
             $roomQuantity = $validated['room_quantity'];
 
             if ($roomQuantity > $availableRooms->count()) {
-                $booking->delete();
+                DB::rollBack();
                 return redirect()->route('home')->with('error', 'Không đủ phòng trống để đặt.');
             }
+
             $selectedRooms = $availableRooms->take($roomQuantity);
             $booking->rooms()->attach($selectedRooms->pluck('id'));
 
-            if (!empty($validated['services'])) {
-                $serviceData = [];
-                foreach ($validated['services'] as $serviceId) {
-                    $quantity = $request->input("service_quantity_{$serviceId}", 1);
-                    $serviceData[$serviceId] = ['quantity' => $quantity];
-                }
-                $booking->servicePlus()->attach($serviceData);
-            }
-
+            // Lưu thông tin khách
             $guests = $request->input('guests', []);
             foreach ($guests as $guestData) {
                 $guest = Guest::create([
@@ -393,6 +468,7 @@ class BookingController extends Controller
                 $booking->guests()->attach($guest->id);
             }
 
+            // Xử lý thanh toán
             $paymentData = [
                 'user_id' => $user->id,
                 'booking_id' => $booking->id,
@@ -413,7 +489,6 @@ class BookingController extends Controller
                 $payment = Payment::create($paymentData);
 
                 if ($onlinePaymentMethod == 'momo') {
-                    // Giữ nguyên logic MoMo
                     $partnerCode = env('MOMO_PARTNER_CODE');
                     $accessKey = env('MOMO_ACCESS_KEY');
                     $secretKey = env('MOMO_SECRET_KEY');
@@ -458,6 +533,7 @@ class BookingController extends Controller
                                 'payUrl' => $result['payUrl'],
                             ]);
                         } else {
+                            DB::rollBack();
                             $booking->delete();
                             $payment->delete();
                             return response()->json([
@@ -466,6 +542,7 @@ class BookingController extends Controller
                             ], 400);
                         }
                     } catch (\Exception $e) {
+                        DB::rollBack();
                         $booking->delete();
                         $payment->delete();
                         return response()->json([
@@ -476,18 +553,18 @@ class BookingController extends Controller
                 } else if ($onlinePaymentMethod == 'vnpay') {
                     $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
                     $vnp_Returnurl = route('bookings.return.vnpay', $booking->id);
-                    $vnp_TmnCode = "6Q5Z9DG8"; // Đảm bảo đúng mã TmnCode từ VNPay
-                    $vnp_HashSecret = "NSEYDYAIT1XETEVUA24DF40DOCMC6NYE"; // Đảm bảo đúng HashSecret từ VNPay
+                    $vnp_TmnCode = "6Q5Z9DG8";
+                    $vnp_HashSecret = "NSEYDYAIT1XETEVUA24DF40DOCMC6NYE";
 
                     $vnp_TxnRef = $booking->booking_code . '-' . time();
                     $vnp_OrderInfo = 'Thanh toán đặt phòng ' . $booking->booking_code;
                     $vnp_OrderType = 'billpayment';
-                    $vnp_Amount = (int) $totalPrice * 100; // VNPay yêu cầu số tiền nhân 100
+                    $vnp_Amount = (int) $totalPrice * 100;
                     $vnp_Locale = 'vn';
-                    $vnp_BankCode = ''; // Có thể để trống nếu không chọn ngân hàng cụ thể
+                    $vnp_BankCode = '';
                     $vnp_IpAddr = $request->ip();
                     $vnp_CreateDate = date('YmdHis');
-                    $vnp_ExpireDate = date('YmdHis', strtotime('+15 minutes')); // Thời gian hết hạn giao dịch (15 phút)
+                    $vnp_ExpireDate = date('YmdHis', strtotime('+15 minutes'));
 
                     $inputData = [
                         "vnp_Version" => "2.1.0",
@@ -509,10 +586,8 @@ class BookingController extends Controller
                         $inputData['vnp_BankCode'] = $vnp_BankCode;
                     }
 
-                    // Sắp xếp tham số theo thứ tự bảng chữ cái
                     ksort($inputData);
 
-                    // Tạo chuỗi dữ liệu để hash
                     $hashdata = "";
                     $first = true;
                     foreach ($inputData as $key => $value) {
@@ -524,13 +599,9 @@ class BookingController extends Controller
                         }
                     }
 
-                    // Tạo chữ ký bảo mật
                     $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
-
-                    // Tạo URL thanh toán
                     $vnp_Url .= "?" . $hashdata . "&vnp_SecureHash=" . $vnpSecureHash;
 
-                    // Lưu transaction_id vào payment
                     $payment->update(['transaction_id' => $vnp_TxnRef]);
 
                     DB::commit();
@@ -540,7 +611,7 @@ class BookingController extends Controller
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            dd($exception->getMessage());
+            \Log::error('Error in store method:', ['exception' => $exception->getMessage()]);
             return redirect()->route('bookings.create')->with('error', $exception->getMessage());
         }
     }
@@ -584,12 +655,24 @@ class BookingController extends Controller
         $booking = Booking::with([
             'user',
             'rooms.roomType' => function ($query) {
-                $query->with(['amenities', 'rulesAndRegulations', 'services', 'roomTypeImages']);
+                $query->with([
+                    'amenities' => function ($query) {
+                        $query->where('is_active', true);
+                    },
+                    'rulesAndRegulations' => function ($query) {
+                        $query->where('is_active', true);
+                    },
+                    'services',
+                    'roomTypeImages'
+                ]);
             },
             'rooms' => function ($query) {
                 $query->withTrashed();
             },
-            'servicePlus',
+            'services' => function ($query) {
+                $query->select('room_type_services.id', 'services.name')
+                      ->withPivot('quantity', 'price');
+            },
             'payments',
             'guests',
         ])->findOrFail($id);

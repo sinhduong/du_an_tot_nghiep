@@ -64,7 +64,7 @@
                                 @if (!empty($selectedServices))
                                     <p><strong>Dịch vụ bổ sung:</strong></p>
                                     @foreach ($selectedServices as $service)
-                                        <p>{{ $service->name }} ({{ \App\Helpers\FormatHelper::FormatPrice($service->price) }})</p>
+                                        <p>{{ $service['name'] }} ({{ $service['price'] == 0 ? 'Miễn phí' : \App\Helpers\FormatHelper::FormatPrice($service['price']) }}) x {{ $service['quantity'] }}</p>
                                     @endforeach
                                 @endif
                             </div>
@@ -123,49 +123,63 @@
 
                                 <div class="lh-checkout-wrap mb-24">
                                     <h3 class="lh-checkout-title">Thông tin chi tiết của bạn (Người ở chính)</h3>
+                                    @php
+                                        $user = Auth::user();
+                                    @endphp
+
                                     <div class="lh-check-block-content">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label class="form-label">Họ và tên *</label>
-                                                    <input type="text" name="guest[name]" class="form-control" value="{{ old('guest.name') }}" placeholder="Nhập họ và tên" required />
+                                                    <input type="text" name="guest[name]" class="form-control"
+                                                        value="{{ old('guest.name', $user->name ?? '') }}"
+                                                        placeholder="Nhập họ và tên" required />
                                                     @error('guest.name')
-                                                    <small class="text-danger">{{ $message }}</small>
+                                                        <small class="text-danger">{{ $message }}</small>
                                                     @enderror
                                                 </div>
                                             </div>
+
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label class="form-label">Email *</label>
-                                                    <input type="email" name="guest[email]" class="form-control" value="{{ old('guest.email') }}" placeholder="Nhập email" required />
+                                                    <input type="email" name="guest[email]" class="form-control"
+                                                        value="{{ old('guest.email', $user->email ?? '') }}"
+                                                        placeholder="Nhập email" required />
                                                     @error('guest.email')
-                                                    <small class="text-danger">{{ $message }}</small>
+                                                        <small class="text-danger">{{ $message }}</small>
                                                     @enderror
                                                 </div>
                                             </div>
+
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label class="form-label">Số điện thoại *</label>
-                                                    <input type="text" name="guest[phone]" class="form-control" value="{{ old('guest.phone') }}" placeholder="Nhập số điện thoại" required />
+                                                    <input type="text" name="guest[phone]" class="form-control"
+                                                        value="{{ old('guest.phone', $user->phone ?? '') }}"
+                                                        placeholder="Nhập số điện thoại" required />
                                                     @error('guest.phone')
-                                                    <small class="text-danger">{{ $message }}</small>
+                                                        <small class="text-danger">{{ $message }}</small>
                                                     @enderror
                                                 </div>
                                             </div>
+
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label class="form-label">Vùng quốc gia *</label>
                                                     <select name="guest[country]" class="form-control" required>
                                                         <option value="">Chọn quốc gia</option>
-                                                        <option value="Việt Nam" {{ old('guest.country') == 'Việt Nam' ? 'selected' : '' }}>Việt Nam</option>
-                                                        <option value="United States" {{ old('guest.country') == 'United States' ? 'selected' : '' }}>United States</option>
-                                                        <option value="Japan" {{ old('guest.country') == 'Japan' ? 'selected' : '' }}>Japan</option>
+                                                        <option value="Việt Nam" {{ old('guest.country', $user->country ?? '') == 'Việt Nam' ? 'selected' : '' }}>Việt Nam</option>
+                                                        <option value="United States" {{ old('guest.country', $user->country ?? '') == 'United States' ? 'selected' : '' }}>United States</option>
+                                                        <option value="Japan" {{ old('guest.country', $user->country ?? '') == 'Japan' ? 'selected' : '' }}>Japan</option>
                                                     </select>
                                                     @error('guest.country')
-                                                    <small class="text-danger">{{ $message }}</small>
+                                                        <small class="text-danger">{{ $message }}</small>
                                                     @enderror
                                                 </div>
                                             </div>
+
                                             <input type="hidden" name="guest[relationship]" value="Người ở chính">
                                         </div>
                                     </div>
@@ -255,9 +269,15 @@
                                 <input type="hidden" name="base_price" value="{{ $basePrice }}">
                                 <input type="hidden" name="service_total" value="{{ $serviceTotal }}">
                                 <input type="hidden" name="discount_amount" value="{{ $discountAmount }}">
-                                @foreach ($selectedServices as $service)
-                                    <input type="hidden" name="services[]" value="{{ $service->id }}">
-                                @endforeach
+
+                                <!-- Truyền dịch vụ và số lượng -->
+                                @if (!empty($selectedServices))
+                                    @foreach ($selectedServices as $service)
+                                        <input type="hidden" name="services[{{ $service['id'] }}][id]" value="{{ $service['id'] }}">
+                                        <input type="hidden" name="services[{{ $service['id'] }}][quantity]" value="{{ $service['quantity'] }}">
+                                        <input type="hidden" name="services[{{ $service['id'] }}][price]" value="{{ $service['price'] }}">
+                                    @endforeach
+                                @endif
 
                                 <div class="lh-checkout-wrap mb-24">
                                     <div class="form-check">

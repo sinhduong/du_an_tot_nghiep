@@ -57,7 +57,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6">
+                                    {{-- <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Nhân viên quản lý *</label>
                                             <select name="manager_id" class="form-control">
@@ -74,7 +74,7 @@
                                                 <p class="text-danger">{{ $message }}</p>
                                             @enderror
                                         </div>
-                                    </div>
+                                    </div> --}}
 
                                     <!-- Status -->
                                     <div class="col-md-6">
@@ -82,8 +82,8 @@
                                             <label>Trạng thái *</label>
                                             <select name="status" class="form-control">
                                                 <option value="available" {{ old('status') == 'available' ? 'selected' : '' }}>Có sẵn</option>
-                                                <option value="booked" {{ old('status') == 'booked' ? 'selected' : '' }}>Đã đặt</option>
-                                                <option value="maintenance" {{ old('status') == 'maintenance' ? 'selected' : '' }}>Bảo trì</option>
+                                                {{-- <option value="booked" {{ old('status') == 'booked' ? 'selected' : '' }}>Đã đặt</option>
+                                                <option value="maintenance" {{ old('status') == 'maintenance' ? 'selected' : '' }}>Bảo trì</option> --}}
                                             </select>
                                             @error('status')
                                                 <p class="text-danger">{{ $message }}</p>

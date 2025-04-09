@@ -45,15 +45,40 @@
                     <div class="lh-side-room">
                         <div class="lh-side-reservation">
                             <div class="lh-check-block-content mb-3">
+                                <h4 class="lh-room-inner-heading">Chi tiết đặt phòng của bạn</h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Nhận phòng:</strong> {{ \App\Helpers\FormatHelper::FormatDate($checkIn) }}</p>
+                                        <p>14:00 - 22:00</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Trả phòng:</strong> {{ \App\Helpers\FormatHelper::FormatDate($checkOut) }}</p>
+                                        <p>Trước 12:00</p>
+                                    </div>
+                                </div>
+                                <p><strong>Tổng thời gian lưu trú:</strong> {{ $days }} đêm</p>
+                            </div>
+                            <div class="lh-check-block-content mb-3">
+                                <h4 class="lh-room-inner-heading">Bạn đã chọn</h4>
+                                <p>{{ $roomQuantity }} phòng cho {{ $totalGuests + $childrenCount }} người</p>
+                                <p>{{ $roomQuantity }} x {{ $roomType->name }}</p>
+                                @if (!empty($selectedServices))
+                                    <p><strong>Dịch vụ bổ sung:</strong></p>
+                                    @foreach ($selectedServices as $service)
+                                        <p>{{ $service->name }} ({{ $service->price == 0 ? 'Miễn phí' : \App\Helpers\FormatHelper::FormatPrice($service->price) }}) x {{ $serviceQuantities[$service->id] ?? 1 }}</p>
+                                    @endforeach
+                                @endif
+                            </div>
+                            <div class="lh-check-block-content mb-3">
                                 <h4 class="lh-room-inner-heading">Tổng giá</h4>
                                 <small class="text-danger">(*) mặc định</small>
                                 <div class="d-flex justify-content-between">
                                     <p>Giá phòng & dịch vụ ({{ $roomQuantity }} phòng x {{ $days }} đêm)</p>
-                                    <p id="base-price-display"> {{ \App\Helpers\FormatHelper::formatPrice($basePrice + $serviceTotal) }}</p>
+                                    <p id="base-price-display">{{ \App\Helpers\FormatHelper::formatPrice($basePrice + $serviceTotal) }}</p>
                                 </div>
                                 <div class="d-flex justify-content-between">
                                     <p>Thuế và phí (8%)</p>
-                                    <p id="initial-tax-display"> {{ \App\Helpers\FormatHelper::formatPrice(($basePrice + $serviceTotal) * 0.08) }}</p>
+                                    <p id="initial-tax-display">{{ \App\Helpers\FormatHelper::formatPrice(($basePrice + $serviceTotal) * 0.08) }}</p>
                                 </div>
 
                                 <div id="discount-section" style="display: {{ $discountAmount > 0 ? 'block' : 'none' }};">
@@ -77,11 +102,11 @@
                                 <div id="after-discount-section" style="display: {{ $discountAmount > 0 ? 'block' : 'none' }};">
                                     <div class="d-flex justify-content-between">
                                         <p>Giá phòng & dịch vụ (sau áp mã)</p>
-                                        <p id="after-base-price-display"> {{ \App\Helpers\FormatHelper::formatPrice($basePrice + $serviceTotal - $discountAmount) }}</p>
+                                        <p id="after-base-price-display">{{ \App\Helpers\FormatHelper::formatPrice($basePrice + $serviceTotal - $discountAmount) }}</p>
                                     </div>
                                     <div class="d-flex justify-content-between">
                                         <p>Thuế và phí (8%)</p>
-                                        <p id="tax-fee-display"> {{ \App\Helpers\FormatHelper::formatPrice($taxFee) }}</p>
+                                        <p id="tax-fee-display">{{ \App\Helpers\FormatHelper::formatPrice($taxFee) }}</p>
                                     </div>
                                 </div>
 
@@ -98,7 +123,7 @@
 
                                 <div class="d-flex justify-content-between">
                                     <h5 class="lh-room-inner-heading">Tổng thanh toán</h5>
-                                    <h5 class="lh-room-inner-heading text-danger" id="total_price_display"> {{ \App\Helpers\FormatHelper::formatPrice($totalPrice) }}</h5>
+                                    <h5 class="lh-room-inner-heading text-danger" id="total_price_display">{{ \App\Helpers\FormatHelper::formatPrice($totalPrice) }}</h5>
                                 </div>
 
                                 <input type="hidden" id="base_price" value="{{ $basePrice }}">
@@ -141,10 +166,15 @@
                                             <input type="hidden" name="guests[0][relationship]" value="{{ $guestData['relationship'] ?? 'Người ở chính' }}">
                                             <input type="hidden" id="discount_amount_input" name="discount_amount" value="{{ $discountAmount }}">
                                             <input type="hidden" id="promotion_id" name="promotion_id">
+
+                                            <!-- Truyền dịch vụ và số lượng sang bước tiếp theo -->
+                                            @if (!empty($selectedServices))
                                             @foreach ($selectedServices as $service)
-                                                <input type="hidden" name="services[]" value="{{ $service->id }}">
-                                                <input type="hidden" name="service_quantity_{{ $service->id }}" value="{{ $serviceQuantities[$service->id] ?? 1 }}">
+                                                <input type="hidden" name="services[{{ $service->id }}][id]" value="{{ $service->id }}">
+                                                <input type="hidden" name="services[{{ $service->id }}][quantity]" value="{{ $serviceQuantities[$service->id] ?? 1 }}">
+                                                <input type="hidden" name="services[{{ $service->id }}][price]" value="{{ $service->price ?? 0 }}">
                                             @endforeach
+                                        @endif
 
                                             <div class="form-check">
                                                 <input class="form-check-input payment-method" type="radio" name="payment_method" id="payment1" value="cash" checked>
@@ -156,12 +186,6 @@
                                             </div>
 
                                             <div id="online-payment-section" style="display: none; margin-left: 20px;">
-                                                <div class="form-check">
-                                                    <input class="form-check-input online-payment-method" type="radio" name="online_payment_method" id="momo" value="momo">
-                                                    <label class="form-check-label" for="momo">
-                                                        <img src="https://developers.momo.vn/v3/vi/assets/images/square-8c08a00f550e40a2efafea4a005b1232.png" alt="MoMo" class="payment-icon"> MoMo Thanh toán qua MoMo
-                                                    </label>
-                                                </div>
                                                 <div class="form-check">
                                                     <input class="form-check-input online-payment-method" type="radio" name="online_payment_method" id="vnpay" value="vnpay">
                                                     <label class="form-check-label" for="vnpay">
@@ -198,7 +222,6 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // dùng đoạn này nếu khi áp voucher, trừ tiền từ giá sau khi được giảm từ chương trình sale
         $(document).ready(function () {
             const basePrice = parseFloat($('#base_price').val());
             const serviceTotal = parseFloat($('#service_total').val());
@@ -305,118 +328,7 @@
                 $('#promotion_id').val('');
                 voucherDiscount = 0;
             });
-        });
-    </script>
-    <script>
-        //  // dùng đoạn này nếu khi áp voucher, trừ tiền từ giá gốc
-        {{--$(document).ready(function () {--}}
-        {{--    const basePrice = parseFloat($('#base_price').val());--}}
-        {{--    const serviceTotal = parseFloat($('#service_total').val());--}}
-        {{--    const defaultDiscount = parseFloat($('#default_discount').val()) || 0;--}}
-        {{--    const initialBasePrice = basePrice + serviceTotal;--}}
-        {{--    const initialSubTotal = initialBasePrice - defaultDiscount;--}}
-        {{--    const initialTax = initialSubTotal * 0.08;--}}
-        {{--    const initialTotal = initialSubTotal + initialTax;--}}
 
-        {{--    let voucherDiscount = 0;--}}
-
-        {{--    $('#base-price-display').text('VND ' + initialBasePrice.toLocaleString('vi-VN'));--}}
-        {{--    $('#initial-tax-display').text('VND ' + initialTax.toLocaleString('vi-VN'));--}}
-        {{--    $('#total_price_display').text('VND ' + initialTotal.toLocaleString('vi-VN'));--}}
-        {{--    if (defaultDiscount > 0) {--}}
-        {{--        $('#after-base-price-display').text('VND ' + initialSubTotal.toLocaleString('vi-VN'));--}}
-        {{--        $('#tax-fee-display').text('VND ' + initialTax.toLocaleString('vi-VN'));--}}
-        {{--    }--}}
-
-        {{--    $('#confirm-button').prop('disabled', false);--}}
-
-        {{--    $('#apply-promotion-btn').on('click', function () {--}}
-        {{--        const code = $('#promotion-code').val();--}}
-
-        {{--        if (!code) {--}}
-        {{--            $('#promotion-message').html('<p class="text-danger">Vui lòng nhập mã giảm giá.</p>');--}}
-        {{--            return;--}}
-        {{--        }--}}
-
-        {{--        $.ajax({--}}
-        {{--            url: '{{ route("bookings.check-promotion") }}',--}}
-        {{--            method: 'POST',--}}
-        {{--            data: {--}}
-        {{--                _token: '{{ csrf_token() }}',--}}
-        {{--                code: code,--}}
-        {{--                base_price: basePrice,--}}
-        {{--                service_total: serviceTotal--}}
-        {{--            },--}}
-        {{--            success: function (response) {--}}
-        {{--                if (response.success) {--}}
-        {{--                    voucherDiscount = response.discount_amount;--}}
-        {{--                    const promotionId = response.promotion_id;--}}
-
-        {{--                    const subTotalAfterVoucher = initialBasePrice - defaultDiscount - voucherDiscount;--}}
-        {{--                    const taxAfterVoucher = subTotalAfterVoucher * 0.08;--}}
-        {{--                    const totalAfterVoucher = subTotalAfterVoucher + taxAfterVoucher;--}}
-
-        {{--                    $('#voucher-amount').text('- VND ' + voucherDiscount.toLocaleString('vi-VN'));--}}
-        {{--                    $('#voucher-section').show();--}}
-
-        {{--                    $('#after-base-price-display').text('VND ' + subTotalAfterVoucher.toLocaleString('vi-VN'));--}}
-        {{--                    $('#tax-fee-display').text('VND ' + taxAfterVoucher.toLocaleString('vi-VN'));--}}
-        {{--                    $('#after-discount-section').show();--}}
-
-        {{--                    $('#total_price_display').text('VND ' + totalAfterVoucher.toLocaleString('vi-VN'));--}}
-
-        {{--                    $('#total_price_input').val(totalAfterVoucher);--}}
-        {{--                    $('#tax_fee_input').val(taxAfterVoucher);--}}
-        {{--                    $('#discount_amount_input').val(defaultDiscount + voucherDiscount);--}}
-        {{--                    $('#promotion_id').val(promotionId);--}}
-
-        {{--                    $('#confirm-button').prop('disabled', false);--}}
-        {{--                    $('#cancel-promotion-btn').show();--}}
-
-        {{--                    $('#promotion-message').html('<p class="text-success">' + response.message + '</p>');--}}
-        {{--                } else {--}}
-        {{--                    $('#promotion_id').val('');--}}
-        {{--                    $('#confirm-button').prop('disabled', true);--}}
-        {{--                    $('#voucher-section').hide();--}}
-        {{--                    $('#promotion-message').html('<p class="text-danger">' + response.message + '</p>');--}}
-        {{--                }--}}
-        {{--            },--}}
-        {{--            error: function () {--}}
-        {{--                $('#voucher-section').hide();--}}
-        {{--                $('#promotion-message').html('<p class="text-danger">Đã có lỗi xảy ra. Vui lòng thử lại.</p>');--}}
-        {{--            }--}}
-        {{--        });--}}
-        {{--    });--}}
-
-        {{--    $('#cancel-promotion-btn').on('click', function () {--}}
-        {{--        $('#voucher-section').hide();--}}
-        {{--        $('#cancel-promotion-btn').hide();--}}
-        {{--        $('#promotion-code').val('');--}}
-        {{--        $('#promotion-message').html('');--}}
-        {{--        $('#confirm-button').prop('disabled', false);--}}
-
-        {{--        const afterDefaultSubTotal = initialBasePrice - defaultDiscount;--}}
-        {{--        const afterDefaultTax = afterDefaultSubTotal * 0.08;--}}
-        {{--        const afterDefaultTotal = afterDefaultSubTotal + afterDefaultTax;--}}
-
-        {{--        if (defaultDiscount > 0) {--}}
-        {{--            $('#after-base-price-display').text('VND ' + afterDefaultSubTotal.toLocaleString('vi-VN'));--}}
-        {{--            $('#tax-fee-display').text('VND ' + afterDefaultTax.toLocaleString('vi-VN'));--}}
-        {{--            $('#after-discount-section').show();--}}
-        {{--        } else {--}}
-        {{--            $('#after-discount-section').hide();--}}
-        {{--        }--}}
-
-        {{--        $('#total_price_display').text('VND ' + afterDefaultTotal.toLocaleString('vi-VN'));--}}
-
-        {{--        $('#total_price_input').val(afterDefaultTotal);--}}
-        {{--        $('#tax_fee_input').val(afterDefaultTax);--}}
-        {{--        $('#discount_amount_input').val(defaultDiscount);--}}
-        {{--        $('#promotion_id').val('');--}}
-        {{--        voucherDiscount = 0;--}}
-        {{--    });--}}
-        {{--});--}}
-        $(document).ready(function () {
             $('.payment-method').on('change', function () {
                 const method = $(this).val();
                 if (method === 'cash') {
@@ -432,9 +344,7 @@
 
             $('.online-payment-method').on('change', function () {
                 const onlineMethod = $(this).val();
-                if (onlineMethod === 'momo') {
-                    $('#payment-instruction p').text('Vui lòng lưu ý hiện thanh toán qua cổng thanh toán: MoMo');
-                } else if (onlineMethod === 'vnpay') {
+                if (onlineMethod === 'vnpay') {
                     $('#payment-instruction p').text('Vui lòng lưu ý hiện thanh toán qua cổng thanh toán: VNPay');
                 }
                 $('#momo-qr-section').hide();
@@ -447,32 +357,11 @@
                 if (paymentMethod === 'online') {
                     const onlineMethod = $('input[name="online_payment_method"]:checked').val();
                     if (!onlineMethod) {
-                        alert('Vui lòng chọn một cổng thanh toán (MoMo hoặc VNPay).');
+                        alert('Vui lòng chọn một cổng thanh toán (VNPay).');
                         return;
                     }
 
-                    if (onlineMethod === 'momo') {
-                        $.ajax({
-                            url: '{{ route("bookings.store") }}',
-                            method: 'POST',
-                            data: $(this).serialize(),
-                            success: function (response) {
-                                if (response.success && response.qrCodeUrl && response.payUrl) {
-                                    $('#momo-qr-code').html('<img src="' + response.qrCodeUrl + '" alt="MoMo QR Code" style="max-width: 300px;">');
-                                    $('#momo-pay-link').attr('href', response.payUrl);
-                                    $('#momo-qr-section').show();
-                                    $('#confirm-button').hide();
-                                } else {
-                                    alert(response.message || 'Không thể tạo yêu cầu thanh toán MoMo. Vui lòng thử lại.');
-                                }
-                            },
-                            error: function (xhr) {
-                                alert('Đã có lỗi xảy ra. Vui lòng thử lại.');
-                            }
-                        });
-                    } else {
-                        this.submit();
-                    }
+                    this.submit();
                 } else {
                     this.submit();
                 }

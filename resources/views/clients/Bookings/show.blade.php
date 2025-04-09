@@ -172,17 +172,22 @@
                                         phòng.</p>
                                 @endif
                                 @if ($booking->servicePlus->isNotEmpty())
-                                    <p><strong>Dịch vụ bổ sung:</strong></p>
-                                    @foreach ($booking->servicePlus as $service)
-                                        <p>{{ $service->name }} ({{ $service->pivot->quantity }} x
-                                            {{ \App\Helpers\FormatHelper::FormatPrice($service->price) }}) =
-                                            {{ \App\Helpers\FormatHelper::FormatPrice($service->price * $service->pivot->quantity) }}
+                                <h5 class="lh-room-inner-heading mb-2">Dịch vụ bổ sung</h5>
+                                @foreach ($booking->servicePlus as $service)
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <p class="mb-0">
+                                            <i class="fas fa-concierge-bell me-2 text-primary"></i>
+                                            {{ $service->name }} ({{ $service->pivot->quantity }} x
+                                            {{ \App\Helpers\FormatHelper::FormatPrice($service->pivot->price) }})
                                         </p>
-                                    @endforeach
-                                @else
-                                    <p class="text-muted"><i class="fas fa-info-circle me-2"></i> Không có dịch vụ bổ sung.
-                                    </p>
-                                @endif
+                                        <p class="mb-0">
+                                            {{ \App\Helpers\FormatHelper::FormatPrice($service->pivot->price * $service->pivot->quantity) }}
+                                        </p>
+                                    </div>
+                                @endforeach
+                            @else
+                                <p class="text-muted"><i class="fas fa-info-circle me-2"></i> Không có dịch vụ bổ sung.</p>
+                            @endif
                             </div>
 
                             <!-- Tổng giá -->
@@ -527,6 +532,6 @@
 
     <!-- Thêm Font Awesome và Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
 
 @endsection
