@@ -46,6 +46,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+    
+        // Sau đó xóa bảng bookings
         Schema::dropIfExists('bookings');
     }
 };

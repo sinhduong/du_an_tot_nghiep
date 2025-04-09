@@ -24,6 +24,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Sau đó xóa bảng room_type_services
         Schema::dropIfExists('room_type_services');
     }
 };
