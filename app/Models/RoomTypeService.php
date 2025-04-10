@@ -17,7 +17,10 @@ class RoomTypeService extends Model
         'is_active'
     ];
 
-
+    public function service()
+    {
+        return $this->belongsTo(Service::class, 'service_id');
+    }
     public function roomTypes()
     {
         return $this->belongsToMany(RoomType::class, 'room_type_services', 'service_id', 'room_type_id');

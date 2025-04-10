@@ -669,10 +669,7 @@ class BookingController extends Controller
             'rooms' => function ($query) {
                 $query->withTrashed();
             },
-            'services' => function ($query) {
-                $query->select('room_type_services.id', 'services.name')
-                      ->withPivot('quantity', 'price');
-            },
+            'services.service',
             'payments',
             'guests',
         ])->findOrFail($id);

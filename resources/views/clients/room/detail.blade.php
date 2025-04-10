@@ -138,7 +138,7 @@
                                 <div class="lh-side-reservation-from ex-service">
                                     <h4>Dịch Vụ Bổ Sung</h4>
                                     @if ($roomType->services->isNotEmpty())
-                                        @foreach ($roomType->services as $service)
+                                    @foreach ($roomType->services as $service)
                                         @if ($service->is_active)
                                             <div class="service-item d-flex align-items-center mb-2">
                                                 <div class="service-name flex-grow-1">
@@ -146,12 +146,12 @@
                                                 </div>
                                                 <div class="service-quantity d-flex align-items-center">
                                                     <button type="button" class="counter-btn decrease-quantity" data-service-id="{{ $service->id }}" {{ $service->price == 0 ? 'disabled' : '' }}>-</button>
-                                                    <input type="number" name="services[{{ $service->id }}]" class="counter-input quantity-input" value="1" min="0" step="1" data-price="{{ $service->price ?? 0 }}" readonly>
+                                                    <input type="number" name="services[{{ $service->id }}]" class="counter-input quantity-input" value="{{ $service->price == 0 ? 1 : 0 }}" min="0" step="1" data-price="{{ $service->price ?? 0 }}" readonly>
                                                     <button type="button" class="counter-btn increase-quantity" data-service-id="{{ $service->id }}" {{ $service->price == 0 ? 'disabled' : '' }}>+</button>
                                                 </div>
                                             </div>
-                                            @endif
-                                        @endforeach
+                                        @endif
+                                    @endforeach
                                     @else
                                         <p>Không có dịch vụ bổ sung nào.</p>
                                     @endif
