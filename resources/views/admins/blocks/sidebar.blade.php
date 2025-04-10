@@ -1,9 +1,9 @@
 <div class="lh-sidebar-overlay"></div>
 <div class="lh-sidebar" data-mode="light">
     <div class="lh-sb-logo">
-        <a href="index.html" class="sb-full"><img src="{{ asset('assets/admin/assets/img/logo/full-logo.png') }}"
+        <a href="{{ route('admin.dashboard') }}" class="sb-full"><img src="{{ asset('assets/admin/assets/img/logo/full-logo.png') }}"
                 alt="logo"></a>
-        <a href="index.html" class="sb-collapse"><img src="{{ asset('assets/admin/assets/img/logo/collapse-logo.png') }}"
+        <a href="{{ route('admin.dashboard') }}" class="sb-collapse"><img src="{{ asset('assets/admin/assets/img/logo/collapse-logo.png') }}"
                 alt="logo"></a>
     </div>
     <div class="lh-sb-wrapper">
