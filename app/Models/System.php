@@ -16,6 +16,7 @@ class System extends Model
         'email',
         'phone',
         'map',
+        'img_faqs',
         'is_use',
      
     ];

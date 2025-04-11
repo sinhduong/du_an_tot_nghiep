@@ -126,6 +126,25 @@
                                                     @enderror
                                                 </div>
                                             </li>
+                                            <li>
+                                                <div class="col-md-12">
+                                                    <label class="form-label fw-bold">Hình ảnh faqs <span class="text-danger">*</span></label>
+                                                    <div id="imageInputs">
+                                                        <div class="input-group input-group-sm mb-2" style="max-width: 400px;">
+                                                            <input type="file" name="img_faqs" class="form-control @error('images.*') is-invalid @enderror" multiple>
+                                                            <button type="button" class="btn btn-outline-danger remove-image-input">
+                                                                <i class="ri-delete-bin-line"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <button type="button" class="btn btn-outline-success btn-sm mt-1" id="addImageInput">
+                                                        <i class="ri-add-line"></i> Thêm ảnh
+                                                    </button>
+                                                    @error('images.*')
+                                                        <small class="text-danger">{{ $message }}</small>
+                                                    @enderror
+                                                </div>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>

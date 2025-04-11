@@ -293,15 +293,20 @@ class HomeController extends Controller
     public function faqs()
     {
         $systems = System::orderBy('id', 'desc')->first();
+        // dd($systems);
         $faqs = Faq::where('is_active', 1)->get();
         return view('clients.faq', compact('faqs', 'systems'));
     }
 
     public function services()
     {
+        $roomTypes = RoomType::query()
+        ->with(['roomTypeImages', 'amenities', 'rooms', 'saleRoomTypes'])
+        ->where('is_active', true)
+        ->get();
         $systems = System::orderBy('id', 'desc')->first();
         $services = Service::where('is_active', 1)->get();
-        return view('clients.service', compact('services', 'systems'));
+        return view('clients.service', compact('services', 'systems','roomTypes'));
     }
 
     public function contacts()

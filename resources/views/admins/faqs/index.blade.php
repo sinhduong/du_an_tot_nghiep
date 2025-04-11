@@ -90,7 +90,7 @@
                                             <th>STT</th>
                                             <th>Câu hỏi</th>
                                             <th>Trạng thái</th>
-                                            <th>Hình ảnh</th>
+                                            {{-- <th>Hình ảnh</th> --}}
                                             <th>Ngày tạo</th>
                                             <th>Hành động</th>
                                         </tr>
@@ -106,27 +106,27 @@
                                                     </span>
                                                 </td>
                                             
-                                                <td>
-                                                    @php
-                                                        // Đảm bảo rằng đường dẫn ảnh có đầy đủ thư mục (nếu cần)
+                                                {{-- <td> --}}
+                                                    {{-- @php --}}
+                                                        {{-- // Đảm bảo rằng đường dẫn ảnh có đầy đủ thư mục (nếu cần)
                                                         $imagePath = $faq->image;
-                                                        // echo $imagePath ;
-                                                    @endphp
+                                                        // echo $imagePath ; --}}
+                                                    {{-- @endphp --}}
                                                     {{-- @if ($faq->image && Storage::disk('public')->exists($faq->image))
                                                         <img src="{{ Storage::url($faq->image) }}" width="100"
                                                             height="100" alt="{{ $faq->name }}"
                                                             class="img-thumbnail">
                                                     @else --}}
-                                                    @if (!empty($faq->image))
-                                                    <img src="{{ asset('storage/' . $faq->image) }}" width="120px" alt="Product Image">
+                                                    {{-- @if (!empty($faq->image)) --}}
+                                                    {{-- <img src="{{ asset('storage/' . $faq->image) }}" width="120px" alt="Product Image"> --}}
 
                                                     {{-- <img src="{{ Storage::url($faq->image) }}"
                                                          width="100" height="100" alt="{{ $faq->name }}"
                                                          class="img-thumbnail"> --}}
-                                                    @else
-                                                        <small>Chưa có</small>
-                                                    @endif
-                                                </td>
+                                                    {{-- @else --}}
+                                                        {{-- <small>Chưa có</small> --}}
+                                                    {{-- @endif --}}
+                                                {{-- </td> --}}
                                                 <td>{{ $faq->created_at->format('d/m/Y H:i') }}</td>
                                                 <td>
                                                     <div class="btn-group">

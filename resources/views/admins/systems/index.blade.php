@@ -64,6 +64,7 @@
                                             <th>ID</th>
                                             <th>Tên Tiện Ích</th>
                                             <th>Logo</th>
+                                            <th>Faqs</th>
                                             <th>Địa Chỉ  </th>                
                                             <th>Email </th>                
                                             <th>Phone</th>
@@ -90,6 +91,27 @@
                                                 @else --}}
                                                 @if (!empty($item->logo))
                                                 <img src="{{ asset('storage/' . $item->logo) }}" width="120px" alt="Product Image">
+
+                                                {{-- <img src="{{ Storage::url($item->image) }}"
+                                                     width="100" height="100" alt="{{ $item->name }}"
+                                                     class="img-thumbnail"> --}}
+                                                @else
+                                                    <small>Chưa có</small>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @php
+                                                    // Đảm bảo rằng đường dẫn ảnh có đầy đủ thư mục (nếu cần)
+                                                    $imagePath = $item->img_faqs;
+                                                    // echo $imagePath ;
+                                                @endphp
+                                                {{-- @if ($item->image && Storage::disk('public')->exists($item->image))
+                                                    <img src="{{ Storage::url($item->image) }}" width="100"
+                                                        height="100" alt="{{ $item->name }}"
+                                                        class="img-thumbnail">
+                                                @else --}}
+                                                @if (!empty($item->img_faqs))
+                                                <img src="{{ asset('storage/' . $item->img_faqs) }}" width="120px" alt="Product Image">
 
                                                 {{-- <img src="{{ Storage::url($item->image) }}"
                                                      width="100" height="100" alt="{{ $item->name }}"

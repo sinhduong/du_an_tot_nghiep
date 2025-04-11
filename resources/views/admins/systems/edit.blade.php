@@ -104,6 +104,25 @@
                                                     </div>
                                                 </div>
                                             </li>
+                                            <li>
+                                                <label class="form-label fw-bold">Hình ảnh faqs <span
+                                                        class="text-danger">*</span></label>
+                                                
+                                                <div id="imageInputs">
+                                                    <div class="input-group input-group-sm mb-2"
+                                                        style="max-width: 400px;">
+                                                        <img src="{{ asset('storage/' . $systems->img_faqs) }}" width="120px"
+                                                    alt="Product Image">
+                                                        <input type="file" name="img_faqs"
+                                                            class="form-control @error('images.*') is-invalid @enderror"
+                                                            multiple>
+                                                        <button type="button"
+                                                            class="btn btn-outline-danger remove-image-input">
+                                                            <i class="ri-delete-bin-line"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>

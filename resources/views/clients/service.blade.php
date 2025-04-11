@@ -74,4 +74,31 @@
             </div>
         </div>
     </section>
+    <section class="section-services padding-tb-100">
+        <div class="container">
+            <div class="banner" data-aos="fade-up" data-aos-duration="1200">
+                <h2>Enjoy Your Best <span>Services</span></h2>
+            </div>
+            <div class="row mtb-m-12">
+
+                <div class="col-lg-4 col-md-6 m-tb-12">
+                    <div class="lh-services" data-aos="fade-up" data-aos-duration="1200">
+                        <div class="lh-services-contain">
+                            <div class="lh-icon">
+                                <img src="assets/img/services/service-1.svg" class="svg-img" alt="services img">
+                            </div>
+                            <h4 class="lh-services-heading">Private Dining Rooms</h4>
+                            <p>This is the dolor sit amet consectetur adipisicing eligendi.</p>
+                        </div>
+                        <div class="lh-services-image">
+                            <img src="assets/img/services/1.jpg" alt="services-1">
+                        </div>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+    </section>
+
 @endsection

@@ -45,6 +45,9 @@ class SystemController extends Controller
         if ($request->hasFile('logo')) {
             $data['logo'] = Storage::disk('public')->put('systems', $request->file('logo'));
         }
+        if ($request->hasFile('img_faqs')) {
+            $data['img_faqs'] = Storage::disk('public')->put('systems', $request->file('img_faqs'));
+        }
 
         $systems = System::create($data);
         return redirect()->route('admin.systems.index')->with('success', 'Thêm  thành công');
@@ -81,6 +84,9 @@ class SystemController extends Controller
 
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('systems', 'public');
+        }
+        if ($request->hasFile('img_faqs')) {
+            $data['img_faqs'] = Storage::disk('public')->put('systems', $request->file('img_faqs'));
         }
 
         $systems = System::findOrFail($id);
