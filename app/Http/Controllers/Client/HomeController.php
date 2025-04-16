@@ -55,7 +55,7 @@ class HomeController extends Controller
                         $q->whereNull('actual_check_out')
                             ->orWhere('actual_check_out', '>=', $checkInDate);
                     })
-                    ->whereNotIn('status', ['cancelled', 'refunded']);
+                    ->whereNotIn('status', ['cancelled', 'refunded', 'check_out']);
             })
             ->count();
 

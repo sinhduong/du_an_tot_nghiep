@@ -77,7 +77,11 @@ class RoomController extends Controller
 
                 // Kiểm tra nếu phòng có booking hợp lệ
                 $hasActiveBooking = $room->bookings->contains(function ($booking) {
-                    return in_array($booking->status, ['pending_confirmation', 'confirmed', 'paid', 'check_in']);
+                    $now = Carbon::now();
+                    $bookingCheckOut = Carbon::parse($booking->check_out);
+                    
+                    return in_array($booking->status, ['pending_confirmation', 'confirmed', 'paid', 'check_in']) &&
+                           $bookingCheckOut->gt($now); // booking chưa hết hạn
                 });
 
                 if ($hasActiveBooking) {
@@ -90,14 +94,16 @@ class RoomController extends Controller
                 if ($checkIn && $checkOut) {
                     $checkInDate = Carbon::parse($checkIn);
                     $checkOutDate = Carbon::parse($checkOut);
-
-                    $hasBookingInRange = $room->bookings->contains(function ($booking) use ($checkInDate, $checkOutDate) {
+                    $now = Carbon::now();
+                
+                    $hasBookingInRange = $room->bookings->contains(function ($booking) use ($checkInDate, $checkOutDate, $now) {
                         $bookingCheckIn = Carbon::parse($booking->check_in);
                         $bookingCheckOut = Carbon::parse($booking->check_out);
-
+                
                         return in_array($booking->status, ['pending_confirmation', 'confirmed', 'paid', 'check_in']) &&
-                            $bookingCheckIn->lte($checkOutDate) &&
-                            $bookingCheckOut->gte($checkInDate);
+                               $bookingCheckOut->gt($now) && // booking chưa hết hạn
+                               $bookingCheckIn->lte($checkOutDate) &&
+                               $bookingCheckOut->gte($checkInDate);
                     });
 
                     $room->filtered_status = $hasBookingInRange ? 'booked' : 'available';
