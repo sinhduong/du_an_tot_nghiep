@@ -52,19 +52,8 @@
                                         <div class="room-details flex-grow-1 px-4">
                                             <h5 class="mb-1 text-dark">{{ $booking->rooms->first()->roomType->name ?? 'Chưa có loại phòng' }}</h5>
                                             <p class="mb-1 text-muted">{{ \App\Helpers\FormatHelper::formatDateVI($booking->check_in) }} – {{ \App\Helpers\FormatHelper::formatDateVI($booking->check_out) }}</p>
-                                            <span class="status-badge {{ 'status-' . $booking->status }} {{ $booking->status == 'confirmed' ? 'text-warning' : ($booking->status == 'cancelled' ? 'text-danger' : 'text-success') }} fw-bold">
-                                                @php
-                                                    $statusMapping = [
-                                                        'pending_confirmation' => 'Chưa xác nhận',
-                                                        'confirmed' => 'Đã xác nhận',
-                                                        'paid' => 'Đã thanh toán',
-                                                        'check_in' => 'Đã check in',
-                                                        'check_out' => 'Đã hoàn thành',
-                                                        'cancelled' => 'Đã hủy',
-                                                        'refunded' => 'Đã hoàn tiền',
-                                                    ];
-                                                @endphp
-                                                {{ $statusMapping[$booking->status] ?? 'Không xác định' }}
+                                            <span class="status-badge {{ \App\Helpers\BookingStatusHelper::getStatusClass($booking->status) }}">
+                                                {{ \App\Helpers\BookingStatusHelper::getStatusLabel($booking->status) }}
                                             </span>
                                         </div>
                                         <div class="room-price d-flex align-items-center pe-3 position-relative" style="min-width: 180px; color: #555;">

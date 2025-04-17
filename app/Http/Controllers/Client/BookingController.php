@@ -359,7 +359,8 @@ class BookingController extends Controller
                 'special_request' => $request->input('special_request'),
                 'service_plus_status' => !empty($validated['services']) ? 'not_yet_paid' : 'none',
                 'payment_method' => $paymentMethod == 'cash' ? 'cash' : $onlinePaymentMethod,
-                'status' => 'confirmed',
+                'status' => 'unpaid',
+                'paid_amount' => 0,
             ]);
 
             if (!empty($validated['services']) && is_array($validated['services'])) {
@@ -468,6 +469,11 @@ class BookingController extends Controller
                 $booking->guests()->attach($guest->id);
             }
 
+            $isPartial = false;
+            if ($request->payment_amount_type == 'partial') {
+                $isPartial = true;
+                $totalPrice = $totalPrice/2;
+            }
             // Xử lý thanh toán
             $paymentData = [
                 'user_id' => $user->id,
@@ -475,6 +481,7 @@ class BookingController extends Controller
                 'amount' => $totalPrice,
                 'status' => 'pending',
                 'transaction_id' => null,
+                'is_partial' => $isPartial,
             ];
 
             if ($paymentMethod == 'cash') {
@@ -604,6 +611,8 @@ class BookingController extends Controller
 
                     $payment->update(['transaction_id' => $vnp_TxnRef]);
 
+
+
                     DB::commit();
 
                     return redirect($vnp_Url);
@@ -639,7 +648,7 @@ class BookingController extends Controller
                 'status' => 'completed',
                 'transaction_id' => $data['transId'],
             ]);
-            $booking->update(['status' => 'confirmed']);
+            $booking->update(['status' => 'paid']);
             $message = 'Thanh toán thành công! Đặt phòng của bạn đã được xác nhận.';
         } else {
             $payment->update(['status' => 'failed']);
@@ -819,6 +828,7 @@ class BookingController extends Controller
         $vnp_SecureHash = $request->input('vnp_SecureHash');
         $vnp_ResponseCode = $request->input('vnp_ResponseCode');
         $vnp_TransactionNo = $request->input('vnp_TransactionNo');
+        $vnp_Amount = $request->input('vnp_Amount') / 100; // Chuyển đổi từ VND sang số thực
 
         // Loại bỏ các tham số không cần thiết để tạo chữ ký
         $inputData = $request->except(['vnp_SecureHash', 'vnp_SecureHashType']);
@@ -848,20 +858,30 @@ class BookingController extends Controller
         // Kiểm tra mã phản hồi
         if ($vnp_ResponseCode == '00') {
             try {
-                DB::transaction(function () use ($id, $vnp_TransactionNo) {
+                DB::transaction(function () use ($id, $vnp_TransactionNo, $vnp_Amount) {
                     $booking = Booking::where('id', $id)->firstOrFail();
-                    $booking->update(['status' => 'paid']);
-
                     $payment = Payment::where('booking_id', $id)->first();
+
                     if ($payment) {
+                        // Cập nhật thông tin thanh toán
                         $payment->update([
                             'transaction_id' => $vnp_TransactionNo,
                             'status' => 'completed',
                         ]);
-                    }
 
-                    // Gửi email
-                    Mail::to($booking->user->email)->send(new BookingSuccess($booking));
+                        // Cập nhật số tiền đã thanh toán
+                        $booking->update(['paid_amount' => $vnp_Amount]);
+
+                        // Kiểm tra xem đây có phải là thanh toán một phần không
+                        if ($payment->is_partial) {
+                            $booking->update(['status' => 'partial']);
+                        } else {
+                            $booking->update(['status' => 'paid']);
+                        }
+
+                        // Gửi email xác nhận
+                        Mail::to($booking->user->email)->send(new BookingSuccess($booking));
+                    }
                 });
 
                 return redirect()->route('bookings.show', $id)

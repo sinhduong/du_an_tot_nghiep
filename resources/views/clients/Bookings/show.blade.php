@@ -72,13 +72,13 @@
                                     {{ $nights }} đêm
                                 </p>
                                 <p><strong>Trạng thái:</strong>
-                                    @switch($booking->status)
-                                        @case('pending_confirmation')
-                                            <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                    <!-- @switch($booking->status)
+                                        @case('unpaid')
+                                            <span class="badge bg-warning text-dark">Chưa thanh toán</span>
                                         @break
 
-                                        @case('confirmed')
-                                            <span class="badge bg-success">Đã xác nhận</span>
+                                        @case('partial')
+                                            <span class="badge bg-success">Đã cọc</span>
                                         @break
 
                                         @case('paid')
@@ -103,7 +103,10 @@
 
                                         @default
                                             <span class="badge bg-secondary">{{ $booking->status }}</span>
-                                    @endswitch
+                                    @endswitch -->
+                                    <span class="{{ \App\Helpers\BookingStatusHelper::getStatusClass($booking->status) }}">
+                                        {{ \App\Helpers\BookingStatusHelper::getStatusLabel($booking->status) }}
+                                    </span>
                                 </p>
                                 <p><strong>Phương thức thanh toán:</strong>
                                     @if ($booking->payments->isNotEmpty())

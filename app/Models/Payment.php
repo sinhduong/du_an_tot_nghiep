@@ -15,6 +15,7 @@ class Payment extends Model
         'transaction_id',
         'booking_id',
         'user_id',
+        'is_partial'
     ];
     public function booking(){
         return $this->belongsTo(Booking::class,'booking_id');

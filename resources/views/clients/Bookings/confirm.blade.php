@@ -176,14 +176,29 @@
                                             @endforeach
                                         @endif
 
+                                        <div id="level-payment-section">
+                                            <label class="form-label mt-2">Chọn mức thanh toán:</label>
                                             <div class="form-check">
-                                                <input class="form-check-input payment-method" type="radio" name="payment_method" id="payment1" value="cash" checked>
-                                                <label class="form-check-label" for="payment1">Thanh toán tại chỗ (Tiền mặt)</label>
+                                                <input class="form-check-input" type="radio" name="payment_amount_type" id="payment_full" value="full" checked>
+                                                <label class="form-check-label" for="payment_full">Thanh toán toàn bộ</label>
                                             </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="payment_amount_type" id="payment_partial" value="partial">
+                                                <label class="form-check-label" for="payment_partial">Thanh toán trước 50%</label>
+                                            </div>
+                                        </div>
+
+                                        <div id="method-payment-section">
+                                            <label class="form-label mt-2">Phương thức thanh toán:</label>
+                                            <!-- <div class="form-check">
+                                                    <input class="form-check-input payment-method" type="radio" name="payment_method" id="payment1" value="cash" checked>
+                                                    <label class="form-check-label" for="payment1">Thanh toán tại chỗ (Tiền mặt)</label>
+                                                </div> -->
                                             <div class="form-check">
                                                 <input class="form-check-input payment-method" type="radio" name="payment_method" id="payment2" value="online">
                                                 <label class="form-check-label" for="payment2">Thanh toán trực tuyến</label>
                                             </div>
+                                        </div>
 
                                             <div id="online-payment-section" style="display: none; margin-left: 20px;">
                                                 <div class="form-check">
@@ -329,17 +344,25 @@
                 voucherDiscount = 0;
             });
 
-            $('.payment-method').on('change', function () {
+            // $('.payment-method').on('change', function () {
+            //     const method = $(this).val();
+            //     if (method === 'cash') {
+            //         $('#online-payment-section').hide();
+            //         $('#payment-instruction p').text('Vui lòng thanh toán bằng tiền mặt khi nhận phòng.');
+            //         $('#momo-qr-section').hide();
+            //     } else {
+            //         $('#online-payment-section').show();
+            //         $('#payment-instruction p').text('Vui lòng lưu ý hiện thanh toán qua cổng thanh toán:');
+            //         $('#momo-qr-section').hide();
+            //     }
+            // });
+            $('#payment2').on('click', function() {
                 const method = $(this).val();
-                if (method === 'cash') {
-                    $('#online-payment-section').hide();
-                    $('#payment-instruction p').text('Vui lòng thanh toán bằng tiền mặt khi nhận phòng.');
-                    $('#momo-qr-section').hide();
-                } else {
-                    $('#online-payment-section').show();
-                    $('#payment-instruction p').text('Vui lòng lưu ý hiện thanh toán qua cổng thanh toán:');
-                    $('#momo-qr-section').hide();
-                }
+
+                $('#online-payment-section').show();
+                $('#payment-instruction p').text('Vui lòng lưu ý hiện thanh toán qua cổng thanh toán.');
+                $('#momo-qr-section').hide();
+
             });
 
             $('.online-payment-method').on('change', function () {

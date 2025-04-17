@@ -314,58 +314,98 @@ class BookingController extends Controller
     {
         $booking = Booking::findOrFail($id);
         $currentStatus = $booking->status;
-        $newStatus = $request->input('status'); // Giả sử trạng thái mới được gửi từ form
+        $newStatus = $request->input('status');
 
-        if ($currentStatus === 'confirmed' && in_array($newStatus, ['paid', 'cancelled'])) {
-            // Nếu trạng thái hiện tại là "Đã xác nhận", chỉ cho phép đổi sang "Đã thanh toán" hoặc "Đã hủy"
-            if ($newStatus === 'paid') {
-                // Tìm bản ghi thanh toán liên quan
-                $payment = Payment::where('booking_id', $booking->id)->first();
-                if (!$payment) {
-                    return redirect()->back()->with('error', 'Không tìm thấy bản ghi thanh toán cho đặt phòng này.');
-                }
+        try {
+            DB::beginTransaction();
 
-                // Kiểm tra trạng thái thanh toán
-                if ($payment->status !== 'pending') {
-                    return redirect()->back()->with('error', 'Thanh toán không ở trạng thái "Chưa thanh toán", không thể cập nhật thành "Đã thanh toán".');
-                }
+            switch ($currentStatus) {
+                case 'unpaid':
+                    // Từ trạng thái chưa thanh toán, chỉ có thể chuyển sang cancelled
+                    if ($newStatus === 'cancelled') {
+                        $booking->update([
+                            'status' => 'cancelled',
+                            'actual_check_in' => Carbon::now('Asia/Ho_Chi_Minh'),
+                            'actual_check_out' => Carbon::now('Asia/Ho_Chi_Minh'),
+                        ]);
+                    } else {
+                        throw new \Exception('Không thể chuyển từ trạng thái chưa thanh toán sang ' . $newStatus);
+                    }
+                    break;
 
-                // Cập nhật trạng thái thanh toán
-                $payment->update([
-                    'status' => 'completed',
-                ]);
+                case 'partial':
+                    // Từ trạng thái thanh toán một phần, có thể chuyển sang paid hoặc cancelled
+                    if ($newStatus === 'paid') {
+                        $booking->update(['status' => 'paid']);
+                    } elseif ($newStatus === 'cancelled') {
+                        $booking->update([
+                            'status' => 'cancelled',
+                            'actual_check_in' => Carbon::now('Asia/Ho_Chi_Minh'),
+                            'actual_check_out' => Carbon::now('Asia/Ho_Chi_Minh'),
+                        ]);
+                    } else {
+                        throw new \Exception('Không thể chuyển từ trạng thái thanh toán một phần sang ' . $newStatus);
+                    }
+                    break;
 
-                // Cập nhật trạng thái đặt phòng
-                $booking->update(['status' => $newStatus]);
-            } elseif ($newStatus === 'cancelled') {
-                // Khi hủy đặt phòng, cập nhật trạng thái và thời gian check-in/check-out thực tế
-                $currentTime = Carbon::now('Asia/Ho_Chi_Minh');
-                $booking->update([
-                    'status' => $newStatus,
-                    'actual_check_in' => $currentTime,
-                    'actual_check_out' => $currentTime,
-                ]);
+                case 'paid':
+                    // Từ trạng thái đã thanh toán, có thể chuyển sang check_in hoặc cancelled
+                    if ($newStatus === 'check_in') {
+                        $booking->update([
+                            'status' => 'check_in',
+                            'actual_check_in' => Carbon::now('Asia/Ho_Chi_Minh'),
+                        ]);
+                    } elseif ($newStatus === 'cancelled') {
+                        $booking->update([
+                            'status' => 'cancelled',
+                            'actual_check_in' => Carbon::now('Asia/Ho_Chi_Minh'),
+                            'actual_check_out' => Carbon::now('Asia/Ho_Chi_Minh'),
+                        ]);
+                    } else {
+                        throw new \Exception('Không thể chuyển từ trạng thái đã thanh toán sang ' . $newStatus);
+                    }
+                    break;
+
+                case 'check_in':
+                    // Từ trạng thái đã check in, có thể chuyển sang check_out hoặc cancelled
+                    if ($newStatus === 'check_out') {
+                        $booking->update([
+                            'status' => 'check_out',
+                            'actual_check_out' => Carbon::now('Asia/Ho_Chi_Minh'),
+                        ]);
+                    } elseif ($newStatus === 'cancelled') {
+                        $booking->update([
+                            'status' => 'cancelled',
+                            'actual_check_out' => Carbon::now('Asia/Ho_Chi_Minh'),
+                        ]);
+                    } else {
+                        throw new \Exception('Không thể chuyển từ trạng thái đã check in sang ' . $newStatus);
+                    }
+                    break;
+
+                case 'check_out':
+                    // Từ trạng thái đã check out, không thể chuyển sang trạng thái khác
+                    throw new \Exception('Không thể thay đổi trạng thái của đặt phòng đã check out');
+
+                case 'cancelled':
+                    // Từ trạng thái đã hủy, không thể chuyển sang trạng thái khác
+                    throw new \Exception('Không thể thay đổi trạng thái của đặt phòng đã hủy');
+
+                case 'refunded':
+                    // Từ trạng thái đã hoàn tiền, không thể chuyển sang trạng thái khác
+                    throw new \Exception('Không thể thay đổi trạng thái của đặt phòng đã hoàn tiền');
+
+                default:
+                    throw new \Exception('Trạng thái hiện tại không hợp lệ');
             }
 
+            DB::commit();
             return redirect()->route('admin.bookings.index')->with('success', 'Cập nhật trạng thái đặt phòng thành công.');
-        } elseif ($currentStatus === 'paid' && in_array($newStatus, ['check_in', 'refunded'])) {
-            // Nếu trạng thái hiện tại là "Đã thanh toán", chỉ cho phép đổi sang "Đã check in" hoặc "Đã hoàn tiền"
-            $booking->update([
-                'status' => $newStatus,
-                'actual_check_in' => Carbon::now('Asia/Ho_Chi_Minh'), // Cập nhật thời gian check-in thực tế
-            ]);
-            return redirect()->route('admin.bookings.index')->with('success', 'Cập nhật trạng thái đặt phòng thành công.');
-        } elseif ($currentStatus === 'check_in' && $newStatus === 'check_out') {
-            // Nếu trạng thái hiện tại là "Đã check in", chỉ cho phép đổi sang "Đã checkout" và cập nhật actual_check_out
-            $booking->update([
-                'status' => $newStatus,
-                'actual_check_out' => Carbon::now('Asia/Ho_Chi_Minh'), // Cập nhật thời gian check-out thực tế
-            ]);
-            return redirect()->route('admin.bookings.index')->with('success', 'Cập nhật trạng thái đặt phòng thành công.');
-        }
 
-        // Nếu trạng thái mới không hợp lệ, trả về lỗi
-        return redirect()->back()->with('error', 'Không thể thay đổi trạng thái từ ' . $currentStatus . ' sang ' . $newStatus . '.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
 

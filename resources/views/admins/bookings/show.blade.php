@@ -319,8 +319,8 @@
                             <li><strong>Số người:</strong> Người lớn: {{ $booking->total_guests }} | Trẻ em: {{ $booking->children_count }}</li>
                             <li><strong>Yêu cầu đặc biệt:</strong> {{ $booking->special_request ?? 'Không có' }}</li>
                             <li><strong>Trạng thái:</strong>
-                                <span class="text-{{ strtolower($booking->status) }}">
-                                    {{ ['pending_confirmation' => 'Chưa xác nhận', 'confirmed' => 'Đã xác nhận', 'paid' => 'Đã thanh toán', 'check_in' => 'Đã check-in', 'check_out' => 'Đã check-out', 'cancelled' => 'Đã hủy', 'refunded' => 'Đã hoàn tiền'][$booking->status] ?? 'Không xác định' }}</span>
+                                <span class="{{ \App\Helpers\BookingStatusHelper::getStatusClass($booking->status) }}">
+                                    {{ \App\Helpers\BookingStatusHelper::getStatusLabel($booking->status) }}</span>
                             </li>
                         </ul>
                     </div>

@@ -30,6 +30,7 @@ class Booking extends Model
         'guest_id',
         'special_request',
         'service_plus_status', // Thêm trường này
+        'paid_amount'
 
     ];
     protected $casts = [

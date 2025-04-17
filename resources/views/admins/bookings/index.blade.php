@@ -75,17 +75,17 @@
                         </form>
 
                         @if (session('success'))
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                {{ session('success') }}
-                                <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('success') }}
+                            <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
                         @endif
 
                         @if (session('error'))
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                {{ session('error') }}
-                                <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ session('error') }}
+                            <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
                         @endif
 
                         <div class="booking-table">
@@ -94,73 +94,76 @@
                                     <thead class="table-dark">
                                         <tr>
                                             <th>ID</th>
-                                            <th>Mã đặt phòng</th>
+                                            <th>Mã</th>
                                             <th>Khách hàng</th>
                                             <th>Phòng</th>
-                                            <th>Ngày Check-in</th>
-                                            <th>Ngày Check-out</th>
+                                            <th>Check-in</th>
+                                            <th>Check-out</th>
                                             <th>Tổng giá</th>
+                                            <th>Đã trả</th>
                                             <th>Trạng thái</th>
                                             <th>Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($bookings as $index => $booking)
-                                            <tr>
-                                                <td class="text-center">{{ $index + 1 }}</td>
-                                                <td>{{ $booking->booking_code }}</td>
-                                                <td>
-                                                    <small> Người đặt : {{ $booking->user->name ?? 'Không xác định' }}</small>
-                                                    @if ($booking->guests->isNotEmpty())
-                                                        <br>
-                                                        <small>
-                                                            Người ở:
-                                                            @foreach ($booking->guests as $key => $guest)
-                                                                {{ $guest->name }}{{ $key < count($booking->guests) - 1 ? ', ' : '' }}
-                                                            @endforeach
-                                                        </small>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @foreach ($booking->rooms as $keyI => $room)
-                                                        <span>{{ $room->room_number }}</span>
-                                                        @if ($keyI < count($booking->rooms) - 1)
-                                                            ,
-                                                        @endif
+                                        <tr>
+                                            <td class="text-center">{{ $index + 1 }}</td>
+                                            <td>{{ $booking->booking_code }}</td>
+                                            <td>
+                                                <small> Người đặt : {{ $booking->user->name ?? 'Không xác định' }}</small>
+                                                @if ($booking->guests->isNotEmpty())
+                                                <br>
+                                                <small>
+                                                    Người ở:
+                                                    @foreach ($booking->guests as $key => $guest)
+                                                    {{ $guest->name }}{{ $key < count($booking->guests) - 1 ? ', ' : '' }}
                                                     @endforeach
-                                                </td>
-                                                <td>{{ \App\Helpers\FormatHelper::formatDate($booking->check_in) }}</td>
-                                                <td>{{ \App\Helpers\FormatHelper::formatDate($booking->check_out) }}</td>
-                                                <td>{{ \App\Helpers\FormatHelper::formatPrice($booking->total_price) }}</td>
-                                                <td>
-                                                    <form action="{{ route('admin.bookings.update', $booking->id) }}" method="POST" style="display:inline;" id="statusForm-{{ $booking->id }}">
-                                                        @csrf
-                                                        @method('PUT')
-                                                        <select name="status" class="form-select" onchange="handleStatusChange(this, '{{ $booking->id }}', {{ $booking->total_guests }})">
-                                                            <option value="confirmed" {{ $booking->status == 'confirmed' ? 'selected' : '' }}>Đã xác nhận</option>
-                                                            <option value="paid" {{ $booking->status == 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
-                                                            <option value="check_in" {{ $booking->status == 'check_in' ? 'selected' : '' }}>Đã check in</option>
-                                                            <option value="check_out" {{ $booking->status == 'check_out' ? 'selected' : '' }}>Đã checkout</option>
-                                                            <option value="cancelled" {{ $booking->status == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
-                                                            <option value="refunded" {{ $booking->status == 'refunded' ? 'selected' : '' }}>Đã hoàn tiền</option>
-                                                        </select>
-                                                    </form>
-                                                </td>
-                                                <td >
-                                                    <div class="btn-group">
-                                                        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-                                                            <i class="ri-settings-3-line"></i>
-                                                        </button>
-                                                        <ul class="dropdown-menu">
-                                                            <li>
-                                                                <a class="dropdown-item" href="{{ route('admin.bookings.show', $booking->id) }}">
-                                                                    <i class="ri-eye-line"></i> Chi tiết
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                </small>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @foreach ($booking->rooms as $keyI => $room)
+                                                <span>{{ $room->room_number }}</span>
+                                                @if ($keyI < count($booking->rooms) - 1)
+                                                    ,
+                                                    @endif
+                                                    @endforeach
+                                            </td>
+                                            <td>{{ \App\Helpers\FormatHelper::formatDate($booking->check_in) }}</td>
+                                            <td>{{ \App\Helpers\FormatHelper::formatDate($booking->check_out) }}</td>
+                                            <td>{{ \App\Helpers\FormatHelper::formatPrice($booking->total_price) }}</td>
+                                            <td>{{ \App\Helpers\FormatHelper::formatPrice($booking->paid_amount) }}</td>
+                                            <td>
+                                                <form action="{{ route('admin.bookings.update', $booking->id) }}" method="POST" style="display:inline;" id="statusForm-{{ $booking->id }}">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <select name="status" class="form-select" onchange="handleStatusChange(this, '{{ $booking->id }}', {{ $booking->total_guests }})">
+                                                        <option value="unpaid" {{ $booking->status == 'unpaid' ? 'selected' : '' }}>{{ \App\Helpers\BookingStatusHelper::getStatusLabel('unpaid') }}</option>
+                                                        <option value="partial" {{ $booking->status == 'partial' ? 'selected' : '' }}>{{ \App\Helpers\BookingStatusHelper::getStatusLabel('partial') }}</option>
+                                                        <option value="paid" {{ $booking->status == 'paid' ? 'selected' : '' }}>{{ \App\Helpers\BookingStatusHelper::getStatusLabel('paid') }}</option>
+                                                        <option value="check_in" {{ $booking->status == 'check_in' ? 'selected' : '' }}>{{ \App\Helpers\BookingStatusHelper::getStatusLabel('check_in') }}</option>
+                                                        <option value="check_out" {{ $booking->status == 'check_out' ? 'selected' : '' }}>{{ \App\Helpers\BookingStatusHelper::getStatusLabel('check_out') }}</option>
+                                                        <option value="cancelled" {{ $booking->status == 'cancelled' ? 'selected' : '' }}>{{ \App\Helpers\BookingStatusHelper::getStatusLabel('cancelled') }}</option>
+                                                        <option value="refunded" {{ $booking->status == 'refunded' ? 'selected' : '' }}>{{ \App\Helpers\BookingStatusHelper::getStatusLabel('refunded') }}</option>
+                                                    </select>
+                                                </form>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                                        <i class="ri-settings-3-line"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item" href="{{ route('admin.bookings.show', $booking->id) }}">
+                                                                <i class="ri-eye-line"></i> Chi tiết
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -228,7 +231,7 @@
                 addButton.type = 'button';
                 addButton.className = 'btn btn-sm btn-info mb-3';
                 addButton.innerText = 'Thêm người ở';
-                addButton.onclick = function () {
+                addButton.onclick = function() {
                     const currentForms = guestForms.getElementsByClassName('guest-form').length;
                     if (currentForms < maxGuests) {
                         addGuestForm(guestForms, maxGuests, currentForms);
@@ -241,57 +244,57 @@
 
             modal.show();
 
-            document.getElementById('checkInForm').onsubmit = function (e) {
+            document.getElementById('checkInForm').onsubmit = function(e) {
                 e.preventDefault();
 
                 // Xóa các thông báo lỗi cũ
                 document.querySelectorAll('.error-message').forEach(el => el.remove());
 
                 fetch(this.action, {
-                    method: 'POST',
-                    body: new FormData(this),
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                    },
-                })
-                .then(response => {
-                    console.log('Response status:', response.status); // Debug response status
-                    if (!response.ok) {
-                        return response.text().then(text => {
-                            console.log('Response text:', text); // Debug response text
-                            try {
-                                const data = JSON.parse(text);
-                                if (response.status === 422) {
-                                    // Hiển thị lỗi validation
-                                    displayValidationErrors(data.errors);
-                                } else if (response.status === 419) {
-                                    // Lỗi CSRF token
-                                    displayGeneralError('Phiên làm việc đã hết hạn. Vui lòng tải lại trang.');
-                                } else {
-                                    displayGeneralError(data.message || 'Lỗi không xác định từ server.');
+                        method: 'POST',
+                        body: new FormData(this),
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                    })
+                    .then(response => {
+                        console.log('Response status:', response.status); // Debug response status
+                        if (!response.ok) {
+                            return response.text().then(text => {
+                                console.log('Response text:', text); // Debug response text
+                                try {
+                                    const data = JSON.parse(text);
+                                    if (response.status === 422) {
+                                        // Hiển thị lỗi validation
+                                        displayValidationErrors(data.errors);
+                                    } else if (response.status === 419) {
+                                        // Lỗi CSRF token
+                                        displayGeneralError('Phiên làm việc đã hết hạn. Vui lòng tải lại trang.');
+                                    } else {
+                                        displayGeneralError(data.message || 'Lỗi không xác định từ server.');
+                                    }
+                                } catch (e) {
+                                    console.error('Phản hồi không phải JSON:', text);
+                                    displayGeneralError('Lỗi hệ thống: Không thể xử lý phản hồi từ server.');
                                 }
-                            } catch (e) {
-                                console.error('Phản hồi không phải JSON:', text);
-                                displayGeneralError('Lỗi hệ thống: Không thể xử lý phản hồi từ server.');
-                            }
-                            throw new Error('Validation or server error');
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        form.submit();
-                    } else {
-                        displayGeneralError(data.message);
-                    }
-                })
-                .catch(error => {
-                    if (error.message !== 'Validation or server error') {
-                        console.error('Lỗi:', error);
-                        displayGeneralError('Lỗi hệ thống: Không thể kết nối đến server.');
-                    }
-                });
+                                throw new Error('Validation or server error');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            form.submit();
+                        } else {
+                            displayGeneralError(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        if (error.message !== 'Validation or server error') {
+                            console.error('Lỗi:', error);
+                            displayGeneralError('Lỗi hệ thống: Không thể kết nối đến server.');
+                        }
+                    });
             };
         } else {
             form.submit();
@@ -405,7 +408,7 @@
         const preview = document.getElementById(previewId);
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-            reader.onload = function (e) {
+            reader.onload = function(e) {
                 preview.src = e.target.result;
                 preview.style.display = 'block';
             };
