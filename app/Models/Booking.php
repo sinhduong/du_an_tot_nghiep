@@ -91,4 +91,9 @@ class Booking extends Model
                     ->withPivot('quantity', 'price')
                     ->withTimestamps();
     }
+
+    public function refund()
+    {
+        return $this->hasOne(Refund::class);
+    }
 }

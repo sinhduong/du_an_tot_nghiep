@@ -25,11 +25,14 @@ use App\Http\Controllers\Admin\StaffRoleController;
 use App\Http\Controllers\Admin\StaffShiftController;
 use App\Http\Controllers\Admin\ServicePlusController;
 use App\Http\Controllers\Admin\IntroductionController;
+use App\Http\Controllers\Admin\PaymentSettingController;
+use App\Http\Controllers\Admin\RefundController;
 use App\Http\Controllers\Admin\SaleRoomTypeController;
 use App\Http\Controllers\Admin\StaffAttendanceController;
 use App\Http\Controllers\Admin\RoomTypePromotionController;
 use App\Http\Controllers\Admin\RulesAndRegulationController;
 use App\Http\Controllers\Client\BookingController as ClientBookingController;
+use App\Http\Controllers\Client\RefundController as ClientRefundController;
 
 // client
 
@@ -112,6 +115,13 @@ Route::prefix('admin')
                 Route::delete('/{room}/force-delete', [RoomController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
             });
 
+        Route::prefix('payment-settings')
+            ->as('payment-settings.')
+            ->group(function () {
+                Route::get('/', [PaymentSettingController::class, 'index'])->name('index');
+                Route::put('/', [PaymentSettingController::class, 'update'])->name('update');
+            });
+
         Route::prefix('bookings')
             ->as('bookings.')
             ->group(function () {
@@ -119,12 +129,23 @@ Route::prefix('admin')
                 Route::get('/create', [BookingController::class, 'create'])->name('create');
                 Route::post('/store', [BookingController::class, 'store'])->name('store');
                 Route::post('/checkin/store', [BookingController::class, 'storeCheckIn'])->name('checkin.store');
+                Route::post('/paid/store', [BookingController::class, 'storePaid'])->name('paid.store');
+                Route::get('{id}/returnVnpay', [BookingController::class, 'returnVnpay'])->name('return.vnpay');
+                Route::get('{id}/get-remaining-amount', [BookingController::class, 'getRemainingAmount'])->name('get-remaining-amount');
                 Route::get('{id}/show', [BookingController::class, 'show'])->name('show');
                 Route::post('{id}/service-plus', [BookingController::class, 'updateServicePlus'])->name('service_plus.update');
                 Route::get('{id}/edit', [BookingController::class, 'edit'])->name('edit');
                 Route::put('{id}/update', [BookingController::class, 'update'])->name('update');
                 Route::delete('{id}/destroy', [BookingController::class, 'destroy'])->name('destroy');
             });
+
+        Route::prefix('refunds')
+            ->as('refunds.')
+            ->group(function () {
+                Route::get('/{refund}/approve', [RefundController::class, 'showApproveForm'])->name('approve-form');
+                Route::post('/{refund}/approve', [RefundController::class, 'approveRefund'])->name('approve');
+            });
+
 
         Route::prefix('staffs') // Đặt tên theo số nhiều chuẩn RESTful
             ->as('staffs.') // Tên route để sử dụng dễ dàng trong view/controller
@@ -221,17 +242,17 @@ Route::prefix('admin')
                 Route::delete('/{id}/force-delete', [AmenityController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
             });
 
-        Route::prefix('bookings')
-            ->as('bookings.')
-            ->group(function () {
-                Route::get('/', [BookingController::class, 'index'])->name('index');
-                Route::get('/create', [BookingController::class, 'create'])->name('create');
-                Route::post('/store', [BookingController::class, 'store'])->name('store');
-                Route::get('{id}/show', [BookingController::class, 'show'])->name('show');
-                Route::get('{id}/edit', [BookingController::class, 'edit'])->name('edit');
-                Route::put('{id}/update', [BookingController::class, 'update'])->name('update');
-                Route::delete('{id}/destroy', [BookingController::class, 'destroy'])->name('destroy');
-            });
+        // Route::prefix('bookings')
+        //     ->as('bookings.')
+        //     ->group(function () {
+        //         Route::get('/', [BookingController::class, 'index'])->name('index');
+        //         Route::get('/create', [BookingController::class, 'create'])->name('create');
+        //         Route::post('/store', [BookingController::class, 'store'])->name('store');
+        //         Route::get('{id}/show', [BookingController::class, 'show'])->name('show');
+        //         Route::get('{id}/edit', [BookingController::class, 'edit'])->name('edit');
+        //         Route::put('{id}/update', [BookingController::class, 'update'])->name('update');
+        //         Route::delete('{id}/destroy', [BookingController::class, 'destroy'])->name('destroy');
+        //     });
 
         Route::prefix('systems')
             ->as('systems.')
@@ -246,39 +267,39 @@ Route::prefix('admin')
             });
 
         Route::prefix('contacts')
-        ->as('contacts.')
-        ->group(function () {
-            Route::get('/contacts', [ContactsController::class, 'index'])->name('index');
-            Route::get('/contacts/{contact}', [ContactsController::class, 'show'])->name('show');
-            Route::post('/contacts/{contact}/reply', [ContactsController::class, 'reply'])->name('reply');
-        });
+            ->as('contacts.')
+            ->group(function () {
+                Route::get('/contacts', [ContactsController::class, 'index'])->name('index');
+                Route::get('/contacts/{contact}', [ContactsController::class, 'show'])->name('show');
+                Route::post('/contacts/{contact}/reply', [ContactsController::class, 'reply'])->name('reply');
+            });
 
         Route::prefix('services') // Đặt tên theo số nhiều chuẩn RESTful
-        ->as('services.') // Tên route để sử dụng dễ dàng trong view/controller
-        ->group(function () {
-            Route::get('/', [ServiceController::class, 'index'])->name('index'); // Danh sách loại phòng
-            Route::get('/create', [ServiceController::class, 'create'])->name('create'); // Form thêm mới
-            Route::post('/store', [ServiceController::class, 'store'])->name('store'); // Lưu loại phòng
-            Route::get('{id}/show', [ServiceController::class, 'show'])->name('show'); // Form chỉnh sửa
-            Route::get('{id}/edit', [ServiceController::class, 'edit'])->name('edit'); // Form chỉnh sửa
-            Route::put('{id}/update', [ServiceController::class, 'update'])->name('update'); // Cập nhật
-            Route::delete('{id}/destroy', [ServiceController::class, 'destroy'])->name('destroy'); // Xóa loại phòng
-            Route::get('/trashed', [ServiceController::class, 'trashed'])->name('trashed'); // Danh sách phòng đã xóa mềm
-            Route::patch('/{id}/restore', [ServiceController::class, 'restore'])->name('restore'); // Khôi phục phòng đã xóa mềm
-            Route::delete('/{id}/force-delete', [ServiceController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
-        });
+            ->as('services.') // Tên route để sử dụng dễ dàng trong view/controller
+            ->group(function () {
+                Route::get('/', [ServiceController::class, 'index'])->name('index'); // Danh sách loại phòng
+                Route::get('/create', [ServiceController::class, 'create'])->name('create'); // Form thêm mới
+                Route::post('/store', [ServiceController::class, 'store'])->name('store'); // Lưu loại phòng
+                Route::get('{id}/show', [ServiceController::class, 'show'])->name('show'); // Form chỉnh sửa
+                Route::get('{id}/edit', [ServiceController::class, 'edit'])->name('edit'); // Form chỉnh sửa
+                Route::put('{id}/update', [ServiceController::class, 'update'])->name('update'); // Cập nhật
+                Route::delete('{id}/destroy', [ServiceController::class, 'destroy'])->name('destroy'); // Xóa loại phòng
+                Route::get('/trashed', [ServiceController::class, 'trashed'])->name('trashed'); // Danh sách phòng đã xóa mềm
+                Route::patch('/{id}/restore', [ServiceController::class, 'restore'])->name('restore'); // Khôi phục phòng đã xóa mềm
+                Route::delete('/{id}/force-delete', [ServiceController::class, 'forceDelete'])->name('forceDelete'); // Xóa vĩnh viễn
+            });
 
         Route::prefix('service_plus') // Đặt tên theo số nhiều chuẩn RESTful
-        ->as('service_plus.') // Tên route để sử dụng dễ dàng trong view/controller
-        ->group(function () {
-            Route::get('/', [ServicePlusController::class, 'index'])->name('index'); // Danh sách loại phòng
-            Route::get('/create', [ServicePlusController::class, 'create'])->name('create'); // Form thêm mới
-            Route::post('/store', [ServicePlusController::class, 'store'])->name('store'); // Lưu loại phòng
-            Route::get('{id}/show', [ServicePlusController::class, 'show'])->name('show'); // Form chỉnh sửa
-            Route::get('{id}/edit', [ServicePlusController::class, 'edit'])->name('edit'); // Form chỉnh sửa
-            Route::put('{id}/update', [ServicePlusController::class, 'update'])->name('update'); // Cập nhật
-            Route::delete('{id}/destroy', [ServicePlusController::class, 'destroy'])->name('destroy'); // Xóa loại phòng
-        });
+            ->as('service_plus.') // Tên route để sử dụng dễ dàng trong view/controller
+            ->group(function () {
+                Route::get('/', [ServicePlusController::class, 'index'])->name('index'); // Danh sách loại phòng
+                Route::get('/create', [ServicePlusController::class, 'create'])->name('create'); // Form thêm mới
+                Route::post('/store', [ServicePlusController::class, 'store'])->name('store'); // Lưu loại phòng
+                Route::get('{id}/show', [ServicePlusController::class, 'show'])->name('show'); // Form chỉnh sửa
+                Route::get('{id}/edit', [ServicePlusController::class, 'edit'])->name('edit'); // Form chỉnh sửa
+                Route::put('{id}/update', [ServicePlusController::class, 'update'])->name('update'); // Cập nhật
+                Route::delete('{id}/destroy', [ServicePlusController::class, 'destroy'])->name('destroy'); // Xóa loại phòng
+            });
 
         Route::resource('promotions', PromotionController::class);
         Route::resource('roles', RoleController::class);
@@ -317,7 +338,7 @@ Route::prefix('bookings')
         Route::get('/create', [ClientBookingController::class, 'create'])->name('create');
         Route::post('/confirm', [ClientBookingController::class, 'confirm'])->name('confirm'); // Chuyển từ create sang confirm
         Route::post('/store', [ClientBookingController::class, 'store'])->name('store'); // Lưu dữ liệu từ confirm
-        Route::get('{id}/returnVnpay',           [ClientBookingController::class, 'returnVnpay'])->name('return.vnpay');
+        Route::get('{id}/returnVnpay', [ClientBookingController::class, 'returnVnpay'])->name('return.vnpay');
         Route::get('{id}/show', [ClientBookingController::class, 'show'])->name('show');
         Route::get('{id}/edit', [ClientBookingController::class, 'edit'])->name('edit');
         Route::put('{id}', [ClientBookingController::class, 'update'])->name('update');
@@ -326,6 +347,11 @@ Route::prefix('bookings')
 
         Route::get('/payment/callback', [ClientBookingController::class, 'paymentCallback'])->name('payment.callback');
         Route::get('/success', [ClientBookingController::class, 'success'])->name('success');
+        Route::post('{id}/process-next-payment', [ClientBookingController::class, 'processNextPayment'])->name('process-next-payment');
     });
 
 Route::get('payments', [HomeController::class, 'paymentsList'])->name('payments.lists');
+
+Route::prefix('refunds')->group(function () {
+    Route::post('/{booking}/request', [ClientRefundController::class, 'requestRefund'])->name('refunds.request');
+});

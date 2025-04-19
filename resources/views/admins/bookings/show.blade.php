@@ -2,84 +2,340 @@
 
 <style>
     /* CSS tổng thể */
-    .lh-main-content { background: #f1f3f5; min-height: 100vh; padding: 20px 0; }
-    .card { border: none; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: all 0.3s; }
-    .card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-    .lh-page-title { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    .lh-breadcrumb h5 { font-size: 1.25rem; color: #0d6efd; font-weight: 600; }
-    .lh-breadcrumb ul { list-style: none; padding: 0; display: flex; gap: 10px; font-size: 0.9rem; }
-    .lh-breadcrumb ul li a { color: #6c757d; text-decoration: none; }
-    .lh-breadcrumb ul li a:hover { color: #0d6efd; }
+    .lh-main-content {
+        background: #f1f3f5;
+        min-height: 100vh;
+        padding: 20px 0;
+    }
+
+    .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s;
+    }
+
+    .card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .lh-page-title {
+        background: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .lh-breadcrumb h5 {
+        font-size: 1.25rem;
+        color: #0d6efd;
+        font-weight: 600;
+    }
+
+    .lh-breadcrumb ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        gap: 10px;
+        font-size: 0.9rem;
+    }
+
+    .lh-breadcrumb ul li a {
+        color: #6c757d;
+        text-decoration: none;
+    }
+
+    .lh-breadcrumb ul li a:hover {
+        color: #0d6efd;
+    }
 
     /* Booking Section */
-    .booking-section { margin-bottom: 20px; background: #fff; border-radius: 6px; overflow: hidden; border: 1px solid #e9ecef; }
-    .booking-section-header { padding: 12px 15px; background: #f8f9fa; color: #333; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-    .booking-section-header h5 { margin: 0; font-size: 1rem; font-weight: 600; }
-    .booking-section-header .toggle-icon { font-size: 1.1rem; transition: transform 0.3s; }
-    .booking-section-header .toggle-icon.open { transform: rotate(180deg); }
-    .booking-section-content { padding: 15px; display: none; }
-    .booking-section-content.open { display: block; }
+    .booking-section {
+        margin-bottom: 20px;
+        background: #fff;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 1px solid #e9ecef;
+    }
+
+    .booking-section-header {
+        padding: 12px 15px;
+        background: #f8f9fa;
+        color: #333;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .booking-section-header h5 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .booking-section-header .toggle-icon {
+        font-size: 1.1rem;
+        transition: transform 0.3s;
+    }
+
+    .booking-section-header .toggle-icon.open {
+        transform: rotate(180deg);
+    }
+
+    .booking-section-content {
+        padding: 15px;
+        display: none;
+    }
+
+    .booking-section-content.open {
+        display: block;
+    }
 
     /* Info Items */
-    .booking-info { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-    .info-item { padding: 10px; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 4px; }
-    .info-item label { font-weight: 500; color: #555; margin-bottom: 4px; display: block; font-size: 0.875rem; }
-    .info-item span { color: #333; font-size: 0.875rem; word-break: break-word; }
+    .booking-info {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    .info-item {
+        padding: 10px;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 4px;
+    }
+
+    .info-item label {
+        font-weight: 500;
+        color: #555;
+        margin-bottom: 4px;
+        display: block;
+        font-size: 0.875rem;
+    }
+
+    .info-item span {
+        color: #333;
+        font-size: 0.875rem;
+        word-break: break-word;
+    }
 
     /* Avatar & Images */
-    .user-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #e9ecef; }
-    .room-image, .id-photo { max-width: 200px; height: auto; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; transition: transform 0.2s; }
-    .room-image:hover, .id-photo:hover { transform: scale(1.05); }
+    .user-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e9ecef;
+    }
+
+    .room-image,
+    .id-photo {
+        max-width: 200px;
+        height: auto;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .room-image:hover,
+    .id-photo:hover {
+        transform: scale(1.05);
+    }
 
     /* Status Badges */
-    .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.875rem; font-weight: 500; color: #fff; display: inline-block; }
-    .status-pending_confirmation { background: #f1c40f; }
-    .status-confirmed { background: #17a2b8; }
-    .status-paid { background: #28a745; }
-    .status-check_in { background: #007bff; }
-    .status-check_out { background: #2197ff; }
-    .status-cancelled { background: #dc3545; }
-    .status-refunded { background: #ff851b; }
-    .status-unknown { background: #6c757d; }
-    .status-pending { background: #f1c40f; }
-    .status-completed { background: #28a745; }
-    .status-failed { background: #dc3545; }
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #fff;
+        display: inline-block;
+    }
 
-    .text-pending_confirmation { color: #f1c40f !important; }
-    .text-confirmed { color: #17a2b8 !important; }
-    .text-paid { color: #28a745 !important; }
-    .text-check_in { color: #007bff !important; }
-    .text-check_out { color: #52a1e6 !important; }
-    .text-cancelled { color: #dc3545 !important; }
-    .text-refunded { color: #ff851b !important; }
-    .text-unknown { color: #6c757d !important; }
-    .text-pending { color: #f1c40f !important; }
-    .text-completed { color: #28a745 !important; }
-    .text-failed { color: #dc3545 !important; }
+    .status-pending_confirmation {
+        background: #f1c40f;
+    }
+
+    .status-confirmed {
+        background: #17a2b8;
+    }
+
+    .status-paid {
+        background: #28a745;
+    }
+
+    .status-check_in {
+        background: #007bff;
+    }
+
+    .status-check_out {
+        background: #2197ff;
+    }
+
+    .status-cancelled {
+        background: #dc3545;
+    }
+
+    .status-refunded {
+        background: #ff851b;
+    }
+
+    .status-unknown {
+        background: #6c757d;
+    }
+
+    .status-pending {
+        background: #f1c40f;
+    }
+
+    .status-completed {
+        background: #28a745;
+    }
+
+    .status-failed {
+        background: #dc3545;
+    }
+
+    .text-pending_confirmation {
+        color: #f1c40f !important;
+    }
+
+    .text-confirmed {
+        color: #17a2b8 !important;
+    }
+
+    .text-paid {
+        color: #28a745 !important;
+    }
+
+    .text-check_in {
+        color: #007bff !important;
+    }
+
+    .text-check_out {
+        color: #52a1e6 !important;
+    }
+
+    .text-cancelled {
+        color: #dc3545 !important;
+    }
+
+    .text-refunded {
+        color: #ff851b !important;
+    }
+
+    .text-unknown {
+        color: #6c757d !important;
+    }
+
+    .text-pending {
+        color: #f1c40f !important;
+    }
+
+    .text-completed {
+        color: #28a745 !important;
+    }
+
+    .text-failed {
+        color: #dc3545 !important;
+    }
+
     /* Method Badges */
-    .text-momo { color: #a50064; }
-    .text-vnpay { color: #0056b3; }
-    .text-cash { color: #28a745; }
+    .text-momo {
+        color: #a50064;
+    }
+
+    .text-vnpay {
+        color: #0056b3;
+    }
+
+    .text-cash {
+        color: #28a745;
+    }
+
     /* Lists */
-    .room-list, .payment-list, .service-list { list-style: none; padding: 0; }
-    .room-list li, .payment-list li, .service-list li { padding: 10px; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 4px; margin-bottom: 10px; }
-    .amenities-list, .rules-list { list-style: none; padding-left: 10px; margin: 0; }
-    .amenities-list li, .rules-list li { margin-bottom: 6px; color: #666; font-size: 0.875rem; }
-    .amenities-list li:before, .rules-list li:before { content: "✓"; color: #28a745; margin-right: 6px; }
+    .room-list,
+    .payment-list,
+    .service-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .room-list li,
+    .payment-list li,
+    .service-list li {
+        padding: 10px;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
+
+    .amenities-list,
+    .rules-list {
+        list-style: none;
+        padding-left: 10px;
+        margin: 0;
+    }
+
+    .amenities-list li,
+    .rules-list li {
+        margin-bottom: 6px;
+        color: #666;
+        font-size: 0.875rem;
+    }
+
+    .amenities-list li:before,
+    .rules-list li:before {
+        content: "✓";
+        color: #28a745;
+        margin-right: 6px;
+    }
 
     /* Buttons */
-    .btn { padding: 8px 16px; border-radius: 4px; font-size: 0.875rem; }
-    .btn-primary { background: #0d6efd; border: none; }
-    .btn-secondary { background: #6c757d; border: none; }
-    .btn-sm { padding: 5px 10px; }
+    .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 0.875rem;
+    }
+
+    .btn-primary {
+        background: #0d6efd;
+        border: none;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        border: none;
+    }
+
+    .btn-sm {
+        padding: 5px 10px;
+    }
 
     /* Table */
-    .table { font-size: 0.875rem; }
-    .table th, .table td { vertical-align: middle; }
+    .table {
+        font-size: 0.875rem;
+    }
+
+    .table th,
+    .table td {
+        vertical-align: middle;
+    }
 
     /* Tooltip */
-    .tooltip-inner { background: #333; color: #fff; padding: 5px 10px; border-radius: 4px; }
-    .tooltip .tooltip-arrow::before { border-top-color: #333 !important; }
+    .tooltip-inner {
+        background: #333;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 4px;
+    }
+
+    .tooltip .tooltip-arrow::before {
+        border-top-color: #333 !important;
+    }
 </style>
 @section('content')
 
@@ -97,31 +353,31 @@
             </div>
             <div>
                 @php
-                    $stayStatus = '';
-                    $stayStatusClass = '';
-                    $tooltipInfo = '';
-                    if (!in_array($booking->status, ['cancelled', 'refunded'])) {
-                        if ($booking->actual_check_in && !$booking->actual_check_out) {
-                            $stayStatus = 'Đã ở';
-                            $stayStatusClass = 'status-check_in';
-                            $tooltipInfo = 'Check-in thực tế: ' . \App\Helpers\FormatHelper::formatDateTime($booking->actual_check_in);
-                        } elseif ($booking->actual_check_in && $booking->actual_check_out) {
-                            $stayStatus = 'Đã ra';
-                            $stayStatusClass = 'status-check_out';
-                            $tooltipInfo = 'Check-out thực tế: ' . \App\Helpers\FormatHelper::formatDateTime($booking->actual_check_out);
-                        } else {
-                            $stayStatus = 'N/A';
-                            $stayStatusClass = 'status-unknown';
-                        }
-                    } else {
-                        $stayStatus = 'N/A';
-                        $stayStatusClass = 'status-unknown';
-                    }
+                $stayStatus = '';
+                $stayStatusClass = '';
+                $tooltipInfo = '';
+                if (!in_array($booking->status, ['cancelled', 'refunded'])) {
+                if ($booking->actual_check_in && !$booking->actual_check_out) {
+                $stayStatus = 'Đã ở';
+                $stayStatusClass = 'status-check_in';
+                $tooltipInfo = 'Check-in thực tế: ' . \App\Helpers\FormatHelper::formatDateTime($booking->actual_check_in);
+                } elseif ($booking->actual_check_in && $booking->actual_check_out) {
+                $stayStatus = 'Đã ra';
+                $stayStatusClass = 'status-check_out';
+                $tooltipInfo = 'Check-out thực tế: ' . \App\Helpers\FormatHelper::formatDateTime($booking->actual_check_out);
+                } else {
+                $stayStatus = 'N/A';
+                $stayStatusClass = 'status-unknown';
+                }
+                } else {
+                $stayStatus = 'N/A';
+                $stayStatusClass = 'status-unknown';
+                }
                 @endphp
                 @if ($stayStatus !== 'N/A')
-                    <span class="status-badge {{ $stayStatusClass }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $tooltipInfo }}">
-                        {{ $stayStatus }}
-                    </span>
+                <span class="status-badge {{ $stayStatusClass }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $tooltipInfo }}">
+                    {{ $stayStatus }}
+                </span>
                 @endif
             </div>
         </div>
@@ -150,18 +406,18 @@
                                     <li>
                                         <strong>Ảnh CCCD:</strong><br>
                                         @if ($booking->user->id_photo)
-                                            @php
-                                                $idPhotoPath = $booking->user->id_photo;
-                                                $fileName = str_contains($idPhotoPath, 'id_photos/') ? basename($idPhotoPath) : $idPhotoPath;
-                                                $fullPath = Storage::url('id_photos/' . $fileName);
-                                            @endphp
-                                            @if (Storage::disk('public')->exists('id_photos/' . $fileName))
-                                                <img style="width:150;height:80px" src="{{ $fullPath }}" alt="Ảnh CCCD" class="id-photo" onclick="showImageModal(this.src)">
-                                            @else
-                                                Không tồn tại file ảnh
-                                            @endif
+                                        @php
+                                        $idPhotoPath = $booking->user->id_photo;
+                                        $fileName = str_contains($idPhotoPath, 'id_photos/') ? basename($idPhotoPath) : $idPhotoPath;
+                                        $fullPath = Storage::url('id_photos/' . $fileName);
+                                        @endphp
+                                        @if (Storage::disk('public')->exists('id_photos/' . $fileName))
+                                        <img style="width:150;height:80px" src="{{ $fullPath }}" alt="Ảnh CCCD" class="id-photo" onclick="showImageModal(this.src)">
                                         @else
-                                            Không có
+                                        Không tồn tại file ảnh
+                                        @endif
+                                        @else
+                                        Không có
                                         @endif
                                     </li>
                                     <li><strong>CCCD:</strong> {{ $booking->user->id_number ?? 'Không có' }}</li>
@@ -181,41 +437,41 @@
                             <div class="booking-section-content open">
                                 <ul class="list-unstyled">
                                     @if ($booking->guests->isEmpty())
-                                        <li>Chưa có thông tin người ở.</li>
+                                    <li>Chưa có thông tin người ở.</li>
                                     @else
-                                        @foreach ($booking->guests as $index => $guest)
-                                            <li class="guest-item mb-3">
-                                                <h6>Người ở {{ $index + 1 }}</h6>
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <strong>Tên:</strong> {{ $guest->name ?? 'Không có' }}<br>
-                                                        <strong>CCCD:</strong> {{ $guest->id_number ?? 'Không có' }}<br>
-                                                        <strong>Ngày sinh:</strong> {{ $guest->birth_date ? \App\Helpers\FormatHelper::formatDate($guest->birth_date) : 'Không có' }}<br>
-                                                        <strong>Giới tính:</strong> {{ $guest->gender ?? 'Không xác định' }}<br>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <strong>Số điện thoại:</strong> {{ $guest->phone ?? 'Không có' }}<br>
-                                                        <strong>Email:</strong> {{ $guest->email ?? 'Không có' }}<br>
-                                                        <strong>Mối quan hệ:</strong> {{ $guest->relationship ?? 'Không có' }}<br>
-                                                        <strong>Ảnh CCCD:</strong><br>
-                                                        @if ($guest->id_photo)
-                                                            @php
-                                                                $idPhotoPath = $guest->id_photo;
-                                                                $fileName = str_contains($idPhotoPath, 'id_photos/') ? basename($idPhotoPath) : $idPhotoPath;
-                                                                $fullPath = Storage::url('id_photos/' . $fileName);
-                                                            @endphp
-                                                            @if (Storage::disk('public')->exists('id_photos/' . $fileName))
-                                                                <img src="{{ $fullPath }}" alt="Ảnh CCCD" class="id-photo" onclick="showImageModal(this.src)">
-                                                            @else
-                                                                Không tồn tại file ảnh
-                                                            @endif
-                                                        @else
-                                                            Không có
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        @endforeach
+                                    @foreach ($booking->guests as $index => $guest)
+                                    <li class="guest-item mb-3">
+                                        <h6>Người ở {{ $index + 1 }}</h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <strong>Tên:</strong> {{ $guest->name ?? 'Không có' }}<br>
+                                                <strong>CCCD:</strong> {{ $guest->id_number ?? 'Không có' }}<br>
+                                                <strong>Ngày sinh:</strong> {{ $guest->birth_date ? \App\Helpers\FormatHelper::formatDate($guest->birth_date) : 'Không có' }}<br>
+                                                <strong>Giới tính:</strong> {{ $guest->gender ?? 'Không xác định' }}<br>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <strong>Số điện thoại:</strong> {{ $guest->phone ?? 'Không có' }}<br>
+                                                <strong>Email:</strong> {{ $guest->email ?? 'Không có' }}<br>
+                                                <strong>Mối quan hệ:</strong> {{ $guest->relationship ?? 'Không có' }}<br>
+                                                <strong>Ảnh CCCD:</strong><br>
+                                                @if ($guest->id_photo)
+                                                @php
+                                                $idPhotoPath = $guest->id_photo;
+                                                $fileName = str_contains($idPhotoPath, 'id_photos/') ? basename($idPhotoPath) : $idPhotoPath;
+                                                $fullPath = Storage::url('id_photos/' . $fileName);
+                                                @endphp
+                                                @if (Storage::disk('public')->exists('id_photos/' . $fileName))
+                                                <img src="{{ $fullPath }}" alt="Ảnh CCCD" class="id-photo" onclick="showImageModal(this.src)">
+                                                @else
+                                                Không tồn tại file ảnh
+                                                @endif
+                                                @else
+                                                Không có
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </li>
+                                    @endforeach
                                     @endif
                                 </ul>
                             </div>
@@ -234,23 +490,29 @@
                     <div class="booking-section-content">
                         <ul class="room-list">
                             @foreach ($booking->rooms as $room)
-                                <li>
-                                    <div class="row g-2">
-                                        <div class="col-md-6"><strong>Số phòng:</strong> {{ $room->room_number }}</div>
-                                        <div class="col-md-6"><strong>Loại phòng:</strong> {{ $room->roomType->name ?? 'Chưa xác định' }}</div>
-                                        <div class="col-md-6"><strong>Loại giường:</strong> {{ ['single' => 'Giường đơn', 'double' => 'Giường đôi', 'queen' => 'Giường Queen', 'king' => 'Giường King', 'bunk' => 'Giường tầng', 'sofa' => 'Giường sofa'][$room->roomType->bed_type] ?? 'Chưa xác định' }}</div>
-                                        <div class="col-md-6"><strong>Kích thước:</strong> {{ $room->roomType->size ?? 'Chưa xác định' }} m²</div>
-                                        <div class="col-md-6"><strong>Số người lớn:</strong> {{ $room->roomType->max_capacity ?? 'Chưa xác định' }}</div>
-                                        <div class="col-md-6"><strong>Số trẻ em:</strong> {{ $room->roomType->children_free_limit ?? 'Chưa xác định' }}</div>
-                                        <div class="col-md-6"><strong>Giá:</strong> {{ \App\Helpers\FormatHelper::formatPrice($room->roomType->price ?? 0) }}</div>
-                                        <div class="col-md-6"><strong>Mô tả:</strong> {{ $room->roomType->description ?? 'Chưa xác định' }}</div>
+                            <li>
+                                <div class="row g-2">
+                                    <div class="col-md-6"><strong>Số phòng:</strong> {{ $room->room_number }}</div>
+                                    <div class="col-md-6"><strong>Loại phòng:</strong> {{ $room->roomType->name ?? 'Chưa xác định' }}</div>
+                                    <div class="col-md-6"><strong>Loại giường:</strong> {{ ['single' => 'Giường đơn', 'double' => 'Giường đôi', 'queen' => 'Giường Queen', 'king' => 'Giường King', 'bunk' => 'Giường tầng', 'sofa' => 'Giường sofa'][$room->roomType->bed_type] ?? 'Chưa xác định' }}</div>
+                                    <div class="col-md-6"><strong>Kích thước:</strong> {{ $room->roomType->size ?? 'Chưa xác định' }} m²</div>
+                                    <div class="col-md-6"><strong>Số người lớn:</strong> {{ $room->roomType->max_capacity ?? 'Chưa xác định' }}</div>
+                                    <div class="col-md-6"><strong>Số trẻ em:</strong> {{ $room->roomType->children_free_limit ?? 'Chưa xác định' }}</div>
+                                    <div class="col-md-6"><strong>Giá:</strong> {{ \App\Helpers\FormatHelper::formatPrice($room->roomType->price ?? 0) }}</div>
+                                    <div class="col-md-6"><strong>Mô tả:</strong> {{ $room->roomType->description ?? 'Chưa xác định' }}</div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-4"><strong>Tiện nghi:</strong>
+                                        <ul class="amenities-list">@forelse ($room->roomType->amenities as $amenity)<li>{{ $amenity->name }}</li>@empty<li>Không có</li>@endforelse</ul>
                                     </div>
-                                    <div class="row mt-2">
-                                        <div class="col-md-4"><strong>Tiện nghi:</strong><ul class="amenities-list">@forelse ($room->roomType->amenities as $amenity)<li>{{ $amenity->name }}</li>@empty<li>Không có</li>@endforelse</ul></div>
-                                        <div class="col-md-4"><strong>Quy tắc:</strong><ul class="rules-list">@forelse ($room->roomType->rulesAndRegulations as $rule)<li>{{ $rule->name }}</li>@empty<li>Không có</li>@endforelse</ul></div>
-                                        <div class="col-md-4"><strong>Dịch vụ:</strong><ul class="amenities-list">@forelse ($room->roomType->services as $service)<li>{{ $service->name }} - {{ \App\Helpers\FormatHelper::formatPrice($service->price) }}</li>@empty<li>Không có</li>@endforelse</ul></div>
+                                    <div class="col-md-4"><strong>Quy tắc:</strong>
+                                        <ul class="rules-list">@forelse ($room->roomType->rulesAndRegulations as $rule)<li>{{ $rule->name }}</li>@empty<li>Không có</li>@endforelse</ul>
                                     </div>
-                                </li>
+                                    <div class="col-md-4"><strong>Dịch vụ:</strong>
+                                        <ul class="amenities-list">@forelse ($room->roomType->services as $service)<li>{{ $service->name }} - {{ \App\Helpers\FormatHelper::formatPrice($service->price) }}</li>@empty<li>Không có</li>@endforelse</ul>
+                                    </div>
+                                </div>
+                            </li>
                             @endforeach
                         </ul>
                     </div>
@@ -266,31 +528,31 @@
                     <div class="booking-section-content">
                         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addServicePlusModal">Thêm dịch vụ phát sinh</button>
                         @if ($booking->servicePlus->isEmpty())
-                            <p>Chưa có dịch vụ phát sinh nào được chọn.</p>
+                        <p>Chưa có dịch vụ phát sinh nào được chọn.</p>
                         @else
-                            <table class="table table-striped" id="servicePlusTable">
-                                <thead>
-                                    <tr>
-                                        <th>Tên dịch vụ</th>
-                                        <th>Giá</th>
-                                        <th>Số lượng</th>
-                                        <th>Hành động</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($booking->servicePlus as $servicePlus)
-                                        <tr>
-                                            <td>{{ $servicePlus->name }}</td>
-                                            <td>{{ \App\Helpers\FormatHelper::formatPrice($servicePlus->price) }}</td>
-                                            <td>{{ $servicePlus->pivot->quantity }}</td>
-                                            <td>
-                                                <button class="btn btn-sm btn-warning edit-service-plus" data-service-plus-id="{{ $servicePlus->id }}" data-quantity="{{ $servicePlus->pivot->quantity }}">Sửa</button>
-                                                <button class="btn btn-sm btn-danger remove-service-plus" data-service-plus-id="{{ $servicePlus->id }}">Xóa</button>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                        <table class="table table-striped" id="servicePlusTable">
+                            <thead>
+                                <tr>
+                                    <th>Tên dịch vụ</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($booking->servicePlus as $servicePlus)
+                                <tr>
+                                    <td>{{ $servicePlus->name }}</td>
+                                    <td>{{ \App\Helpers\FormatHelper::formatPrice($servicePlus->price) }}</td>
+                                    <td>{{ $servicePlus->pivot->quantity }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning edit-service-plus" data-service-plus-id="{{ $servicePlus->id }}" data-quantity="{{ $servicePlus->pivot->quantity }}">Sửa</button>
+                                        <button class="btn btn-sm btn-danger remove-service-plus" data-service-plus-id="{{ $servicePlus->id }}">Xóa</button>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                         @endif
                     </div>
                 </div>
@@ -344,66 +606,66 @@
                                 <strong>Số tiền:</strong> {{ \App\Helpers\FormatHelper::formatPrice($payment->amount ?? 0) }}<br>
                                 <strong>Ngày thanh toán:</strong> {{ \App\Helpers\FormatHelper::formatDate($payment->created_at) }}<br>
                                 <strong>Trạng thái:</strong>
-                                <span class="text-{{ strtolower($payment->status) }}">
-                                    {{ ['pending' => 'Đang chờ', 'completed' => 'Đã hoàn thành', 'failed' => 'Không hoàn thành'][$payment->status] ?? 'Không xác định' }}
+                                <span class="{{ \App\Helpers\PaymentStatusHelper::getStatusClass($payment->status) }}">
+                                    {{ \App\Helpers\PaymentStatusHelper::getStatusLabel($payment->status) }}
                                 </span>
                             </li>
                         </ul>
-                    @empty
+                        @empty
                         <p>Chưa có thông tin thanh toán.</p>
-                    @endforelse
+                        @endforelse
                     </div>
                 </div>
             </div>
 
-<!-- Dịch vụ phát sinh & Tổng tiền -->
-<div class="col-md-6">
-    <div class="booking-section">
-        <div class="booking-section-header">
-            <h5>Tổng dịch vụ phát sinh</h5>
-            <span class="toggle-icon">▼</span>
-        </div>
-        <div class="booking-section-content">
-            @php $totalServicePlusPrice = 0; @endphp <!-- Initialize the variable here -->
-            @if ($booking->servicePlus->isEmpty())
-                <p>Chưa có dịch vụ phát sinh.</p>
-            @else
-                <ul class="service-list">
-                    @foreach ($booking->servicePlus as $service)
-                        @php
+            <!-- Dịch vụ phát sinh & Tổng tiền -->
+            <div class="col-md-6">
+                <div class="booking-section">
+                    <div class="booking-section-header">
+                        <h5>Tổng dịch vụ phát sinh</h5>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="booking-section-content">
+                        @php $totalServicePlusPrice = 0; @endphp <!-- Initialize the variable here -->
+                        @if ($booking->servicePlus->isEmpty())
+                        <p>Chưa có dịch vụ phát sinh.</p>
+                        @else
+                        <ul class="service-list">
+                            @foreach ($booking->servicePlus as $service)
+                            @php
                             $totalPrice = $service->price * $service->pivot->quantity;
                             $totalServicePlusPrice += $totalPrice;
-                        @endphp
-                        <li>{{ $service->name }} ({{ $service->pivot->quantity }} x {{ \App\Helpers\FormatHelper::formatPrice($service->price) }}) = {{ \App\Helpers\FormatHelper::formatPrice($totalPrice) }}</li>
-                    @endforeach
-                </ul>
-                <p><strong>Tổng cộng:</strong> {{ \App\Helpers\FormatHelper::formatPrice($totalServicePlusPrice) }}</p>
-                <div class="mt-2">
-                    <label>Trạng thái:</label>
-                    <select class="form-control service-plus-status" data-booking-id="{{ $booking->id }}" {{ $booking->service_plus_status === 'paid' ? 'disabled' : '' }}>
-                        <option value="not_yet_paid" {{ $booking->service_plus_status === 'not_yet_paid' ? 'selected' : '' }}>Chưa thanh toán</option>
-                        <option value="paid" {{ $booking->service_plus_status === 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
-                    </select>
+                            @endphp
+                            <li>{{ $service->name }} ({{ $service->pivot->quantity }} x {{ \App\Helpers\FormatHelper::formatPrice($service->price) }}) = {{ \App\Helpers\FormatHelper::formatPrice($totalPrice) }}</li>
+                            @endforeach
+                        </ul>
+                        <p><strong>Tổng cộng:</strong> {{ \App\Helpers\FormatHelper::formatPrice($totalServicePlusPrice) }}</p>
+                        <div class="mt-2">
+                            <label>Trạng thái:</label>
+                            <select class="form-control service-plus-status" data-booking-id="{{ $booking->id }}" {{ $booking->service_plus_status === 'paid' ? 'disabled' : '' }}>
+                                <option value="not_yet_paid" {{ $booking->service_plus_status === 'not_yet_paid' ? 'selected' : '' }}>Chưa thanh toán</option>
+                                <option value="paid" {{ $booking->service_plus_status === 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
+                            </select>
+                        </div>
+                        @endif
+                    </div>
                 </div>
-            @endif
-        </div>
-    </div>
-</div>
+            </div>
 
-<div class="col-md-6">
-    <div class="booking-section">
-        <div class="booking-section-header">
-            <h5>Tổng tiền</h5>
-            <span class="toggle-icon">▼</span>
-        </div>
-        <div class="booking-section-content">
-            @php $totalAmount = $booking->total_price + $totalServicePlusPrice; @endphp
-            <p><strong>Tổng tiền đơn đặt phòng:</strong> <span>{{ \App\Helpers\FormatHelper::formatPrice($booking->total_price) }}</span></p>
-            <p><strong>Tổng tiền dịch vụ phát sinh:</strong> <span>{{ \App\Helpers\FormatHelper::formatPrice($totalServicePlusPrice) }}</span></p>
-            <p><strong>Tổng tiền:</strong> <span>{{ \App\Helpers\FormatHelper::formatPrice($totalAmount) }}</span></p>
-        </div>
-    </div>
-</div>
+            <div class="col-md-6">
+                <div class="booking-section">
+                    <div class="booking-section-header">
+                        <h5>Tổng tiền</h5>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="booking-section-content">
+                        @php $totalAmount = $booking->total_price + $totalServicePlusPrice; @endphp
+                        <p><strong>Tổng tiền đơn đặt phòng:</strong> <span>{{ \App\Helpers\FormatHelper::formatPrice($booking->total_price) }}</span></p>
+                        <p><strong>Tổng tiền dịch vụ phát sinh:</strong> <span>{{ \App\Helpers\FormatHelper::formatPrice($totalServicePlusPrice) }}</span></p>
+                        <p><strong>Tổng tiền:</strong> <span>{{ \App\Helpers\FormatHelper::formatPrice($totalAmount) }}</span></p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="mt-4 text-center">
@@ -429,7 +691,7 @@
                         <select name="service_plus_id" class="form-control" required>
                             <option value="">Chọn dịch vụ</option>
                             @foreach ($availableServicePlus as $servicePlus)
-                                <option value="{{ $servicePlus->id }}">{{ $servicePlus->name }} ({{ \App\Helpers\FormatHelper::formatPrice($servicePlus->price) }})</option>
+                            <option value="{{ $servicePlus->id }}">{{ $servicePlus->name }} ({{ \App\Helpers\FormatHelper::formatPrice($servicePlus->price) }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -485,7 +747,7 @@
                         <select name="status" id="status" class="form-control" required>
                             @php $statusOptions = ['pending_confirmation' => 'Chưa xác nhận', 'confirmed' => 'Đã xác nhận', 'paid' => 'Đã thanh toán', 'check_in' => 'Đã check-in', 'check_out' => 'Đã check-out', 'cancelled' => 'Đã hủy', 'refunded' => 'Đã hoàn tiền']; @endphp
                             @foreach ($statusOptions as $key => $value)
-                                <option value="{{ $key }}" {{ $booking->status === $key ? 'selected' : '' }}>{{ $value }}</option>
+                            <option value="{{ $key }}" {{ $booking->status === $key ? 'selected' : '' }}>{{ $value }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -515,7 +777,7 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const sectionHeaders = document.querySelectorAll('.booking-section-header');
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -525,7 +787,7 @@
 
         // Toggle sections
         sectionHeaders.forEach(header => {
-            header.addEventListener('click', function () {
+            header.addEventListener('click', function() {
                 const content = this.nextElementSibling;
                 const toggleIcon = this.querySelector('.toggle-icon');
                 content.classList.toggle('open');
@@ -535,29 +797,43 @@
         });
 
         // Thêm dịch vụ phát sinh
-        document.getElementById('addServicePlusForm').addEventListener('submit', function (e) {
+        document.getElementById('addServicePlusForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
             fetch(`{{ route('admin.bookings.service_plus.update', $booking->id) }}`, {
-                method: 'POST',
-                headers: { 'X-CSRF-TOKEN': csrfToken },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({ icon: 'success', title: 'Thành công', text: data.message }).then(() => {
-                        location.reload(); // Tải lại trang để cập nhật
-                    });
-                } else {
-                    Swal.fire({ icon: 'error', title: 'Lỗi', text: data.message });
-                }
-            })
-            .catch(() => Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Có lỗi xảy ra khi thêm dịch vụ.' }));
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công',
+                            text: data.message
+                        }).then(() => {
+                            location.reload(); // Tải lại trang để cập nhật
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: data.message
+                        });
+                    }
+                })
+                .catch(() => Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Có lỗi xảy ra khi thêm dịch vụ.'
+                }));
         });
 
         // Sửa dịch vụ phát sinh
-        document.addEventListener('click', function (e) {
+        document.addEventListener('click', function(e) {
             if (e.target.classList.contains('edit-service-plus')) {
                 const servicePlusId = e.target.getAttribute('data-service-plus-id');
                 const quantity = e.target.getAttribute('data-quantity');
@@ -575,49 +851,81 @@
             }
         });
 
-        document.getElementById('editServicePlusForm').addEventListener('submit', function (e) {
+        document.getElementById('editServicePlusForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
             fetch(`{{ route('admin.bookings.service_plus.update', $booking->id) }}`, {
-                method: 'POST',
-                headers: { 'X-CSRF-TOKEN': csrfToken },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({ icon: 'success', title: 'Thành công', text: data.message }).then(() => {
-                        location.reload();
-                    });
-                } else {
-                    Swal.fire({ icon: 'error', title: 'Lỗi', text: data.message });
-                }
-            })
-            .catch(() => Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Có lỗi xảy ra khi cập nhật.' }));
-        });
-
-        // Cập nhật trạng thái dịch vụ phát sinh
-        document.querySelectorAll('.service-plus-status').forEach(select => {
-            select.addEventListener('change', function () {
-                const newStatus = this.value;
-                fetch(`{{ route('admin.bookings.service_plus.update', $booking->id) }}`, {
                     method: 'POST',
-                    headers: { 'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'updateServicePlusStatus', service_plus_status: newStatus })
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: formData
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        Swal.fire({ icon: 'success', title: 'Thành công', text: data.message }).then(() => {
-                            if (newStatus === 'paid') select.disabled = true;
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công',
+                            text: data.message
+                        }).then(() => {
+                            location.reload();
                         });
                     } else {
-                        Swal.fire({ icon: 'error', title: 'Lỗi', text: data.message }).then(() => {
-                            select.value = '{{ $booking->service_plus_status }}';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: data.message
                         });
                     }
                 })
-                .catch(() => Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Có lỗi xảy ra khi cập nhật trạng thái.' }));
+                .catch(() => Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Có lỗi xảy ra khi cập nhật.'
+                }));
+        });
+
+        // Cập nhật trạng thái dịch vụ phát sinh
+        document.querySelectorAll('.service-plus-status').forEach(select => {
+            select.addEventListener('change', function() {
+                const newStatus = this.value;
+                fetch(`{{ route('admin.bookings.service_plus.update', $booking->id) }}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action: 'updateServicePlusStatus',
+                            service_plus_status: newStatus
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công',
+                                text: data.message
+                            }).then(() => {
+                                if (newStatus === 'paid') select.disabled = true;
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: data.message
+                            }).then(() => {
+                                select.value = '{{ $booking->service_plus_status }}';
+                            });
+                        }
+                    })
+                    .catch(() => Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Có lỗi xảy ra khi cập nhật trạng thái.'
+                    }));
             });
         });
 
@@ -626,21 +934,35 @@
             formData.append('action', action);
             formData.append('service_plus_id', servicePlusId);
             fetch(`{{ route('admin.bookings.service_plus.update', $booking->id) }}`, {
-                method: 'POST',
-                headers: { 'X-CSRF-TOKEN': csrfToken },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({ icon: 'success', title: 'Thành công', text: data.message }).then(() => {
-                        location.reload();
-                    });
-                } else {
-                    Swal.fire({ icon: 'error', title: 'Lỗi', text: data.message });
-                }
-            })
-            .catch(() => Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Có lỗi xảy ra khi xử lý.' }));
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công',
+                            text: data.message
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: data.message
+                        });
+                    }
+                })
+                .catch(() => Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Có lỗi xảy ra khi xử lý.'
+                }));
         }
     });
 

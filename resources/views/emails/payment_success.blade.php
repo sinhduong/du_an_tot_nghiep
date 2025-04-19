@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Đặt Phòng Thành Công</title>
+    <title>Thanh Toán Thành Công</title>
 </head>
 <body>
 <h1>Xin chào {{ $booking->user->name }},</h1>

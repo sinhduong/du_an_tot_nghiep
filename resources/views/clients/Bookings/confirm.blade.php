@@ -184,7 +184,7 @@
                                             </div>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="payment_amount_type" id="payment_partial" value="partial">
-                                                <label class="form-check-label" for="payment_partial">Thanh toán trước 50%</label>
+                                                <label class="form-check-label" for="payment_partial">Thanh toán trước {{ $deposit_percentage }}%</label>
                                             </div>
                                         </div>
 
