@@ -101,6 +101,7 @@
                                             <th>Check-out</th>
                                             <th>Tổng giá</th>
                                             <th>Đã trả</th>
+                                            <th>Hoàn tiền</th>
                                             <th>Trạng thái</th>
                                             <th>Hành động</th>
                                         </tr>
@@ -135,17 +136,66 @@
                                             <td>{{ \App\Helpers\FormatHelper::formatPrice($booking->total_price) }}</td>
                                             <td>{{ \App\Helpers\FormatHelper::formatPrice($booking->paid_amount) }}</td>
                                             <td>
+                                                @if($booking->refund && $booking->refund->status === 'pending')
+                                                    <button type="button" class="btn btn-primary" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#processRefundRequestModal"
+                                                            data-refund-id="{{ $booking->refund->id }}">
+                                                        Chờ xử lý
+                                                    </button>
+                                                @elseif($booking->refund && $booking->refund->status === 'approved' && $booking->refund->amount > 0)
+                                                    <span class="badge bg-success">Đã hoàn tiền</span>
+                                                @elseif($booking->refund && $booking->refund->status === 'rejected')
+                                                    <span class="badge bg-danger">Đã từ chối</span>
+                                                @else
+                                                    <span class="badge bg-secondary">Không có</span>
+                                                @endif
+                                            </td>
+                                            <td>
                                                 <form action="{{ route('admin.bookings.update', $booking->id) }}" method="POST" style="display:inline;" id="statusForm-{{ $booking->id }}">
                                                     @csrf
                                                     @method('PUT')
+                                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                     <select name="status" class="form-select" onchange="handleStatusChange(this, '{{ $booking->id }}', {{ $booking->total_guests }})">
-                                                        <option value="unpaid" {{ $booking->status == 'unpaid' ? 'selected' : '' }}>{{ \App\Helpers\BookingStatusHelper::getStatusLabel('unpaid') }}</option>
-                                                        <option value="partial" {{ $booking->status == 'partial' ? 'selected' : '' }}>{{ \App\Helpers\BookingStatusHelper::getStatusLabel('partial') }}</option>
-                                                        <option value="paid" {{ $booking->status == 'paid' ? 'selected' : '' }}>{{ \App\Helpers\BookingStatusHelper::getStatusLabel('paid') }}</option>
-                                                        <option value="check_in" {{ $booking->status == 'check_in' ? 'selected' : '' }}>{{ \App\Helpers\BookingStatusHelper::getStatusLabel('check_in') }}</option>
-                                                        <option value="check_out" {{ $booking->status == 'check_out' ? 'selected' : '' }}>{{ \App\Helpers\BookingStatusHelper::getStatusLabel('check_out') }}</option>
-                                                        <option value="cancelled" {{ $booking->status == 'cancelled' ? 'selected' : '' }}>{{ \App\Helpers\BookingStatusHelper::getStatusLabel('cancelled') }}</option>
-                                                        <option value="refunded" {{ $booking->status == 'refunded' ? 'selected' : '' }}>{{ \App\Helpers\BookingStatusHelper::getStatusLabel('refunded') }}</option>
+                                                        @php
+                                                        $allowedTransitions = [
+                                                        'unpaid' => ['cancelled'],
+                                                        'partial' => ['paid', 'cancelled'],
+                                                        'paid' => ['check_in', 'cancelled'],
+                                                        'check_in' => ['check_out'],
+                                                        'check_out' => [],
+                                                        'cancelled' => [],
+                                                        'cancelled_without_refund' => [],
+                                                        'refunded' => []
+                                                        ];
+                                                        $currentStatus = $booking->status;
+                                                        $allowedStatuses = $allowedTransitions[$currentStatus] ?? [];
+                                                        @endphp
+
+                                                        <option value="unpaid" {{ $booking->status == 'unpaid' ? 'selected' : '' }} {{ !in_array('unpaid', $allowedStatuses) && $booking->status != 'unpaid' ? 'disabled' : '' }}>
+                                                            {{ \App\Helpers\BookingStatusHelper::getStatusLabel('unpaid') }}
+                                                        </option>
+                                                        <option value="partial" {{ $booking->status == 'partial' ? 'selected' : '' }} {{ !in_array('partial', $allowedStatuses) && $booking->status != 'partial' ? 'disabled' : '' }}>
+                                                            {{ \App\Helpers\BookingStatusHelper::getStatusLabel('partial') }}
+                                                        </option>
+                                                        <option value="paid" {{ $booking->status == 'paid' ? 'selected' : '' }} {{ !in_array('paid', $allowedStatuses) && $booking->status != 'paid' ? 'disabled' : '' }}>
+                                                            {{ \App\Helpers\BookingStatusHelper::getStatusLabel('paid') }}
+                                                        </option>
+                                                        <option value="check_in" {{ $booking->status == 'check_in' ? 'selected' : '' }} {{ !in_array('check_in', $allowedStatuses) && $booking->status != 'check_in' ? 'disabled' : '' }}>
+                                                            {{ \App\Helpers\BookingStatusHelper::getStatusLabel('check_in') }}
+                                                        </option>
+                                                        <option value="check_out" {{ $booking->status == 'check_out' ? 'selected' : '' }} {{ !in_array('check_out', $allowedStatuses) && $booking->status != 'check_out' ? 'disabled' : '' }}>
+                                                            {{ \App\Helpers\BookingStatusHelper::getStatusLabel('check_out') }}
+                                                        </option>
+                                                        <option value="cancelled" {{ $booking->status == 'cancelled' ? 'selected' : '' }} {{ !in_array('cancelled', $allowedStatuses) && $booking->status != 'cancelled' ? 'disabled' : '' }}>
+                                                            {{ \App\Helpers\BookingStatusHelper::getStatusLabel('cancelled') }}
+                                                        </option>
+                                                        <option value="cancelled_without_refund" {{ $booking->status == 'cancelled_without_refund' ? 'selected' : '' }} {{ !in_array('cancelled_without_refund', $allowedStatuses) && $booking->status != 'cancelled_without_refund' ? 'disabled' : '' }}>
+                                                            {{ \App\Helpers\BookingStatusHelper::getStatusLabel('cancelled_without_refund') }}
+                                                        </option>
+                                                        <option value="refunded" {{ $booking->status == 'refunded' ? 'selected' : '' }} {{ !in_array('refunded', $allowedStatuses) && $booking->status != 'refunded' ? 'disabled' : '' }}>
+                                                            {{ \App\Helpers\BookingStatusHelper::getStatusLabel('refunded') }}
+                                                        </option>
                                                     </select>
                                                 </form>
                                             </td>
@@ -207,6 +257,138 @@
     </div>
 </div>
 
+<!-- Payment Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel">Thanh toán nốt tiền</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="paymentForm" method="POST" action="{{ route('admin.bookings.paid.store') }}">
+                    @csrf
+                    <input type="hidden" name="id_booking" id="id_booking">
+                    <div class="mb-3">
+                        <label for="remaining_amount" class="form-label">Số tiền còn lại</label>
+                        <input type="text" class="form-control" name="remaining_amount" id="remaining_amount" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="payment_method" class="form-label">Phương thức thanh toán</label>
+                        <select class="form-select" id="payment_method" name="payment_method" required>
+                            <option value="cash">Tiền mặt</option>
+                            <option value="vnpay">VNPay</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="payment_note" class="form-label">Ghi chú</label>
+                        <textarea class="form-control" id="payment_note" name="payment_note" rows="3"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Xác nhận thanh toán</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for processing refund requests -->
+<div class="modal fade" id="processRefundRequestModal" tabindex="-1" aria-labelledby="processRefundRequestModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="processRefundRequestModalLabel">Phê duyệt yêu cầu hoàn tiền</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Thông tin đặt phòng</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Mã đặt phòng:</th>
+                                <td id="modalBookingCode"></td>
+                            </tr>
+                            <tr>
+                                <th>Khách hàng:</th>
+                                <td id="modalCustomerName"></td>
+                            </tr>
+                            <tr>
+                                <th>Ngày nhận phòng:</th>
+                                <td id="modalCheckIn"></td>
+                            </tr>
+                            <tr>
+                                <th>Ngày trả phòng:</th>
+                                <td id="modalCheckOut"></td>
+                            </tr>
+                            <tr>
+                                <th>Tổng tiền:</th>
+                                <td id="modalTotalAmount"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Thông tin hoàn tiền</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Chính sách hoàn tiền:</th>
+                                <td id="modalRefundPolicy"></td>
+                            </tr>
+                            <tr>
+                                <th>Tiền đã thanh toán:</th>
+                                <td id="modalPaidAmount"></td>
+                            </tr>
+                            <tr>
+                                <th>Số tiền hoàn:</th>
+                                <td id="modalRefundAmount"></td>
+                            </tr>
+                            <tr>
+                                <th>Phí hủy:</th>
+                                <td id="modalCancellationFee"></td>
+                            </tr>
+                            <tr>
+                                <th>Lý do hoàn tiền:</th>
+                                <td id="modalRefundReason"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <form id="processRefundForm" method="POST">
+                    @csrf
+                    <input type="hidden" name="refund_id" id="modalRefundId">
+                    
+                    <div class="mb-3">
+                        <label for="refund_method" class="form-label">Phương thức hoàn tiền</label>
+                        <select class="form-select" id="refund_method" name="refund_method" required>
+                            <option value="">Chọn phương thức</option>
+                            <option value="vnpay">VNPay</option>
+                        </select>
+                    </div>
+
+                    <!-- <div class="mb-3">
+                        <label for="transaction_id" class="form-label">Mã giao dịch</label>
+                        <input type="text" class="form-control" id="transaction_id" name="transaction_id" required>
+                    </div> -->
+
+                    <div class="mb-3">
+                        <label for="admin_note" class="form-label">Ghi chú</label>
+                        <textarea class="form-control" id="admin_note" name="admin_note" rows="3"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" name="action" value="reject" class="btn btn-danger">Từ chối</button>
+                        <button type="submit" name="action" value="approve" class="btn btn-success">Phê duyệt</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     function clearDateInputs() {
         document.querySelector('input[name="start_date"]').value = '';
@@ -223,7 +405,6 @@
 
             const guestForms = document.getElementById('guestForms');
             guestForms.innerHTML = '';
-
             addGuestForm(guestForms, maxGuests, 0);
 
             if (maxGuests > 1) {
@@ -246,7 +427,6 @@
 
             document.getElementById('checkInForm').onsubmit = function(e) {
                 e.preventDefault();
-
                 // Xóa các thông báo lỗi cũ
                 document.querySelectorAll('.error-message').forEach(el => el.remove());
 
@@ -296,6 +476,37 @@
                         }
                     });
             };
+        } else if (selectedStatus === 'paid') {
+            const modal = new bootstrap.Modal(document.getElementById('paymentModal'));
+            document.getElementById('id_booking').value = bookingId;
+
+            // Lấy số tiền còn lại
+            fetch(`/admin/bookings/${bookingId}/get-remaining-amount`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('remaining_amount').value = data.remaining_amount.toLocaleString('vi-VN') + ' VNĐ';
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+                    alertDiv.innerHTML = `
+                    Không thể lấy thông tin số tiền còn lại. Vui lòng thử lại sau.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                    document.querySelector('.lh-card-content').insertBefore(alertDiv, document.querySelector('.booking-table'));
+                });
         } else {
             form.submit();
         }
@@ -417,6 +628,58 @@
             preview.src = '';
             preview.style.display = 'none';
         }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('processRefundRequestModal');
+        if (modal) {
+            modal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const refundId = button.getAttribute('data-refund-id');
+                console.log(refundId);
+                
+                // Fetch refund details
+                fetch(`/admin/refunds/${refundId}/details`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+                        
+                        // Fill modal with data
+                        document.getElementById('modalRefundId').value = data.id;
+                        document.getElementById('modalBookingCode').textContent = data.booking.booking_code;
+                        document.getElementById('modalCustomerName').textContent = data.booking.user.name;
+                        document.getElementById('modalCheckIn').textContent = data.booking.check_in;
+                        document.getElementById('modalCheckOut').textContent = data.booking.check_out;
+                        document.getElementById('modalTotalAmount').textContent = formatCurrency(data.booking.total_price);
+                        document.getElementById('modalRefundPolicy').textContent = data.refund_policy.name;
+                        document.getElementById('modalPaidAmount').textContent = formatCurrency(data.booking.paid_amount);
+                        document.getElementById('modalRefundAmount').textContent = formatCurrency(data.amount);
+                        document.getElementById('modalCancellationFee').textContent = formatCurrency(data.cancellation_fee);
+                        document.getElementById('modalRefundReason').textContent = data.reason;
+                        
+                        // Set form action
+                        document.getElementById('processRefundForm').action = `/admin/refunds/${refundId}/approve`;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra khi tải thông tin hoàn tiền: ' + error.message);
+                    });
+            });
+        }
+    });
+
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        }).format(amount);
     }
 </script>
 @endsection

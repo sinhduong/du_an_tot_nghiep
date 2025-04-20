@@ -14,6 +14,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorebookingRequest;
 use App\Http\Requests\StoreCheckInRequest;
 use App\Http\Requests\UpdatebookingRequest;
+use App\Mail\PaymentSuccess;
+use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
@@ -33,7 +35,7 @@ class BookingController extends Controller
         $title = 'Đơn đặt phòng mới nhất';
 
         // Khởi tạo query
-        $query = Booking::with('user', 'rooms')->latest();
+        $query = Booking::with('user', 'rooms', 'refund', 'refund.refundPolicy')->latest();
 
         // Lọc theo khoảng thời gian
         if ($request->has('start_date') && $request->has('end_date')) {
@@ -154,9 +156,12 @@ class BookingController extends Controller
             'guests',
         ])->findOrFail($id);
 
+        if (request()->ajax()) {
+            return response()->json(['booking' => $booking]);
+        }
+
         $title = 'Chi tiết đơn đặt phòng';
         $availableServicePlus = ServicePlus::where('is_active', 1)->get();
-        // dd($booking);
         return view('admins.bookings.show', compact('title', 'booking', 'availableServicePlus'));
     }
 
@@ -319,22 +324,33 @@ class BookingController extends Controller
         try {
             DB::beginTransaction();
 
+            // Kiểm tra quy tắc chuyển trạng thái
+            $allowedTransitions = [
+                'unpaid' => ['cancelled'],
+                'partial' => ['paid', 'cancelled'],
+                'paid' => ['check_in', 'cancelled'],
+                'check_in' => ['check_out', 'cancelled'],
+                'check_out' => [],
+                'cancelled' => [],
+                'refunded' => []
+            ];
+
+            if (!in_array($newStatus, $allowedTransitions[$currentStatus] ?? [])) {
+                throw new \Exception('Không thể chuyển từ trạng thái "' . \App\Helpers\BookingStatusHelper::getStatusLabel($currentStatus) . '" sang trạng thái "' . \App\Helpers\BookingStatusHelper::getStatusLabel($newStatus) . '"');
+            }
+
             switch ($currentStatus) {
                 case 'unpaid':
-                    // Từ trạng thái chưa thanh toán, chỉ có thể chuyển sang cancelled
                     if ($newStatus === 'cancelled') {
                         $booking->update([
                             'status' => 'cancelled',
                             'actual_check_in' => Carbon::now('Asia/Ho_Chi_Minh'),
                             'actual_check_out' => Carbon::now('Asia/Ho_Chi_Minh'),
                         ]);
-                    } else {
-                        throw new \Exception('Không thể chuyển từ trạng thái chưa thanh toán sang ' . $newStatus);
                     }
                     break;
 
                 case 'partial':
-                    // Từ trạng thái thanh toán một phần, có thể chuyển sang paid hoặc cancelled
                     if ($newStatus === 'paid') {
                         $booking->update(['status' => 'paid']);
                     } elseif ($newStatus === 'cancelled') {
@@ -343,13 +359,10 @@ class BookingController extends Controller
                             'actual_check_in' => Carbon::now('Asia/Ho_Chi_Minh'),
                             'actual_check_out' => Carbon::now('Asia/Ho_Chi_Minh'),
                         ]);
-                    } else {
-                        throw new \Exception('Không thể chuyển từ trạng thái thanh toán một phần sang ' . $newStatus);
                     }
                     break;
 
                 case 'paid':
-                    // Từ trạng thái đã thanh toán, có thể chuyển sang check_in hoặc cancelled
                     if ($newStatus === 'check_in') {
                         $booking->update([
                             'status' => 'check_in',
@@ -361,13 +374,10 @@ class BookingController extends Controller
                             'actual_check_in' => Carbon::now('Asia/Ho_Chi_Minh'),
                             'actual_check_out' => Carbon::now('Asia/Ho_Chi_Minh'),
                         ]);
-                    } else {
-                        throw new \Exception('Không thể chuyển từ trạng thái đã thanh toán sang ' . $newStatus);
                     }
                     break;
 
                 case 'check_in':
-                    // Từ trạng thái đã check in, có thể chuyển sang check_out hoặc cancelled
                     if ($newStatus === 'check_out') {
                         $booking->update([
                             'status' => 'check_out',
@@ -378,30 +388,12 @@ class BookingController extends Controller
                             'status' => 'cancelled',
                             'actual_check_out' => Carbon::now('Asia/Ho_Chi_Minh'),
                         ]);
-                    } else {
-                        throw new \Exception('Không thể chuyển từ trạng thái đã check in sang ' . $newStatus);
                     }
                     break;
-
-                case 'check_out':
-                    // Từ trạng thái đã check out, không thể chuyển sang trạng thái khác
-                    throw new \Exception('Không thể thay đổi trạng thái của đặt phòng đã check out');
-
-                case 'cancelled':
-                    // Từ trạng thái đã hủy, không thể chuyển sang trạng thái khác
-                    throw new \Exception('Không thể thay đổi trạng thái của đặt phòng đã hủy');
-
-                case 'refunded':
-                    // Từ trạng thái đã hoàn tiền, không thể chuyển sang trạng thái khác
-                    throw new \Exception('Không thể thay đổi trạng thái của đặt phòng đã hoàn tiền');
-
-                default:
-                    throw new \Exception('Trạng thái hiện tại không hợp lệ');
             }
 
             DB::commit();
             return redirect()->route('admin.bookings.index')->with('success', 'Cập nhật trạng thái đặt phòng thành công.');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', $e->getMessage());
@@ -417,5 +409,174 @@ class BookingController extends Controller
     public function destroy(Booking $bookings)
     {
         //
+    }
+
+    public function getRemainingAmount($id)
+    {
+        $booking = Booking::findOrFail($id);
+        $remainingAmount = $booking->total_price - $booking->paid_amount;
+
+        return response()->json([
+            'remaining_amount' => $remainingAmount
+        ]);
+    }
+
+    public function storePaid(Request $request)
+    {
+        $booking = Booking::findOrFail($request->id_booking);
+        $remainingAmount = $booking->total_price - $booking->paid_amount;
+        $paymentData = [
+            'user_id' => $booking->user_id,
+            'booking_id' => $request->id_booking,
+            'amount' => $remainingAmount,
+            'status' => 'pending',
+            'transaction_id' => null,
+            'is_partial' => false,
+        ];
+        if ($request->payment_method === 'cash') {
+            $paymentData['method'] = 'cash';
+            $paymentData['transaction_id'] = 'BOOK' . time();
+            $payment = Payment::create($paymentData);
+            $booking->update([
+                'status' => 'paid',
+                'paid_amount' => $booking->total_price,
+            ]);
+            $payment->update([
+                'status' => 'completed',
+            ]);
+            $message = 'Thanh toán đã hoàn tất! Thông tin chi tiết đã được gửi qua email.';
+            // Gửi email xác nhận
+            Mail::to($booking->user->email)->send(new PaymentSuccess($booking));
+            return redirect()->back()->with('success', $message);
+        } elseif ($request->payment_method === 'vnpay') {
+            $paymentData['method'] = 'vnpay';
+            $payment = Payment::create($paymentData);
+            $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+            $vnp_Returnurl = route('admin.bookings.return.vnpay', $booking->id);
+            $vnp_TmnCode = "6Q5Z9DG8";
+            $vnp_HashSecret = "NSEYDYAIT1XETEVUA24DF40DOCMC6NYE";
+
+            $vnp_TxnRef = $booking->booking_code . '-' . time();
+            $vnp_OrderInfo = 'Thanh toán đặt phòng ' . $booking->booking_code;
+            $vnp_OrderType = 'billpayment';
+            $vnp_Amount = (int) $remainingAmount * 100;
+            $vnp_Locale = 'vn';
+            $vnp_BankCode = '';
+            $vnp_IpAddr = $request->ip();
+            $vnp_CreateDate = date('YmdHis');
+            $vnp_ExpireDate = date('YmdHis', strtotime('+15 minutes'));
+
+            $inputData = [
+                "vnp_Version" => "2.1.0",
+                "vnp_TmnCode" => $vnp_TmnCode,
+                "vnp_Amount" => $vnp_Amount,
+                "vnp_Command" => "pay",
+                "vnp_CreateDate" => $vnp_CreateDate,
+                "vnp_CurrCode" => "VND",
+                "vnp_IpAddr" => $vnp_IpAddr,
+                "vnp_Locale" => $vnp_Locale,
+                "vnp_OrderInfo" => $vnp_OrderInfo,
+                "vnp_OrderType" => $vnp_OrderType,
+                "vnp_ReturnUrl" => $vnp_Returnurl,
+                "vnp_TxnRef" => $vnp_TxnRef,
+                "vnp_ExpireDate" => $vnp_ExpireDate,
+            ];
+
+            if (!empty($vnp_BankCode)) {
+                $inputData['vnp_BankCode'] = $vnp_BankCode;
+            }
+
+            ksort($inputData);
+
+            $hashdata = "";
+            $first = true;
+            foreach ($inputData as $key => $value) {
+                if ($first) {
+                    $hashdata .= $key . "=" . urlencode($value);
+                    $first = false;
+                } else {
+                    $hashdata .= "&" . $key . "=" . urlencode($value);
+                }
+            }
+
+            $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
+            $vnp_Url .= "?" . $hashdata . "&vnp_SecureHash=" . $vnpSecureHash;
+
+            $payment->update(['transaction_id' => $vnp_TxnRef]);
+
+            return redirect($vnp_Url);
+        }
+    }
+
+    public function returnVnpay(Request $request, $id)
+    {
+        $vnp_HashSecret = "NSEYDYAIT1XETEVUA24DF40DOCMC6NYE"; // Đảm bảo đúng HashSecret từ VNPay
+
+        // Lấy tất cả tham số từ VNPay trả về
+        $vnp_SecureHash = $request->input('vnp_SecureHash');
+        $vnp_ResponseCode = $request->input('vnp_ResponseCode');
+        $vnp_TransactionNo = $request->input('vnp_TransactionNo');
+        $vnp_Amount = $request->input('vnp_Amount') / 100; // Chuyển đổi từ VND sang số thực
+
+        // Loại bỏ các tham số không cần thiết để tạo chữ ký
+        $inputData = $request->except(['vnp_SecureHash', 'vnp_SecureHashType']);
+        ksort($inputData);
+
+        // Tạo chuỗi dữ liệu để kiểm tra chữ ký
+        $hashdata = "";
+        $first = true;
+        foreach ($inputData as $key => $value) {
+            if ($first) {
+                $hashdata .= $key . "=" . urlencode($value);
+                $first = false;
+            } else {
+                $hashdata .= "&" . $key . "=" . urlencode($value);
+            }
+        }
+
+        // Tạo chữ ký để so sánh
+        $checkSum = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
+
+        // Kiểm tra chữ ký
+        if ($checkSum !== $vnp_SecureHash) {
+            return redirect()->route('admin.bookings.index')
+                ->with('error', 'Chữ ký không hợp lệ! Thanh toán không được xác nhận.');
+        }
+
+        // Kiểm tra mã phản hồi
+        if ($vnp_ResponseCode == '00') {
+            try {
+                DB::transaction(function () use ($id, $vnp_TransactionNo, $vnp_Amount) {
+                    $booking = Booking::where('id', $id)->firstOrFail();
+                    $payment = Payment::where('booking_id', $id)->first();
+
+                    if ($payment) {
+                        // Cập nhật thông tin thanh toán
+                        $payment->update([
+                            'transaction_id' => $vnp_TransactionNo,
+                            'status' => 'completed',
+                        ]);
+
+                        // Cập nhật số tiền đã thanh toán
+                        $booking->update([
+                            'paid_amount' => $booking->total_price,
+                            'status' => 'paid'
+                        ]);
+
+                        // Gửi email xác nhận
+                        Mail::to($booking->user->email)->send(new PaymentSuccess($booking));
+                    }
+                });
+
+                return redirect()->route('admin.bookings.index')
+                    ->with('success', 'Thanh toán thành công! Thông tin thanh toán đã được gửi qua email.');
+            } catch (\Throwable $th) {
+                return redirect()->route('admin.bookings.index')
+                    ->with('error', 'Đã có lỗi xảy ra trong quá trình cập nhật thanh toán: ' . $th->getMessage());
+            }
+        } else {
+            return redirect()->route('admin.bookings.index')
+                ->with('error', 'Thanh toán không thành công! Mã lỗi: ' . $vnp_ResponseCode);
+        }
     }
 }
