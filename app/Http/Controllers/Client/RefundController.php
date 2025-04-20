@@ -160,7 +160,7 @@ class RefundController extends Controller
 
     public function lists()
     {
-        $refunds = Refund::with(['booking', 'policy'])
+        $refunds = Refund::with(['booking', 'refundPolicy'])
             ->whereHas('booking', function($query) {
                 $query->where('user_id', auth()->id());
             })

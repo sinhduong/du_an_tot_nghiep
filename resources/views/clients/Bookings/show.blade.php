@@ -382,12 +382,12 @@
                                                     @endswitch
                                                 </div>
                                             </div>
-                                            @if($booking->refund->amount > 0)
+                                            @if($booking->refund->amount >= 0)
                                             <div class="mt-2">
                                                 <strong>Số tiền hoàn:</strong> {{ number_format($booking->refund->amount) }} VNĐ
                                             </div>
                                             @endif
-                                            @if($booking->refund->cancellation_fee > 0)
+                                            @if($booking->refund->cancellation_fee >= 0)
                                             <div class="mt-2">
                                                 <strong>Phí hủy:</strong> {{ number_format($booking->refund->cancellation_fee) }} VNĐ
                                             </div>
