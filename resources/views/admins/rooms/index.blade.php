@@ -55,11 +55,68 @@
                             <div class="col-md-3">
                                 <label class="form-label">Khoảng thời gian</label>
                                 <input type="text" name="date_range" class="form-control form-control-sm date-range-picker"
-                                       value="{{ request('date_range') ?: '' }}" placeholder="Chọn khoảng thời gian">
+                                       value="{{ $dateRange }}" placeholder="Chọn khoảng thời gian">
                             </div>
-                            <div class="col-md-2 text-end">
-                                <button type="submit" class="btn btn-primary btn-sm mt-3">Lọc</button>
-                                <a href="{{ route('admin.rooms.index') }}" class="btn btn-secondary btn-sm mt-3 ms-2">Xóa lọc</a>
+                            <div class="col-md-3">
+                                <label class="form-label">Tiện nghi</label>
+                                <select name="amenities[]" class="form-control form-control-sm select2" multiple>
+                                    @foreach ($allAmenities as $amenity)
+                                        <option value="{{ $amenity->id }}" {{ in_array($amenity->id, $amenities) ? 'selected' : '' }}>
+                                            {{ $amenity->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Giá tối thiểu</label>
+                                <input type="number" name="min_price" class="form-control form-control-sm"
+                                       value="{{ request('min_price') }}" placeholder="Nhập giá tối thiểu">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Giá tối đa</label>
+                                <input type="number" name="max_price" class="form-control form-control-sm"
+                                       value="{{ request('max_price') }}" placeholder="Nhập giá tối đa">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Số lượng người ở</label>
+                                <div class="counter-dropdown">
+                                    <input type="text" id="counter_summary" class="form-control form-control-sm"
+                                           value="{{ $totalGuests }} người lớn - {{ $childrenCount }} trẻ em - {{ $roomCount }} phòng" readonly>
+                                    <div class="counter-dropdown-content">
+                                        <div class="counter-item">
+                                            <label>Người lớn</label>
+                                            <div class="counter-controls">
+                                                <button type="button" class="counter-btn minus" data-target="total_guests">-</button>
+                                                <input type="text" name="total_guests" class="counter-input" value="{{ $totalGuests }}" readonly>
+                                                <button type="button" class="counter-btn plus" data-target="total_guests">+</button>
+                                            </div>
+                                        </div>
+                                        <div class="counter-item">
+                                            <label>Trẻ em</label>
+                                            <div class="counter-controls">
+                                                <button type="button" class="counter-btn minus" data-target="children_count">-</button>
+                                                <input type="text" name="children_count" class="counter-input" value="{{ $childrenCount }}" readonly>
+                                                <button type="button" class="counter-btn plus" data-target="children_count">+</button>
+                                            </div>
+                                        </div>
+                                        <div class="counter-item">
+                                            <label>Phòng</label>
+                                            <div class="counter-controls">
+                                                <button type="button" class="counter-btn minus" data-target="room_count">-</button>
+                                                <input type="text" name="room_count" class="counter-input" value="{{ $roomCount }}" readonly>
+                                                <button type="button" class="counter-btn plus" data-target="room_count">+</button>
+                                            </div>
+                                        </div>
+                                        <small class="note">
+                                            Trẻ em dưới 12 tuổi miễn phí, trên 12 xem như người lớn
+                                        </small>
+                                        <button type="button" class="done-btn">Xong</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary mt-3">Lọc</button>
+                                <a href="{{ route('admin.rooms.index') }}" class="btn btn-secondary mt-3 ms-2">Xóa lọc</a>
                             </div>
                         </form>
                     </div>
@@ -149,8 +206,6 @@
                         <p class="text-muted text-center">Không có loại phòng hoặc phòng nào để hiển thị.</p>
                     </div>
                 @endif
-
-
             </div>
         </div>
     </main>
@@ -184,6 +239,60 @@
             padding: 2px 5px;
             font-size: 12px;
         }
+        .counter-dropdown {
+            position: relative;
+        }
+        .counter-dropdown-content {
+            display: none;
+            position: absolute;
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            z-index: 1000;
+            width: 300px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .counter-dropdown-content.show {
+            display: block;
+        }
+        .counter-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .counter-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .counter-input {
+            width: 50px;
+            text-align: center;
+            border: 1px solid #ddd;
+            padding: 5px;
+        }
+        .counter-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+        .done-btn {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .note {
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+        }
     </style>
 
     <!-- Thêm thư viện date range picker -->
@@ -196,7 +305,7 @@
         $(document).ready(function() {
             // Khởi tạo date range picker
             $('.date-range-picker').daterangepicker({
-                autoUpdateInput: false,
+                autoUpdateInput: true,
                 locale: {
                     format: 'DD/MM/YYYY',
                     applyLabel: 'Áp dụng',
@@ -208,19 +317,47 @@
                 },
                 ranges: {
                     'Hôm nay': [moment(), moment()],
-                    'Hôm qua': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    '7 ngày qua': [moment().subtract(6, 'days'), moment()],
-                    '30 ngày qua': [moment().subtract(29, 'days'), moment()],
-                    'Tháng này': [moment().startOf('month'), moment().endOf('month')],
-                    'Tháng trước': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    '7 ngày tới': [moment(), moment().add(6, 'days')],
+                    '14 ngày tới': [moment(), moment().add(13, 'days')],
+                    '30 ngày tới': [moment(), moment().add(29, 'days')],
+                    '90 ngày tới': [moment(), moment().add(89, 'days')]
                 }
             }, function(start, end, label) {
                 $('.date-range-picker').val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
             });
 
-            var dateRange = '{{ request('date_range') }}';
+            // Khởi tạo giá trị mặc định cho date range
+            var dateRange = '{{ $dateRange }}';
             if (dateRange) {
                 $('.date-range-picker').val(dateRange);
+            }
+
+            // Xử lý counter dropdown
+            $('#counter_summary').on('click', function() {
+                $('.counter-dropdown-content').toggleClass('show');
+            });
+
+            $('.counter-btn').on('click', function() {
+                var target = $(this).data('target');
+                var input = $('input[name="' + target + '"]');
+                var value = parseInt(input.val());
+                if ($(this).hasClass('plus')) {
+                    input.val(value + 1);
+                } else if (value > 0) {
+                    input.val(value - 1);
+                }
+                updateCounterSummary();
+            });
+
+            $('.done-btn').on('click', function() {
+                $('.counter-dropdown-content').removeClass('show');
+            });
+
+            function updateCounterSummary() {
+                var totalGuests = parseInt($('input[name="total_guests"]').val());
+                var childrenCount = parseInt($('input[name="children_count"]').val());
+                var roomCount = parseInt($('input[name="room_count"]').val());
+                $('#counter_summary').val(totalGuests + ' người lớn - ' + childrenCount + ' trẻ em - ' + roomCount + ' phòng');
             }
 
             // Xử lý nút "Xem thêm" và "Ẩn bớt"
