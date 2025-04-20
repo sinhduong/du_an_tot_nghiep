@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use App\Models\BookingRoomTypeService;
+use App\Models\PaymentSetting;
+use App\Models\RefundPolicy;
 use Illuminate\Support\Facades\Storage;
 
 class BookingController extends Controller
@@ -255,7 +257,7 @@ class BookingController extends Controller
             $totalPrice = $subTotal + $taxFee - $discountAmount;
 
             $guestData = $request->input('guest');
-
+            $paymentSetting = PaymentSetting::first();
             return view('clients.bookings.confirm', [
                 'roomType' => $roomType,
                 'checkIn' => $checkIn->toDateString(),
@@ -273,10 +275,17 @@ class BookingController extends Controller
                 'roomQuantity' => $roomQuantity,
                 'serviceQuantities' => $serviceQuantities,
                 'guestData' => $guestData,
+                'deposit_percentage' => $paymentSetting->deposit_percentage,
             ]);
         }
 
         return redirect()->route('bookings.create')->with('error', 'Vui lòng hoàn tất thông tin đặt phòng trước khi xác nhận.');
+    }
+
+    public function calculateDepositAmount($totalAmount)
+    {
+        $depositPercentage = PaymentSetting::first()->deposit_percentage;
+        return $totalAmount * ($depositPercentage / 100);
     }
 
     public function store(Request $request)
@@ -359,7 +368,8 @@ class BookingController extends Controller
                 'special_request' => $request->input('special_request'),
                 'service_plus_status' => !empty($validated['services']) ? 'not_yet_paid' : 'none',
                 'payment_method' => $paymentMethod == 'cash' ? 'cash' : $onlinePaymentMethod,
-                'status' => 'confirmed',
+                'status' => 'unpaid',
+                'paid_amount' => 0,
             ]);
 
             if (!empty($validated['services']) && is_array($validated['services'])) {
@@ -468,6 +478,12 @@ class BookingController extends Controller
                 $booking->guests()->attach($guest->id);
             }
 
+            $isPartial = false;
+            $depositAmount = $this->calculateDepositAmount($totalPrice);
+            if ($request->payment_amount_type == 'partial') {
+                $isPartial = true;
+                $totalPrice = $depositAmount;
+            }
             // Xử lý thanh toán
             $paymentData = [
                 'user_id' => $user->id,
@@ -475,6 +491,7 @@ class BookingController extends Controller
                 'amount' => $totalPrice,
                 'status' => 'pending',
                 'transaction_id' => null,
+                'is_partial' => $isPartial,
             ];
 
             if ($paymentMethod == 'cash') {
@@ -604,6 +621,8 @@ class BookingController extends Controller
 
                     $payment->update(['transaction_id' => $vnp_TxnRef]);
 
+
+
                     DB::commit();
 
                     return redirect($vnp_Url);
@@ -639,7 +658,7 @@ class BookingController extends Controller
                 'status' => 'completed',
                 'transaction_id' => $data['transId'],
             ]);
-            $booking->update(['status' => 'confirmed']);
+            $booking->update(['status' => 'paid']);
             $message = 'Thanh toán thành công! Đặt phòng của bạn đã được xác nhận.';
         } else {
             $payment->update(['status' => 'failed']);
@@ -674,8 +693,12 @@ class BookingController extends Controller
             'guests',
         ])->findOrFail($id);
 
+        $paymentSetting = PaymentSetting::first();
+        $deposit_percentage = $paymentSetting->deposit_percentage; 
+        $refundPolicies = RefundPolicy::all();
+
         $title = 'Chi tiết đơn đặt phòng';
-        return view('clients.bookings.show', compact('title', 'booking'));
+        return view('clients.bookings.show', compact('title', 'booking', 'deposit_percentage', 'refundPolicies'));
     }
 
     public function edit(string $id)
@@ -819,6 +842,7 @@ class BookingController extends Controller
         $vnp_SecureHash = $request->input('vnp_SecureHash');
         $vnp_ResponseCode = $request->input('vnp_ResponseCode');
         $vnp_TransactionNo = $request->input('vnp_TransactionNo');
+        $vnp_Amount = $request->input('vnp_Amount') / 100; // Chuyển đổi từ VND sang số thực
 
         // Loại bỏ các tham số không cần thiết để tạo chữ ký
         $inputData = $request->except(['vnp_SecureHash', 'vnp_SecureHashType']);
@@ -848,20 +872,30 @@ class BookingController extends Controller
         // Kiểm tra mã phản hồi
         if ($vnp_ResponseCode == '00') {
             try {
-                DB::transaction(function () use ($id, $vnp_TransactionNo) {
+                DB::transaction(function () use ($id, $vnp_TransactionNo, $vnp_Amount) {
                     $booking = Booking::where('id', $id)->firstOrFail();
-                    $booking->update(['status' => 'paid']);
-
                     $payment = Payment::where('booking_id', $id)->first();
+
                     if ($payment) {
+                        // Cập nhật thông tin thanh toán
                         $payment->update([
                             'transaction_id' => $vnp_TransactionNo,
                             'status' => 'completed',
                         ]);
-                    }
 
-                    // Gửi email
-                    Mail::to($booking->user->email)->send(new BookingSuccess($booking));
+                        // Cập nhật số tiền đã thanh toán
+                        $booking->update(['paid_amount' => $vnp_Amount]);
+
+                        // Kiểm tra xem đây có phải là thanh toán một phần không
+                        if ($payment->is_partial) {
+                            $booking->update(['status' => 'partial']);
+                        } else {
+                            $booking->update(['status' => 'paid']);
+                        }
+
+                        // Gửi email xác nhận
+                        Mail::to($booking->user->email)->send(new BookingSuccess($booking));
+                    }
                 });
 
                 return redirect()->route('bookings.show', $id)
@@ -873,6 +907,92 @@ class BookingController extends Controller
         } else {
             return redirect()->route('bookings.show', $id)
                 ->with('error', 'Thanh toán không thành công! Mã lỗi: ' . $vnp_ResponseCode);
+        }
+    }
+
+    public function processNextPayment(Request $request, $id)
+    {
+        $booking = Booking::findOrFail($id);
+
+        $validated = $request->validate([
+            'payment_method' => 'required|in:momo,vnpay',
+            'payment_amount_type' => 'required|in:full,partial'
+        ]);
+
+        $paymentAmount = $booking->total_price;
+        $deposit_percentage = $request->input('deposit_percentage');
+        if ($validated['payment_amount_type'] == 'partial') {
+            $paymentAmount = $paymentAmount * (intval($deposit_percentage) / 100);
+        }
+
+        $paymentData = [
+            'user_id' => $booking->user_id,
+            'booking_id' => $booking->id,
+            'amount' => $paymentAmount,
+            'status' => 'pending',
+            'transaction_id' => null,
+            'is_partial' => $validated['payment_amount_type'] == 'partial',
+        ];
+
+        $paymentMethod = $validated['payment_method'];
+        if ($paymentMethod == 'vnpay') {
+            $payment = Payment::create($paymentData);
+            $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+            $vnp_Returnurl = route('bookings.return.vnpay', $booking->id);
+            $vnp_TmnCode = "6Q5Z9DG8";
+            $vnp_HashSecret = "NSEYDYAIT1XETEVUA24DF40DOCMC6NYE";
+
+            $vnp_TxnRef = $booking->booking_code . '-' . time();
+            $vnp_OrderInfo = 'Thanh toán đặt phòng ' . $booking->booking_code;
+            $vnp_OrderType = 'billpayment';
+            $vnp_Amount = (int) $paymentAmount * 100;
+            $vnp_Locale = 'vn';
+            $vnp_BankCode = '';
+            $vnp_IpAddr = $request->ip();
+            $vnp_CreateDate = date('YmdHis');
+            $vnp_ExpireDate = date('YmdHis', strtotime('+15 minutes'));
+
+            $inputData = [
+                "vnp_Version" => "2.1.0",
+                "vnp_TmnCode" => $vnp_TmnCode,
+                "vnp_Amount" => $vnp_Amount,
+                "vnp_Command" => "pay",
+                "vnp_CreateDate" => $vnp_CreateDate,
+                "vnp_CurrCode" => "VND",
+                "vnp_IpAddr" => $vnp_IpAddr,
+                "vnp_Locale" => $vnp_Locale,
+                "vnp_OrderInfo" => $vnp_OrderInfo,
+                "vnp_OrderType" => $vnp_OrderType,
+                "vnp_ReturnUrl" => $vnp_Returnurl,
+                "vnp_TxnRef" => $vnp_TxnRef,
+                "vnp_ExpireDate" => $vnp_ExpireDate,
+            ];
+
+            if (!empty($vnp_BankCode)) {
+                $inputData['vnp_BankCode'] = $vnp_BankCode;
+            }
+
+            ksort($inputData);
+
+            $hashdata = "";
+            $first = true;
+            foreach ($inputData as $key => $value) {
+                if ($first) {
+                    $hashdata .= $key . "=" . urlencode($value);
+                    $first = false;
+                } else {
+                    $hashdata .= "&" . $key . "=" . urlencode($value);
+                }
+            }
+
+            $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
+            $vnp_Url .= "?" . $hashdata . "&vnp_SecureHash=" . $vnpSecureHash;
+
+            $payment->update(['transaction_id' => $vnp_TxnRef]);
+
+            DB::commit();
+
+            return redirect($vnp_Url);
         }
     }
 }

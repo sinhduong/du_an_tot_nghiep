@@ -198,6 +198,16 @@
                 <li class="lh-sb-item-separator"></li>
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
+                        <i class="ri-contacts-book-line"></i><span class="condense">Quản lý tỷ lệ đặt cọc <i
+                                class="drop-arrow ri-arrow-down-s-line"></i></span></a>
+                    <ul class="lh-sb-drop condense">
+                        <li><a href="{{ route('admin.payment-settings.index') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Danh sách tỷ lệ</a></li>
+                    </ul>
+                </li>
+                <li class="lh-sb-item-separator"></li>
+                <li class="lh-sb-item sb-drop-item">
+                    <a href="javascript:void(0)" class="lh-drop-toggle">
                         <i class="ri-contacts-book-line"></i><span class="condense">Quản lý đặt phòng <i
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">

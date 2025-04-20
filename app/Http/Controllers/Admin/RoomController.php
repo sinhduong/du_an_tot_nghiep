@@ -40,9 +40,9 @@ class RoomController extends Controller
         }
 
         // Xây dựng truy vấn cho room_types
-        $query = RoomType::with(['rooms' => function ($query) use ($checkIn, $checkOut) {
+        $query = RoomType::with(['rooms' => function ($query) use ($checkIn, $checkOut, $status, $roomNumber) {
             $query->with(['bookings' => function ($query) use ($checkIn, $checkOut) {
-                $query->whereIn('status', ['pending_confirmation', 'confirmed', 'paid', 'check_in', 'check_out'])
+                $query->whereIn('status', ['pending_confirmation', 'confirmed', 'paid', 'check_in'])
                     ->when($checkIn, function ($query, $checkIn) {
                         return $query->whereDate('check_in', '>=', $checkIn);
                     })
@@ -52,9 +52,12 @@ class RoomController extends Controller
                     ->orderBy('created_at', 'desc');
             }])
                 ->withCount(['bookings as booking_count' => function ($query) {
-                    $query->whereIn('status', ['pending_confirmation', 'confirmed', 'paid', 'check_in', 'check_out']);
+                    $query->whereIn('status', ['pending_confirmation', 'confirmed', 'paid', 'check_in']);
                 }])
                 ->whereNull('deleted_at')
+                ->when($roomNumber, function ($query, $roomNumber) {
+                    return $query->where('room_number', 'like', "%{$roomNumber}%");
+                })
                 ->orderBy('id', 'desc');
         }])
             ->whereNull('deleted_at')
@@ -67,14 +70,18 @@ class RoomController extends Controller
         $roomTypes = $query->get();
 
         // Tính trạng thái và chọn booking mới nhất
-        $roomTypes->each(function ($roomType) use ($checkIn, $checkOut) {
+        $roomTypes->each(function ($roomType) use ($checkIn, $checkOut, $status) {
             $roomType->rooms->each(function ($room) use ($checkIn, $checkOut) {
                 // Mặc định filtered_status là available
                 $room->filtered_status = 'available';
 
                 // Kiểm tra nếu phòng có booking hợp lệ
                 $hasActiveBooking = $room->bookings->contains(function ($booking) {
-                    return !in_array($booking->status, ['cancelled', 'refunded']);
+                    $now = Carbon::now();
+                    $bookingCheckOut = Carbon::parse($booking->check_out);
+                    
+                    return in_array($booking->status, ['pending_confirmation', 'confirmed', 'paid', 'check_in']) &&
+                           $bookingCheckOut->gt($now); // booking chưa hết hạn
                 });
 
                 if ($hasActiveBooking) {
@@ -87,14 +94,16 @@ class RoomController extends Controller
                 if ($checkIn && $checkOut) {
                     $checkInDate = Carbon::parse($checkIn);
                     $checkOutDate = Carbon::parse($checkOut);
-
-                    $hasBookingInRange = $room->bookings->contains(function ($booking) use ($checkInDate, $checkOutDate) {
+                    $now = Carbon::now();
+                
+                    $hasBookingInRange = $room->bookings->contains(function ($booking) use ($checkInDate, $checkOutDate, $now) {
                         $bookingCheckIn = Carbon::parse($booking->check_in);
                         $bookingCheckOut = Carbon::parse($booking->check_out);
-
-                        return !in_array($booking->status, ['cancelled', 'refunded']) &&
-                            $bookingCheckIn->lte($checkOutDate) &&
-                            $bookingCheckOut->gte($checkInDate);
+                
+                        return in_array($booking->status, ['pending_confirmation', 'confirmed', 'paid', 'check_in']) &&
+                               $bookingCheckOut->gt($now) && // booking chưa hết hạn
+                               $bookingCheckIn->lte($checkOutDate) &&
+                               $bookingCheckOut->gte($checkInDate);
                     });
 
                     $room->filtered_status = $hasBookingInRange ? 'booked' : 'available';
@@ -114,6 +123,13 @@ class RoomController extends Controller
                 // Debug
                 Log::info("Room {$room->room_number}: booking_count = {$room->booking_count}, filtered_status = {$room->filtered_status}");
             });
+
+            // lọc theo trạng thái phòng
+            if ($status) {
+                $roomType->rooms = $roomType->rooms->filter(function ($room) use ($status) {
+                    return $room->filtered_status === $status;
+                });
+            }
 
             // Tính số phòng trống và đã đặt dựa trên filtered_status
             $roomType->available_rooms_count = $roomType->rooms->where('filtered_status', 'available')->count();
