@@ -64,14 +64,15 @@ class RoomController extends Controller
         $query = RoomType::with(['rooms' => function ($query) use ($checkIn, $checkOut, $status, $roomNumber, $totalGuests, $childrenCount, $roomCount) {
             $query->with(['bookings' => function ($query) use ($checkIn, $checkOut) {
                 $query->whereIn('status', ['pending_confirmation', 'confirmed', 'paid', 'check_in'])
-                    ->when($checkIn, function ($query, $checkIn) {
-                        return $query->whereDate('check_in', '>=', $checkIn);
-                    })
-                    ->when($checkOut, function ($query, $checkOut) {
-                        return $query->whereDate('check_out', '<=', $checkOut);
+                    ->when($checkIn && $checkOut, function ($query) use ($checkIn, $checkOut) {
+                        return $query->where(function ($q) use ($checkIn, $checkOut) {
+                            $q->whereDate('check_in', '<', $checkOut)
+                                ->whereDate('check_out', '>', $checkIn);
+                        });
                     })
                     ->orderBy('created_at', 'desc');
             }])
+
                 ->withCount(['bookings as booking_count' => function ($query) {
                     $query->whereIn('status', ['pending_confirmation', 'confirmed', 'paid', 'check_in']);
                 }])
