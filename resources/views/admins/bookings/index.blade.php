@@ -170,9 +170,9 @@
                             </div>
 
                             <!-- Phân trang -->
-                            <div class="d-flex justify-content-center">
-                                {{ $bookings->appends(request()->query())->links() }}
-                            </div>
+{{--                            <div class="d-flex justify-content-center">--}}
+{{--                                {{ $bookings->appends(request()->query())->links() }}--}}
+{{--                            </div>--}}
                         </div>
                     </div>
                 </div>
