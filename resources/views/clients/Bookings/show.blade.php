@@ -114,12 +114,6 @@
                                 $method = $payment->method;
                                 $paymentStatus = $payment->status;
                                 @endphp
-
-                                @if ($paymentStatus=='completed')
-                                <span class="badge bg-info mt-2">
-                                    <i class="fas fa-clock"></i> {{ $payment->created_at->format('H:i:s d-m-Y') }}
-                                </span>
-                                @endif
                             </p>
                             <p><strong>Phương thức thanh toán:</strong>
                                 @if ($booking->payments->isNotEmpty())
@@ -142,6 +136,12 @@
                                 @else
                                 <span class="badge bg-warning text-dark">Chưa thanh toán</span>
                                 @endif
+
+                                @if ($paymentStatus=='completed')
+                                    <span class="badge bg-info mt-2">
+                                        <i class="fas fa-clock"></i> {{ $payment->created_at->format('H:i:s d-m-Y') }}
+                                    </span>
+                                    @endif
                             </p>
                         </div>
 
@@ -333,6 +333,74 @@
                                     <p class="text-muted"><i class="fas fa-info-circle me-2"></i> Không có thông
                                         tin loại phòng.</p>
                                     @endif
+
+                                    <!-- Chính sách huỷ đặt phòng và hoàn tiền -->
+                                    @if ($refundPolicies->isNotEmpty())
+                                    <div class="lh-check-block-content mb-4">
+                                        <h5 class="lh-room-inner-heading mb-2">Chính sách huỷ đặt phòng và hoàn tiền</h5>
+                                        <ul class="list-unstyled">
+                                            @foreach ($refundPolicies as $refundPolicy)
+                                            <li class="mb-2"><i
+                                                    class="fas fa-exclamation-circle text-warning me-2"></i>
+                                                {{ $refundPolicy->name }}: {{ $refundPolicy->description }}
+                                            </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                    @endif
+
+                                    <!-- Trạng thái hoàn tiền -->
+                                    @if ($booking->refund)
+                                    <div class="lh-check-block-content mb-4">
+                                        <h5 class="lh-room-inner-heading mb-2">Trạng thái hoàn tiền</h5>
+                                        <div class="alert 
+                                            @if($booking->refund->status == 'pending') alert-warning
+                                            @elseif($booking->refund->status == 'approved') alert-success
+                                            @elseif($booking->refund->status == 'rejected') alert-danger
+                                            @else alert-info @endif">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas 
+                                                    @if($booking->refund->status == 'pending') fa-clock
+                                                    @elseif($booking->refund->status == 'approved') fa-check-circle
+                                                    @elseif($booking->refund->status == 'rejected') fa-times-circle
+                                                    @else fa-info-circle @endif 
+                                                    me-2"></i>
+                                                <div>
+                                                    <strong>Trạng thái:</strong> 
+                                                    @switch($booking->refund->status)
+                                                        @case('pending')
+                                                            Đang chờ xử lý
+                                                            @break
+                                                        @case('approved')
+                                                            Đã được phê duyệt
+                                                            @break
+                                                        @case('rejected')
+                                                            Đã bị từ chối
+                                                            @break
+                                                        @default
+                                                            {{ $booking->refund->status }}
+                                                    @endswitch
+                                                </div>
+                                            </div>
+                                            @if($booking->refund->amount > 0)
+                                            <div class="mt-2">
+                                                <strong>Số tiền hoàn:</strong> {{ number_format($booking->refund->amount) }} VNĐ
+                                            </div>
+                                            @endif
+                                            @if($booking->refund->cancellation_fee > 0)
+                                            <div class="mt-2">
+                                                <strong>Phí hủy:</strong> {{ number_format($booking->refund->cancellation_fee) }} VNĐ
+                                            </div>
+                                            @endif
+                                            @if($booking->refund->reason)
+                                            <div class="mt-2">
+                                                <strong>Lý do:</strong> {{ $booking->refund->reason }}
+                                            </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @endif
+
                                 </div>
                             </div>
 
@@ -518,7 +586,7 @@
                                     </button>
                                     @endif
 
-                                    @if ($booking->status == 'cancelled')
+                                    @if (in_array($booking->status, ['cancelled', 'cancelled_without_refund']))
                                     <p class="text-danger"><i class="fas fa-times-circle me-2"></i> Đặt phòng đã
                                         được hủy.</p>
                                     @endif
@@ -598,13 +666,8 @@
                 <form action="{{ route('refunds.request', $booking->id) }}" method="POST">
                     @csrf
                     <div class="form-group mb-3">
-                        <label for="reason">Lý do hủy phòng</label>
-                        <textarea name="reason" id="reason" class="form-control @error('reason') is-invalid @enderror" required></textarea>
-                        @error('reason')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                        @enderror
+                        <label for="reason">Lý do hủy phòng(Không bắt buộc)</label>
+                        <textarea name="reason" id="reason" class="form-control"></textarea>
                     </div>
 
                     <div class="form-group mb-3">
@@ -621,5 +684,4 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 @endsection

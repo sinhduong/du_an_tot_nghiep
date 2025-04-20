@@ -28,7 +28,7 @@ class Refund extends Model
         return $this->belongsTo(Booking::class);
     }
 
-    public function policy()
+    public function refundPolicy()
     {
         return $this->belongsTo(RefundPolicy::class, 'refund_policy_id');
     }

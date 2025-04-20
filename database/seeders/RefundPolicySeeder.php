@@ -36,9 +36,9 @@ class RefundPolicySeeder extends Seeder
         RefundPolicy::create([
             'name' => 'Hủy trong 24 giờ',
             'days_before_checkin' => 0,
-            'refund_percentage' => 30,
-            'cancellation_fee_percentage' => 70,
-            'description' => 'Hoàn trả 30% số tiền đã thanh toán'
+            'refund_percentage' => 0,
+            'cancellation_fee_percentage' => 100,
+            'description' => 'Không hoàn trả số tiền đã thanh toán'
         ]);
     }
 }

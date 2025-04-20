@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use App\Models\BookingRoomTypeService;
 use App\Models\PaymentSetting;
+use App\Models\RefundPolicy;
 use Illuminate\Support\Facades\Storage;
 
 class BookingController extends Controller
@@ -274,7 +275,7 @@ class BookingController extends Controller
                 'roomQuantity' => $roomQuantity,
                 'serviceQuantities' => $serviceQuantities,
                 'guestData' => $guestData,
-                'deposit_percentage' => $paymentSetting->deposit_percentage
+                'deposit_percentage' => $paymentSetting->deposit_percentage,
             ]);
         }
 
@@ -694,9 +695,10 @@ class BookingController extends Controller
 
         $paymentSetting = PaymentSetting::first();
         $deposit_percentage = $paymentSetting->deposit_percentage; 
+        $refundPolicies = RefundPolicy::all();
 
         $title = 'Chi tiết đơn đặt phòng';
-        return view('clients.bookings.show', compact('title', 'booking', 'deposit_percentage'));
+        return view('clients.bookings.show', compact('title', 'booking', 'deposit_percentage', 'refundPolicies'));
     }
 
     public function edit(string $id)

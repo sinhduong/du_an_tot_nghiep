@@ -20,8 +20,7 @@ class CancelExpiredPayments extends Command
             
             $this->info("Checking for expired payments before {$expiredTime}");
             
-            $expiredPayments = Payment::where('method', 'vnpay')
-                ->where('status', 'pending')
+            $expiredPayments = Payment::where('status', 'pending')
                 ->where('created_at', '<=', $expiredTime)
                 ->get();
 

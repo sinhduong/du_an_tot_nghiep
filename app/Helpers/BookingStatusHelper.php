@@ -13,6 +13,7 @@ class BookingStatusHelper
             'check_in' => 'Đã check in',
             'check_out' => 'Đã checkout',
             'cancelled' => 'Đã hủy',
+            'cancelled_without_refund' => 'Đã hủy không hoàn tiền',
             'refunded' => 'Đã hoàn tiền'
         ];
 
@@ -28,6 +29,7 @@ class BookingStatusHelper
             'check_in' => 'badge bg-primary',
             'check_out' => 'badge bg-secondary',
             'cancelled' => 'badge bg-danger',
+            'cancelled_without_refund' => 'badge bg-danger',
             'refunded' => 'badge bg-dark'
         ];
 

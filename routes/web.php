@@ -144,6 +144,7 @@ Route::prefix('admin')
             ->group(function () {
                 Route::get('/{refund}/approve', [RefundController::class, 'showApproveForm'])->name('approve-form');
                 Route::post('/{refund}/approve', [RefundController::class, 'approveRefund'])->name('approve');
+                Route::get('/{refund}/details', [RefundController::class, 'getRefundDetails'])->name('details');
             });
 
 
@@ -354,4 +355,5 @@ Route::get('payments', [HomeController::class, 'paymentsList'])->name('payments.
 
 Route::prefix('refunds')->group(function () {
     Route::post('/{booking}/request', [ClientRefundController::class, 'requestRefund'])->name('refunds.request');
+    Route::get('/lists', [ClientRefundController::class, 'lists'])->name('refunds.lists');
 });

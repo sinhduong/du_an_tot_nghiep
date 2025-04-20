@@ -35,7 +35,7 @@ class BookingController extends Controller
         $title = 'Đơn đặt phòng mới nhất';
 
         // Khởi tạo query
-        $query = Booking::with('user', 'rooms', 'refund', 'refund.policy')->latest();
+        $query = Booking::with('user', 'rooms', 'refund', 'refund.refundPolicy')->latest();
 
         // Lọc theo khoảng thời gian
         if ($request->has('start_date') && $request->has('end_date')) {

@@ -47,6 +47,10 @@
                                     <td>{{ $refund->reason }}</td>
                                 </tr>
                                 <tr>
+                                    <th>Tiền đã thanh toán:</th>
+                                    <td>{{ $refund->booking->paid_amount }}</td>
+                                </tr>
+                                <tr>
                                     <th>Chính sách hoàn tiền:</th>
                                     <td>{{ $refund->policy->name }}</td>
                                 </tr>
