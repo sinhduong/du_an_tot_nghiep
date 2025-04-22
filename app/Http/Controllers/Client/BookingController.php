@@ -69,6 +69,8 @@ class BookingController extends Controller
         $taxFee = $subTotal * 0.08;
         $totalPrice = $subTotal + $taxFee;
 
+        // dd($totalPrice, $basePrice, $discountedPrice, $serviceTotal, $taxFee);
+
         $request->validate([
             'room_type_id' => 'required|exists:room_types,id',
             'check_in' => 'required|date|after_or_equal:today',
@@ -218,7 +220,7 @@ class BookingController extends Controller
             $childrenCount = (int) $request->children_count;
             $roomQuantity = (int) $request->room_quantity;
             $serviceTotal = (float) $request->service_total;
-
+            // dd($basePrice, $discountAmount, $totalGuests, $childrenCount, $roomQuantity, $serviceTotal);
             // Debug dữ liệu services
             \Log::info('Services received in confirm:', $request->services);
 
@@ -252,9 +254,19 @@ class BookingController extends Controller
             // Debug selected services
             \Log::info('Selected services in confirm:', ['selectedServices' => $selectedServices, 'serviceQuantities' => $serviceQuantities]);
 
-            $subTotal = $basePrice + $serviceTotal;
-            $taxFee = $subTotal * 0.08; // Thuế 8%
-            $totalPrice = $subTotal + $taxFee - $discountAmount;
+            if ($discountAmount > 0) {
+                $subTotal = ($basePrice - $discountAmount )+ $serviceTotal;
+                $taxFee = $subTotal * 0.08; // Thuế 8%
+                $totalPrice = $subTotal + $taxFee;
+            }else{
+                $subTotal = $basePrice + $serviceTotal;
+                $taxFee = $subTotal * 0.08; // Thuế 8%
+                $totalPrice = $subTotal + $taxFee - $discountAmount;
+            }
+            // dd($subTotal, $taxFee, $totalPrice);
+            // $subTotal = $basePrice + $serviceTotal;
+            // $taxFee = $subTotal * 0.08; // Thuế 8%
+            // $totalPrice = $subTotal + $taxFee - $discountAmount;
 
             $guestData = $request->input('guest');
             $paymentSetting = PaymentSetting::first();
@@ -348,6 +360,7 @@ class BookingController extends Controller
             $taxFee = (float) $request->input('tax_fee');
             $subTotal = (float) $request->input('sub_total');
             $totalPrice = (float) $request->input('total_price');
+            // dd($totalPrice, $basePrice, $discountAmount, $serviceTotal, $taxFee, $subTotal);
 
             // Tạo bản ghi Booking
             $booking = Booking::create([
@@ -479,11 +492,13 @@ class BookingController extends Controller
             }
 
             $isPartial = false;
+            // dd($totalPrice);
             $depositAmount = $this->calculateDepositAmount($totalPrice);
             if ($request->payment_amount_type == 'partial') {
                 $isPartial = true;
                 $totalPrice = $depositAmount;
             }
+
             // Xử lý thanh toán
             $paymentData = [
                 'user_id' => $user->id,
