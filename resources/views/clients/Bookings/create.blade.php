@@ -131,7 +131,7 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Họ và tên *</label>
+                                                    <label class="form-label">Họ và tên <span class="text-danger">*</span> </label>
                                                     <input type="text" name="guest[name]" class="form-control"
                                                         value="{{ old('guest.name', $user->name ?? '') }}"
                                                         placeholder="Nhập họ và tên" required />
@@ -143,7 +143,7 @@
 
                                             <div class="col-md-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Email *</label>
+                                                    <label class="form-label">Email <span class="text-danger">*</span> </label>
                                                     <input type="email" name="guest[email]" class="form-control"
                                                         value="{{ old('guest.email', $user->email ?? '') }}"
                                                         placeholder="Nhập email" required />
@@ -155,7 +155,7 @@
 
                                             <div class="col-md-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Số điện thoại *</label>
+                                                    <label class="form-label">Số điện thoại <span class="text-danger">*</span> </label>
                                                     <input type="text" name="guest[phone]" class="form-control"
                                                         value="{{ old('guest.phone', $user->phone ?? '') }}"
                                                         placeholder="Nhập số điện thoại" required />
@@ -167,7 +167,7 @@
 
                                             <div class="col-md-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Vùng quốc gia *</label>
+                                                    <label class="form-label">Vùng quốc gia <span class="text-danger">*</span> </label>
                                                     <select name="guest[country]" class="form-control" required>
                                                         <option value="">Chọn quốc gia</option>
                                                         <option value="Việt Nam" {{ old('guest.country', $user->country ?? '') == 'Việt Nam' ? 'selected' : '' }}>Việt Nam</option>

@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\ServicePlusController;
 use App\Http\Controllers\Admin\IntroductionController;
 use App\Http\Controllers\Admin\PaymentSettingController;
 use App\Http\Controllers\Admin\RefundController;
+use App\Http\Controllers\Admin\RefundPolicyController;
 use App\Http\Controllers\Admin\SaleRoomTypeController;
 use App\Http\Controllers\Admin\StaffAttendanceController;
 use App\Http\Controllers\Admin\RoomTypePromotionController;
@@ -145,6 +146,17 @@ Route::prefix('admin')
                 Route::get('/{refund}/approve', [RefundController::class, 'showApproveForm'])->name('approve-form');
                 Route::post('/{refund}/approve', [RefundController::class, 'approveRefund'])->name('approve');
                 Route::get('/{refund}/details', [RefundController::class, 'getRefundDetails'])->name('details');
+            });
+
+        Route::prefix('refund-policies')
+            ->as('refund-policies.')
+            ->group(function () {
+                Route::get('/', [RefundPolicyController::class, 'index'])->name('index');
+                Route::get('/create', [RefundPolicyController::class, 'create'])->name('create');
+                Route::post('/store', [RefundPolicyController::class, 'store'])->name('store');
+                Route::get('{id}/edit', [RefundPolicyController::class, 'edit'])->name('edit');
+                Route::put('{id}/update', [RefundPolicyController::class, 'update'])->name('update');
+                Route::delete('{id}/destroy', [RefundPolicyController::class, 'destroy'])->name('destroy');
             });
 
 

@@ -208,6 +208,18 @@
                 <li class="lh-sb-item-separator"></li>
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
+                        <i class="ri-contacts-book-line"></i><span class="condense">Quản lý chính sách hoàn tiền <i
+                                class="drop-arrow ri-arrow-down-s-line"></i></span></a>
+                    <ul class="lh-sb-drop condense">
+                        <li><a href="{{ route('admin.refund-policies.index') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Danh sách</a></li>
+                        <li><a href="{{ route('admin.refund-policies.create') }}" class="lh-page-link drop"><i
+                                    class="ri-git-commit-line"></i>Thêm mới</a></li>
+                    </ul>
+                </li>
+                <li class="lh-sb-item-separator"></li>
+                <li class="lh-sb-item sb-drop-item">
+                    <a href="javascript:void(0)" class="lh-drop-toggle">
                         <i class="ri-contacts-book-line"></i><span class="condense">Quản lý đặt phòng <i
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
@@ -250,7 +262,7 @@
                         <li><a href="{{ route('admin.banners.index') }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Quản lý banner</a></li>
                         <li><a href="{{ route('admin.systems.index') }}" class="lh-page-link drop"><i
-                                        class="ri-git-commit-line"></i>Quản lý system </a></li>
+                                    class="ri-git-commit-line"></i>Quản lý system </a></li>
                     </ul>
                 </li>
                 <li class="lh-sb-title condense">Settings</li>
