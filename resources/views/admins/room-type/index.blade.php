@@ -4,13 +4,16 @@
         padding: 0.375rem 0.75rem;
         font-size: 0.875rem;
     }
+
     .header-tools .btn-link {
         line-height: 1;
     }
+
     .filter-form .form-control {
         height: 35px;
         font-size: 0.875rem;
     }
+
     .filter-form .btn {
         height: 35px;
         font-size: 0.875rem;
@@ -43,13 +46,13 @@
             </div>
 
             @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
             @endif
 
-    
+
 
             <div class="lh-card-content">
                 <div class="table-responsive">
@@ -72,11 +75,11 @@
                                 <td>{{ $item->name }}</td>
                                 <td>
                                     @if ($item->roomTypeImages->isNotEmpty())
-                                        <img src="{{ Storage::url($item->roomTypeImages->first()->image) }}"
-                                             width="100" height="100" alt="{{ $item->name }}"
-                                             class="img-thumbnail">
+                                    <img src="{{ Storage::url($item->roomTypeImages->first()->image) }}"
+                                        width="100" height="100" alt="{{ $item->name }}"
+                                        class="img-thumbnail">
                                     @else
-                                        <small>Chưa có</small>
+                                    <small>Chưa có</small>
                                     @endif
                                 </td>
                                 <td>{{ Str::limit($item->description, 30) }}</td>
@@ -171,11 +174,138 @@ $(document).ready(function() {
                         }
                     },
                     error: function(xhr) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi',
-                            text: xhr.responseJSON?.message || 'Đã có lỗi xảy ra!'
-                        });
+                        const response = xhr.responseJSON;
+                        if (response && response.require_action) {
+                            // Hiển thị thông báo với nút Tùy chọn
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: response.message,
+                                showDenyButton: true,
+                                confirmButtonText: 'Đóng',
+                                denyButtonText: 'Tùy chọn',
+                                showCancelButton: false
+                            }).then((result) => {
+                                if (result.isDenied) {
+                                    // Tạo HTML cho các options
+                                    const optionsHtml = Object.entries(response.options).map(([value, text]) => `
+                                        <div class="custom-control custom-radio mb-2 d-flex align-items-center">
+                                            <input type="radio" id="${value}" name="deleteAction" class="custom-control-input me-3" value="${value}">
+                                            <label class="custom-control-label" for="${value}">${text}</label>
+                                        </div>
+                                    `).join('');
+
+                                    // Tạo HTML cho select box
+                                    const selectHtml = `
+                                        <div class="form-group mt-3" id="roomTypeSelect" style="display: none;">
+                                            <label for="targetRoomType">Chọn loại phòng đích:</label>
+                                            <select id="targetRoomType" class="form-control">
+                                                <option value="">Chọn loại phòng</option>
+                                                @foreach($room_types as $type)
+                                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    `;
+
+                                    // Hiển thị SweetAlert2 với form tùy chỉnh
+                                    Swal.fire({
+                                        title: 'Chọn cách xử lý',
+                                        html: `
+                                            <div class="text-left">
+                                                <p>${response.message}</p>
+                                                <div id="deleteOptions">
+                                                    ${optionsHtml}
+                                                </div>
+                                                ${selectHtml}
+                                            </div>
+                                        `,
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Xác nhận',
+                                        cancelButtonText: 'Hủy',
+                                        showLoaderOnConfirm: true,
+                                        preConfirm: () => {
+                                            const action = $('input[name="deleteAction"]:checked').val();
+                                            if (!action) {
+                                                Swal.showValidationMessage('Vui lòng chọn cách xử lý');
+                                                return false;
+                                            }
+
+                                            if (action === 'move_to_another' && !$('#targetRoomType').val()) {
+                                                Swal.showValidationMessage('Vui lòng chọn loại phòng đích');
+                                                return false;
+                                            }
+
+                                            return {
+                                                action: action,
+                                                target_room_type_id: action === 'move_to_another' ? $('#targetRoomType').val() : null
+                                            };
+                                        },
+                                        allowOutsideClick: () => !Swal.isLoading()
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            const data = {
+                                                _token: '{{ csrf_token() }}',
+                                                _method: 'DELETE',
+                                                action: result.value.action
+                                            };
+
+                                            if (result.value.target_room_type_id) {
+                                                data.target_room_type_id = result.value.target_room_type_id;
+                                            }
+
+                                            // Gọi API xóa
+                                            $.ajax({
+                                                url: form.attr('action'),
+                                                method: 'POST',
+                                                data: data,
+                                                success: function(response) {
+                                                    if (response.success) {
+                                                        Swal.fire({
+                                                            icon: 'success',
+                                                            title: 'Thành công',
+                                                            text: response.message,
+                                                            timer: 1500,
+                                                            showConfirmButton: false
+                                                        }).then(() => {
+                                                            window.location.href = response.redirect;
+                                                        });
+                                                    } else {
+                                                        Swal.fire({
+                                                            icon: 'error',
+                                                            title: 'Lỗi',
+                                                            text: response.message
+                                                        });
+                                                    }
+                                                },
+                                                error: function(xhr) {
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'Lỗi',
+                                                        text: xhr.responseJSON?.message || 'Đã có lỗi xảy ra!'
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
+
+                                    // Xử lý sự kiện khi chọn radio button
+                                    $(document).on('change', 'input[name="deleteAction"]', function() {
+                                        if ($(this).val() === 'move_to_another') {
+                                            $('#roomTypeSelect').show();
+                                        } else {
+                                            $('#roomTypeSelect').hide();
+                                        }
+                                    });
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: response?.message || 'Đã có lỗi xảy ra!'
+                            });
+                        }
                     }
                 });
             }

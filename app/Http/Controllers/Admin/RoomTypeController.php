@@ -161,14 +161,66 @@ class RoomTypeController extends Controller
     {
         try {
             $roomType = RoomType::findOrFail($id);
+            $action = $request->input('action');
+            $targetRoomTypeId = $request->input('target_room_type_id');
 
             // Kiểm tra xem loại phòng có đang được sử dụng trong đặt phòng không
-            $bookingCount = Booking::where('room_type_id', $roomType->id)->count();
+            $bookingCount = Booking::whereHas('rooms', function ($query) use ($roomType) {
+                $query->where('room_type_id', $roomType->id);
+            })->count();
+
             if ($bookingCount > 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Không thể xóa loại phòng này vì đang có ' . $bookingCount . ' đặt phòng liên quan.'
-                ], 400);
+                if (!$action) {
+                    // Nếu không có action, trả về thông tin để hiển thị popup
+                    return response()->json([
+                        'success' => false,
+                        'require_action' => true,
+                        'message' => 'Không thể xóa loại phòng này vì đang có ' . $bookingCount . ' đặt phòng liên quan, chọn cách xử lý.',
+                        'options' => [
+                            'delete_rooms' => 'Xoá loại phòng và tất cả các phòng thuộc loại này (có thể mất dữ liệu đặt phòng).',
+                            'move_to_another' => 'Chuyển các phòng sang loại phòng khác.'
+                        ]
+                    ], 400);
+                }
+
+                // Xử lý theo action được chọn
+                switch ($action) {
+                    case 'delete_rooms':
+                        // Xóa các phòng thuộc loại này
+                        $roomType->rooms()->delete();
+                        $roomType->delete();
+                        break;
+                    case 'move_to_another':
+                        // Chuyển sang loại phòng khác
+                        if (!$targetRoomTypeId) {
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'Vui lòng chọn loại phòng đích.'
+                            ], 400);
+                        }
+
+                        $targetRoomType = RoomType::find($targetRoomTypeId);
+                        if (!$targetRoomType) {
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'Loại phòng đích không tồn tại.'
+                            ], 400);
+                        }
+
+                        // Cập nhật room_type_id cho tất cả các phòng
+                        $roomType->rooms()->update(['room_type_id' => $targetRoomType->id]);
+
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Đã chuyển các phòng sang loại phòng mới.',
+                            'redirect' => route('admin.room_types.index')
+                        ]);
+                    default:
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Hành động không hợp lệ'
+                        ], 400);
+                }
             }
 
             // Xóa mềm các dữ liệu liên quan

@@ -117,7 +117,7 @@
                                 <div class="lh-checkout-wrap mb-24">
                                     <h3 class="lh-checkout-title">Thông tin người đặt</h3>
                                     <div class="lh-check-block-content">
-                                        <p><strong>Email:</strong> {{ $user->email }} (Tài khoản đang đăng nhập)</p>
+                                        <p><strong>Email:</strong> {{ $user->email ?? '' }} (Tài khoản đang đăng nhập)</p>
                                     </div>
                                 </div>
 

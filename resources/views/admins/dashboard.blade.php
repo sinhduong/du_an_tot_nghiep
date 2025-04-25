@@ -14,13 +14,20 @@
                     </ul>
                 </div>
                 <div class="lh-tools">
+                    <form action="" method="get">
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="text" name="date_range" class="form-control form-control-sm date-range-picker"
+                                value="{{ $dateRange }}" placeholder="Chọn khoảng thời gian">
+                            <button type="submit" class="btn btn-primary btn-sm">Lọc</button>
+                        </div>
+                    </form>
                     <a href="javascript:void(0)" title="Làm mới" class="refresh"><i class="ri-refresh-line"></i></a>
-                    <div id="pagedate">
+                    <!-- <div id="pagedate">
                         <div class="lh-date-range" title="Ngày">
                             <span></span>
                         </div>
-                    </div>
-                    <div class="filter">
+                    </div> -->
+                    <!-- <div class="filter">
                         <div class="dropdown" title="Lọc">
                             <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1"
                                     data-bs-toggle="dropdown" aria-expanded="false">
@@ -32,45 +39,21 @@
                                 <li><a class="dropdown-item" href="#">Chi Phí</a></li>
                             </ul>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <div class="row">
-                <div class="col-xl-3 col-md-6">
-                    <div class="lh-card lh-card-1">
-                        <div class="lh-card-content label-card">
-                            <div class="title">
-                                <div class="growth-numbers">
-                                    <h4>Lượt Khách Tham Quan</h4>
-                                    <h5>{{ number_format($visitorCount / 1000, 1) }}k</h5>
-                                </div>
-                                <span class="icon"><i class="ri-shield-user-line"></i></span>
-                            </div>
-                            <p class="card-groth {{ $visitorGrowth >= 0 ? 'up' : 'down' }}">
-                                <i class="ri-arrow-{{ $visitorGrowth >= 0 ? 'up' : 'down' }}-line"></i>
-                                {{ abs(round($visitorGrowth, 1)) }}%
-                                <span>Tháng N</span>
-                            </p>
-                            <div class="mini-chart">
-                                <div id="userNumbers"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-4 col-md-6">
                     <div class="lh-card lh-card-2">
                         <div class="lh-card-content label-card">
                             <div class="title">
                                 <div class="growth-numbers">
                                     <h4>Đặt Phòng</h4>
-                                    <h5>{{ number_format($bookingCount / 1000, 2) }}k</h5>
+                                    <h5>{{ number_format($bookingCount) }}</h5>
                                 </div>
-                                <span class="icon"><i class="ri-shopping-bag-3-line"></i></span>
                             </div>
-                            <p class="card-groth {{ $bookingGrowth >= 0 ? 'up' : 'down' }}">
-                                <i class="ri-arrow-{{ $bookingGrowth >= 0 ? 'up' : 'down' }}-line"></i>
-                                {{ abs(round($bookingGrowth, 1)) }}%
-                                <span>Tháng N</span>
+                            <p class="card-groth up">
+                                <span></span>
                             </p>
                             <div class="mini-chart">
                                 <div id="bookingNumbers"></div>
@@ -78,7 +61,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-4 col-md-6">
                     <div class="lh-card lh-card-3">
                         <div class="lh-card-content label-card">
                             <div class="title">
@@ -87,10 +70,8 @@
                                     <h5>{{ number_format($revenueTotal) }} VND</h5>
                                 </div>
                             </div>
-                            <p class="card-groth {{ $revenueGrowth >= 0 ? 'up' : 'down' }}">
-                                <i class="ri-arrow-{{ $revenueGrowth >= 0 ? 'up' : 'down' }}-line"></i>
-                                {{ abs(round($revenueGrowth, 1)) }}%
-                                <span>Tháng N</span>
+                            <p class="card-groth up">
+                                <span></span>
                             </p>
                             <div class="mini-chart">
                                 <div id="revenueNumbers"></div>
@@ -98,7 +79,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-4 col-md-6">
                     <div class="lh-card lh-card-4">
                         <div class="lh-card-content label-card">
                             <div class="title">
@@ -110,9 +91,7 @@
                                 {{-- <span class="icon"><i class="ri-exchange-vnd-line"></i></span> --}}
                             </div>
                             <p class="card-groth up">
-                                <i class="ri-arrow-up-line"></i>
-                                9%
-                                <span>Tháng N</span>
+                                <span></span>
                             </p>
                             <div class="mini-chart">
                                 <div id="expensesNumbers"></div>
@@ -129,9 +108,6 @@
                             <div class="header-tools">
                                 <a href="javascript:void(0)" class="m-r-10 lh-full-card">
                                     <i class="ri-fullscreen-line" title="Toàn Màn Hình"></i></a>
-                                <div class="lh-date-range date" title="Ngày">
-                                    <span></span>
-                                </div>
                             </div>
                         </div>
                         <div class="lh-card-content">
@@ -170,6 +146,68 @@
             </div>
         </div>
     </div>
+    <!-- Thêm thư viện date range picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Khởi tạo date range picker
+            $('.date-range-picker').daterangepicker({
+                autoUpdateInput: true,
+                maxDate: moment(), // Không cho phép chọn ngày trong tương lai
+                locale: {
+                    format: 'DD/MM/YYYY',
+                    applyLabel: 'Áp dụng',
+                    cancelLabel: 'Hủy',
+                    customRangeLabel: 'Tùy chọn',
+                    daysOfWeek: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+                    monthNames: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+                    firstDay: 1
+                },
+                ranges: {
+                    'Hôm nay': [moment(), moment()],
+                    'Hôm qua': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    '7 ngày qua': [moment().subtract(6, 'days'), moment()],
+                    '30 ngày qua': [moment().subtract(29, 'days'), moment()],
+                    'Tháng này': [moment().startOf('month'), moment()],
+                    'Tháng trước': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'Năm này': [moment().startOf('year'), moment()]
+                },
+                alwaysShowCalendars: true,
+                showCustomRangeLabel: true,
+                opens: 'right',
+                drops: 'auto'
+            }, function(start, end, label) {
+                $('.date-range-picker').val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
+            });
+
+            // Khởi tạo giá trị mặc định cho date range
+            var dateRange = '{{ $dateRange }}';
+            if (dateRange) {
+                $('.date-range-picker').val(dateRange);
+            }
+
+            // Xử lý counter dropdown
+            $('#counter_summary').on('click', function() {
+                $('.counter-dropdown-content').toggleClass('show');
+            });
+
+            $('.counter-btn').on('click', function() {
+                var target = $(this).data('target');
+                var input = $('input[name="' + target + '"]');
+                var value = parseInt(input.val());
+                if ($(this).hasClass('plus')) {
+                    input.val(value + 1);
+                } else if (value > 0) {
+                    input.val(value - 1);
+                }
+                updateCounterSummary();
+            });
+        });
+    </script>
 @endsection
 
 @push('scripts')
@@ -192,10 +230,6 @@
             }
         };
 
-        new Chart(document.getElementById('userNumbers'), {
-            ...miniChartOptions,
-            data: { ...miniChartOptions.data, datasets: [{ ...miniChartOptions.data.datasets[0], data: @json($miniChartData['visitor']) }] }
-        });
         new Chart(document.getElementById('bookingNumbers'), {
             ...miniChartOptions,
             data: { ...miniChartOptions.data, datasets: [{ ...miniChartOptions.data.datasets[0], data: @json($miniChartData['booking']) }] }
