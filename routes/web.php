@@ -34,6 +34,8 @@ use App\Http\Controllers\Admin\RoomTypePromotionController;
 use App\Http\Controllers\Admin\RulesAndRegulationController;
 use App\Http\Controllers\Client\BookingController as ClientBookingController;
 use App\Http\Controllers\Client\RefundController as ClientRefundController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 // client
 
@@ -60,6 +62,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/home')->with('verified', true);
+})->middleware(['signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('status', 'verification-link-sent');
+})->middleware(['throttle:6,1'])->name('verification.send');
+
 require __DIR__ . '/auth.php';
 
 
@@ -67,7 +83,7 @@ require __DIR__ . '/auth.php';
 Route::prefix('admin')
 
     ->as('admin.')
-    ->middleware('auth')
+    ->middleware('auth', 'verified')
     ->group(function () {
 
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
