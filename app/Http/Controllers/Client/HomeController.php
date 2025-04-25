@@ -170,7 +170,30 @@ class HomeController extends Controller
             ->where('end_date', '>=', now())
             ->get();
 
-        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights', 'promotions','systems'));
+        // Thêm code mới để tính toán giới hạn
+        $maxCapacity = $roomTypes->max('max_capacity') ?? 4;
+        $maxChildrenLimit = $roomTypes->max('children_free_limit') ?? 2;
+        $totalAvailableRooms = 0;
+        foreach ($roomTypes as $roomType) {
+            $availableRooms = $this->calculateAvailableRooms($roomType, $checkInDate, $checkOutDate);
+            $totalAvailableRooms += $availableRooms;
+        }
+
+        return view('clients.home', compact(
+            'roomTypes', 
+            'checkIn', 
+            'checkOut', 
+            'totalGuests', 
+            'childrenCount', 
+            'roomCount', 
+            'formattedDateRange', 
+            'nights', 
+            'promotions',
+            'systems',
+            'maxCapacity',
+            'maxChildrenLimit',
+            'totalAvailableRooms'
+        ));
     }
 
     private function calculateDiscountedPrice($originalPrice, $saleRoomType, $nights, $roomCount)

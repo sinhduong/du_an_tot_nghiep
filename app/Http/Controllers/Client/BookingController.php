@@ -222,7 +222,7 @@ class BookingController extends Controller
             $serviceTotal = (float) $request->service_total;
             // dd($basePrice, $discountAmount, $totalGuests, $childrenCount, $roomQuantity, $serviceTotal);
             // Debug dữ liệu services
-            \Log::info('Services received in confirm:', $request->services);
+            \Log::info('Services received in confirm:', ['services' => $request->services ?? []]);
 
             // Lấy danh sách dịch vụ từ request
             $selectedServices = [];
@@ -345,7 +345,7 @@ class BookingController extends Controller
             }
 
             // Debug dữ liệu services nhận được
-            \Log::info('Services received in store:', $request->services);
+            \Log::info('Services received in store:', ['services' => $request->services ?? []]);
 
             // Xử lý thời gian check-in và check-out
             $checkIn = Carbon::parse($validated['check_in'])->setTime(14, 0, 0);
