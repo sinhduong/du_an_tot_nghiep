@@ -30,7 +30,8 @@ class Booking extends Model
         'guest_id',
         'special_request',
         'service_plus_status', // Thêm trường này
-        'paid_amount'
+        'paid_amount',
+        'service_plus_total'
 
     ];
     protected $casts = [
@@ -90,6 +91,17 @@ class Booking extends Model
         return $this->belongsToMany(RoomTypeService::class, 'booking_room_type_services', 'booking_id', 'room_type_service_id')
                     ->withPivot('quantity', 'price')
                     ->withTimestamps();
+    }
+
+    public function getServiceDetailsAttribute()
+    {
+        return $this->services->map(function($roomTypeService) {
+            return [
+                'name' => $roomTypeService->service->name,
+                'quantity' => $roomTypeService->pivot->quantity,
+                'price' => $roomTypeService->pivot->price
+            ];
+        });
     }
 
     public function refund()

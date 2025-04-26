@@ -576,7 +576,19 @@
                             <li><strong>Số tiền giảm:</strong> {{ \App\Helpers\FormatHelper::formatPrice($booking->discount_amount) }}</li>
                             <li><strong>Phí thuế:</strong> {{ \App\Helpers\FormatHelper::formatPrice($booking->tax_fee) }}</li>
                             <li><strong>Số lượng phòng:</strong> {{ $booking->room_quantity }}</li>
-                            <li><strong>Tiền dịch vụ bổ sung:</strong> {{ \App\Helpers\FormatHelper::formatPrice($booking->service_total) }}</li>
+                            
+                            <li><strong>Dịch vụ loại phòng đã đặt:</strong> {{ \App\Helpers\FormatHelper::formatPrice($booking->service_total) }}
+                                @if($booking->serviceDetails->count() > 0)
+                                    <ul>
+                                        @foreach($booking->serviceDetails as $service)
+                                            <li>{{ $service['name'] }} ({{ $service['quantity'] }} x {{ \App\Helpers\FormatHelper::formatPrice($service['price']) }})</li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    Không có dịch vụ loại phòng
+                                @endif
+                            </li>
+                            
                             <li><strong>Tổng tiền:</strong> {{ \App\Helpers\FormatHelper::formatPrice($booking->total_price) }}</li>
                             <li><strong>Số người:</strong> Người lớn: {{ $booking->total_guests }} | Trẻ em: {{ $booking->children_count }}</li>
                             <li><strong>Yêu cầu đặc biệt:</strong> {{ $booking->special_request ?? 'Không có' }}</li>
@@ -659,7 +671,14 @@
                         <span class="toggle-icon">▼</span>
                     </div>
                     <div class="booking-section-content">
-                        @php $totalAmount = $booking->total_price + $totalServicePlusPrice; @endphp
+                        @php 
+                        if ($booking->service_plus_status === 'paid') {
+                            $totalServicePlusPrice = $totalServicePlusPrice; 
+                        } else {
+                            $totalServicePlusPrice = 0; 
+                        }
+                        $totalAmount = $booking->total_price + $totalServicePlusPrice; 
+                        @endphp
                         <p><strong>Tổng tiền đơn đặt phòng:</strong> <span>{{ \App\Helpers\FormatHelper::formatPrice($booking->total_price) }}</span></p>
                         <p><strong>Tổng tiền dịch vụ phát sinh:</strong> <span>{{ \App\Helpers\FormatHelper::formatPrice($totalServicePlusPrice) }}</span></p>
                         <p><strong>Tổng tiền:</strong> <span>{{ \App\Helpers\FormatHelper::formatPrice($totalAmount) }}</span></p>

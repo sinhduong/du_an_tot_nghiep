@@ -518,7 +518,8 @@
         for (let field in errors) {
             let fieldName = field; // Ví dụ: guests.0.name
             // Chuyển đổi guests.0.name thành guests[0][name]
-            fieldName = fieldName.replace(/\.(\d+)\./g, '[$1][').replace(/\.(\w+)/g, '[$1]');
+            fieldName = fieldName.replace(/\.(\d+|\w+)/g, '[$1]');
+            // fieldName = fieldName.replace(/\.(\d+)\./g, '[$1][').replace(/\.(\w+)/g, '[$1]');
             console.log('Converted field name:', fieldName); // Debug converted field name
 
             const input = document.querySelector(`[name="${fieldName}"]`);
@@ -533,7 +534,7 @@
 
                 // Tạo và hiển thị thông báo lỗi mới
                 const errorSpan = document.createElement('span');
-                errorSpan.className = 'error-message text-danger small mt-1 d-block';
+                errorSpan.className = 'error-message text-danger small mt-1 d-block mb-2';
                 errorSpan.style.display = 'block'; // Đảm bảo span hiển thị
                 errorSpan.style.color = 'red'; // Đảm bảo màu đỏ
                 errorSpan.style.fontSize = '0.875rem'; // Kích thước chữ nhỏ
@@ -553,7 +554,7 @@
     function displayGeneralError(message) {
         const guestForms = document.getElementById('guestForms');
         const errorSpan = document.createElement('span');
-        errorSpan.className = 'error-message text-danger small mt-1 d-block';
+        errorSpan.className = 'error-message text-danger small mt-1 d-block mb-2';
         errorSpan.style.display = 'block'; // Đảm bảo span hiển thị
         errorSpan.style.color = 'red'; // Đảm bảo màu đỏ
         errorSpan.style.fontSize = '0.875rem'; // Kích thước chữ nhỏ
