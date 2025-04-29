@@ -8,6 +8,13 @@ use Illuminate\Http\Request;
 
 class StaffShiftController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:staff_shifts_list')->only(['index']);
+        $this->middleware('permission:staff_shifts_create')->only(['create', 'store']);
+        $this->middleware('permission:staff_shifts_update')->only(['edit', 'update']);
+        $this->middleware('permission:staff_shifts_delete')->only(['destroy']);
+    }
     public function index()
     {
         $staff_shifts = StaffShift::with('staff')->get();

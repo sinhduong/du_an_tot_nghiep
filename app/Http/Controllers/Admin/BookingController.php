@@ -19,17 +19,19 @@ use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
-    // public function __construct()
-    // {
-    //     // Gán middleware để kiểm soát quyền truy cập cho các phương thức
-    //     $this->middleware('middleware:permission:booking_list')->only(['index']);
-    //     $this->middleware('middleware:permission:bookings_create')->only(['create', 'store']);
-    //     $this->middleware('middleware:permission:bookings_detail')->only(['show']);
-    //     $this->middleware('middleware:permission:bookings_update')->only(['edit', 'update']);
-    //     $this->middleware('middleware:permission:bookings_delete')->only(['destroy']);
-    //     $this->middleware('middleware:permission:bookings_checkin')->only(['storeCheckIn']);
-    //     $this->middleware('middleware:permission:bookings_service_plus')->only(['updateServicePlus']);
-    // }
+    public function __construct()
+    {
+        // Gán middleware để kiểm soát quyền truy cập cho các phương thức
+        $this->middleware('middleware:permission:bookings_list')->only(['index']);
+        $this->middleware('middleware:permission:bookings_create')->only(['create', 'store']);
+        $this->middleware('middleware:permission:bookings_detail')->only(['show']);
+        $this->middleware('middleware:permission:bookings_update')->only(['edit', 'update']);
+        $this->middleware('middleware:permission:bookings_delete')->only(['destroy']);
+        $this->middleware('middleware:permission:bookings_checkin')->only(['storeCheckIn']);
+        $this->middleware('middleware:permission:bookings_service_plus')->only(['updateServicePlus']);
+
+
+    }
     public function index(Request $request)
     {
         $title = 'Đơn đặt phòng mới nhất';
@@ -488,9 +490,6 @@ class BookingController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
-
-
-
 
     /**
      * Remove the specified resource from storage.

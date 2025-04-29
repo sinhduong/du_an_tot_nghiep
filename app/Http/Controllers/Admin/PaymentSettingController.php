@@ -8,6 +8,12 @@ use Illuminate\Http\Request;
 
 class PaymentSettingController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:payment_settings_list')->only(['index']);
+        $this->middleware('permission:payment_settings_update')->only(['update']);
+    }
+    
     public function index()
        {
            $setting = PaymentSetting::first();

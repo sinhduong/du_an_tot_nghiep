@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\DB;
 
 class AboutController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:abouts_list')->only(['index']);
+        $this->middleware('permission:abouts_create')->only(['create', 'store']);
+        $this->middleware('permission:abouts_update')->only(['edit', 'update']);
+        $this->middleware('permission:abouts_delete')->only(['destroy']);
+    }
     public function index()
     {
         $abouts = About::latest()->paginate(10);

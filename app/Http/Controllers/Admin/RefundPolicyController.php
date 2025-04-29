@@ -9,6 +9,13 @@ use Illuminate\Http\Request;
 
 class RefundPolicyController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:refund_policies_list')->only(['index']);
+        $this->middleware('permission:refund_policies_create')->only(['create', 'store']);
+        $this->middleware('permission:refund_policies_update')->only(['edit', 'update']);
+        $this->middleware('permission:refund_policies_delete')->only(['destroy']);
+    }
     public function index()
     {
         $title = 'Danh sách chính sách hoàn tiền';

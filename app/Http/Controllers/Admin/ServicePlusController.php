@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\Log;
 
 class ServicePlusController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:service_plus_list')->only(['index']);
+        $this->middleware('permission:service_plus_create')->only(['create', 'store']);
+        $this->middleware('permission:service_plus_update')->only(['edit', 'update']);
+        $this->middleware('permission:service_plus_delete')->only(['destroy']);
+    }
     public function index()
     {
         $title = 'Danh sách dịch vụ';

@@ -11,6 +11,17 @@ use App\Http\Requests\AmenityRequest;
 
 class AmenityController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:amenities_list')->only(['index']);
+        $this->middleware('permission:amenities_create')->only(['create', 'store']);
+        $this->middleware('permission:amenities_detail')->only(['show']);
+        $this->middleware('permission:amenities_update')->only(['edit', 'update']);
+        $this->middleware('permission:amenities_delete')->only(['destroy']);
+        $this->middleware('permission:amenities_trashed')->only(['trashed']);
+        $this->middleware('permission:amenities_restore')->only(['restore']);
+        $this->middleware('permission:amenities_force_delete')->only(['forceDelete']);
+    }
     public function index()
     {
         $title = 'Danh Sách Tiện nghi';

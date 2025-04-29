@@ -14,6 +14,19 @@ use Illuminate\Support\Facades\DB;
 
 class RulesAndRegulationController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:rules_and_regulations_list')->only(['index']);
+        $this->middleware('permission:rules_and_regulations_create')->only(['create', 'store']);
+        $this->middleware('permission:rules_and_regulations_update')->only(['edit', 'update']);
+        $this->middleware('permission:rules_and_regulations_delete')->only(['destroy']);
+        $this->middleware('permission:rules_and_regulations_trashed')->only(['trashed']);
+        $this->middleware('permission:rules_and_regulations_restore')->only(['restore']);
+        $this->middleware('permission:rules_and_regulations_force_delete')->only(['forceDelete']);
+        $this->middleware('permission:rules_and_regulations_room_index')->only(['room_index']);
+        $this->middleware('permission:rules_and_regulations_create_room')->only(['create_room']);
+        $this->middleware('permission:rules_and_regulations_store_room')->only(['room_store']);
+    }
     /**
      * Display a listing of the resource.
      */
@@ -33,7 +46,7 @@ class RulesAndRegulationController extends Controller
         $title = 'Thêm Quy Định  ';
         $roomTypes = RoomType::all();
 
-        return  view('admins.rule-regulation.create', compact('title','roomTypes'));
+        return  view('admins.rule-regulation.create', compact('title', 'roomTypes'));
     }
 
     //     /**
@@ -76,7 +89,7 @@ class RulesAndRegulationController extends Controller
         $roomTypes = RoomType::all();
         $rules = RulesAndRegulation::findOrfail($id);
         $selectedRoomTypes = $rules->roomTypes->pluck('id')->toArray();
-        return  view('admins.rule-regulation.edit', compact('rules', 'title','roomTypes','selectedRoomTypes'));
+        return  view('admins.rule-regulation.edit', compact('rules', 'title', 'roomTypes', 'selectedRoomTypes'));
     }
 
     //     /**
@@ -147,36 +160,36 @@ class RulesAndRegulationController extends Controller
         // $room = Room::pluck('name','id')->all();
         $room = Room::orderBy('id', 'desc')->get();
         $room_rule = RulesAndRegulation::orderBy('id', 'desc')->get();
-        return view('admins.rule-regulation.rule-room.index', compact('title', 'room_rule','room'));
+        return view('admins.rule-regulation.rule-room.index', compact('title', 'room_rule', 'room'));
     }
     public function create_room()
     {
         $title = 'Thêm Quy Tắc Vào Phòng';
-        $room = Room::pluck('name','id')->all();
-        $rule = RulesAndRegulation::pluck('name','id')->all();
-        return  view('admins.rule-regulation.rule-room.create', compact('title','rule','room'));
+        $room = Room::pluck('name', 'id')->all();
+        $rule = RulesAndRegulation::pluck('name', 'id')->all();
+        return  view('admins.rule-regulation.rule-room.create', compact('title', 'rule', 'room'));
     }
     public function room_store(Storerules_and_regulationRequest $request)
     {
         $roomIds = $request->room_ids;  // Lấy danh sách room_id
         $ruleIds = $request->rule_ids;  // Lấy danh sách rule_id
 
-// Gán từng rule vào từng phòng và thêm timestamps
-foreach ($roomIds as $roomId) {
-    $room = Room::find($roomId);
+        // Gán từng rule vào từng phòng và thêm timestamps
+        foreach ($roomIds as $roomId) {
+            $room = Room::find($roomId);
 
-    // Chuẩn bị dữ liệu cho bảng trung gian room_rars
-    $data = [];
-    foreach ($ruleIds as $ruleId) {
-        $data[$ruleId] = [
-            'created_at' => now(),
-            'updated_at' => now(),
-        ];
-    }
+            // Chuẩn bị dữ liệu cho bảng trung gian room_rars
+            $data = [];
+            foreach ($ruleIds as $ruleId) {
+                $data[$ruleId] = [
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
 
-    // Thêm dữ liệu vào bảng trung gian với timestamps
-    $room->rules()->attach($data);
-}
+            // Thêm dữ liệu vào bảng trung gian với timestamps
+            $room->rules()->attach($data);
+        }
         return redirect()->back()->with('success', 'Đã gán quy định cho các phòng thành công!');
         // Chuyển hướng về danh sách với thông báo thành công
         // return redirect()->route('admin.rule-regulations.index')->with('success', 'Thêm quy định phòng thành công');

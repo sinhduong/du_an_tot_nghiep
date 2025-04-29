@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\Storage;
 
 class SystemController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:systems_list')->only(['index']);
+        $this->middleware('permission:systems_create')->only(['create', 'store']);
+        $this->middleware('permission:systems_update')->only(['edit', 'update']);
+        $this->middleware('permission:systems_delete')->only(['destroy']);
+    }
     /**
      * Display a listing of the resource.
      */

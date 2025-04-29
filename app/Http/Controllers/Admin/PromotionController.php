@@ -9,6 +9,15 @@ use Illuminate\Http\Request;
 
 class PromotionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:promotions_list')->only(['index']);
+        $this->middleware('permission:promotions_create')->only(['create', 'store']);
+        $this->middleware('permission:promotions_detail')->only(['show']);
+        $this->middleware('permission:promotions_update')->only(['edit', 'update']);
+        $this->middleware('permission:promotions_delete')->only(['destroy']);
+    }
+
     /**
      * Display a listing of the resource.
      */

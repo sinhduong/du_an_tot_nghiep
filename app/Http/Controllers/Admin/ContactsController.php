@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Mail;
 
 class ContactsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:contacts_list')->only(['index']);
+        $this->middleware('permission:contacts_detail')->only(['show']);
+        $this->middleware('permission:contacts_reply')->only(['reply']);
+    }
     public function index()
     {
         $contacts = Contacts::latest()->paginate(10);
