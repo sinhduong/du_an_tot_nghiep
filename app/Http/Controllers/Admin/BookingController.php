@@ -22,13 +22,13 @@ class BookingController extends Controller
     public function __construct()
     {
         // Gán middleware để kiểm soát quyền truy cập cho các phương thức
-        $this->middleware('middleware:permission:bookings_list')->only(['index']);
-        $this->middleware('middleware:permission:bookings_create')->only(['create', 'store']);
-        $this->middleware('middleware:permission:bookings_detail')->only(['show']);
-        $this->middleware('middleware:permission:bookings_update')->only(['edit', 'update']);
-        $this->middleware('middleware:permission:bookings_delete')->only(['destroy']);
-        $this->middleware('middleware:permission:bookings_checkin')->only(['storeCheckIn']);
-        $this->middleware('middleware:permission:bookings_service_plus')->only(['updateServicePlus']);
+        $this->middleware('permission:bookings_list')->only(['index']);
+        $this->middleware('permission:bookings_create')->only(['create', 'store']);
+        $this->middleware('permission:bookings_detail')->only(['show']);
+        $this->middleware('permission:bookings_update')->only(['edit', 'update']);
+        $this->middleware('permission:bookings_delete')->only(['destroy']);
+        $this->middleware('permission:bookings_checkin')->only(['storeCheckIn']);
+        $this->middleware('permission:bookings_service_plus')->only(['updateServicePlus']);
 
 
     }
@@ -227,7 +227,7 @@ class BookingController extends Controller
                         $servicePrice = $servicePlus->price * $quantity;
                         $currentServiceTotal = $booking->service_plus_total ?? 0;
                         $newServiceTotal = $currentServiceTotal + $servicePrice;
-                        
+
                         // Cập nhật service_plus_total và total_price
                         $booking->update([
                             'service_plus_total' => $newServiceTotal,
@@ -274,26 +274,26 @@ class BookingController extends Controller
                         DB::beginTransaction();
                         $servicePlusId = $request->input('service_plus_id');
                         $newQuantity = $request->input('quantity');
-                        
+
                         // Lấy thông tin dịch vụ và số lượng hiện tại
                         $servicePlus = ServicePlus::find($servicePlusId);
                         $currentPivot = $booking->servicePlus()->where('service_plus_id', $servicePlusId)->first();
                         $oldQuantity = $currentPivot->pivot->quantity;
-                        
+
                         // Tính toán chênh lệch giá
                         $oldPrice = $servicePlus->price * $oldQuantity;
                         $newPrice = $servicePlus->price * $newQuantity;
                         $priceDifference = $newPrice - $oldPrice;
-                        
+
                         // Cập nhật số lượng mới
                         $booking->servicePlus()->updateExistingPivot($servicePlusId, ['quantity' => $newQuantity]);
-                        
+
                         // Cập nhật tổng phí dịch vụ và tổng giá
                         $booking->update([
                             'service_plus_total' => $booking->service_plus_total + $priceDifference,
                             'total_price' => $booking->total_price + $priceDifference
                         ]);
-                        
+
                         DB::commit();
 
                         return response()->json([
@@ -328,24 +328,24 @@ class BookingController extends Controller
 
                         DB::beginTransaction();
                         $servicePlusId = $request->input('service_plus_id');
-                        
+
                         // Lấy thông tin dịch vụ và số lượng hiện tại
                         $servicePlus = ServicePlus::find($servicePlusId);
                         $currentPivot = $booking->servicePlus()->where('service_plus_id', $servicePlusId)->first();
                         $oldQuantity = $currentPivot->pivot->quantity;
-                        
+
                         // Tính giá trị dịch vụ cần xóa
                         $removedPrice = $servicePlus->price * $oldQuantity;
-                        
+
                         // Xóa dịch vụ
                         $booking->servicePlus()->detach($servicePlusId);
-                        
+
                         // Cập nhật tổng phí dịch vụ và tổng giá
                         $booking->update([
                             'service_plus_total' => $booking->service_plus_total - $removedPrice,
                             'total_price' => $booking->total_price - $removedPrice
                         ]);
-                        
+
                         DB::commit();
 
                         return response()->json([
