@@ -36,19 +36,6 @@
                         <a class="nav-link " href="{{ route('contacts') }}" >
                             Liên hệ với cúng tôi
                         </a>
-
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            Tin Tức <i class="ri-arrow-down-s-line"></i>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Blog</a></li>
-                            <li><a class="dropdown-item" href="#">Chi tiết Blog</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Nhà hàng</a>
                     </li>
                 </ul>
             </div>

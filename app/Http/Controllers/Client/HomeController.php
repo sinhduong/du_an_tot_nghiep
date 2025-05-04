@@ -180,14 +180,14 @@ class HomeController extends Controller
         }
 
         return view('clients.home', compact(
-            'roomTypes', 
-            'checkIn', 
-            'checkOut', 
-            'totalGuests', 
-            'childrenCount', 
-            'roomCount', 
-            'formattedDateRange', 
-            'nights', 
+            'roomTypes',
+            'checkIn',
+            'checkOut',
+            'totalGuests',
+            'childrenCount',
+            'roomCount',
+            'formattedDateRange',
+            'nights',
             'promotions',
             'systems',
             'maxCapacity',
@@ -309,9 +309,8 @@ class HomeController extends Controller
     }
     public function faqs()
     {
-        $systems = System::orderBy('id', 'desc')->first();
         $faqs = Faq::where('is_active', 1)->get();
-        return view('clients.faq', compact('faqs', 'systems'));
+        return view('clients.faq', compact('faqs'));
     }
 
     public function services()

@@ -255,7 +255,7 @@
                 @endcan
 
                 <li class="lh-sb-item-separator"></li>
-                
+
                 @can('sale_room_types_list')
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
@@ -269,7 +269,7 @@
                 @endcan
 
                 <li class="lh-sb-item-separator"></li>
-               
+
                 @canany(['policies_list', 'policies_create'])
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
@@ -289,7 +289,7 @@
                 @endcan
 
                 <li class="lh-sb-item-separator"></li>
-                
+
                 @canany(['service_plus_list', 'service_plus_create'])
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
@@ -309,7 +309,7 @@
                 @endcan
 
                 <li class="lh-sb-item-separator"></li>
-                
+
                 @can('payment_settings_list')
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
@@ -323,7 +323,7 @@
                 @endcan
 
                 <li class="lh-sb-item-separator"></li>
-               
+
                 @canany(['refund_policies_list', 'refund_policies_create'])
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
@@ -396,10 +396,10 @@
                         <i class="ri-pages-fill"></i><span class="condense">Quản lý page<i
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
-                        @can('abouts_list')
-                        <li><a href="{{ route('admin.abouts.index') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Trang Về chúng tôi</a></li>
-                        @endcan
+{{--                        @can('abouts_list')--}}
+{{--                        <li><a href="{{ route('admin.abouts.index') }}" class="lh-page-link drop"><i--}}
+{{--                                    class="ri-git-commit-line"></i>Trang Về chúng tôi</a></li>--}}
+{{--                        @endcan--}}
                         @can('introductions_list')
                         <li><a href="{{ route('admin.introductions.index') }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Trang Giới thiệu</a></li>
@@ -417,7 +417,7 @@
                 @endcan
 
                 <!-- <li class="lh-sb-title condense">Settings</li> -->
-                
+
             </ul>
         </div>
     </div>

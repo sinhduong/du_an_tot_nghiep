@@ -1,4 +1,4 @@
-<footer>
+    <footer>
     <div class="container">
         <div class="footer-top-section">
             <div class="row">
@@ -67,11 +67,11 @@
                                 </li>
                                 <li class="lh-information">
                                     <h5 class="heading">Email</h5>
-                                    <span>hotro@luxurioushotel.vn</span>
+                                    <span>sinhduong1508@gmail.com</span>
                                 </li>
                                 <li class="lh-information">
-                                    <h5 class="heading">Hotline</h5>
-                                    <span>+84 33 1234 567</span>
+                                    <h5 class="heading">Số điện thoại</h5>
+                                    <span>+84 865642497</span>
                                 </li>
                             </ul>
                         </div>
@@ -80,7 +80,7 @@
             </div>
         </div>
         <div class="footer-bottom-copy">
-            <span>Bản quyền © <span id="copyright_year"></span> <a href="{{route('home')}}">Luxurious Hotel</a>. Mọi quyền được bảo lưu.</span>
+            <span>Bản quyền © <span id="copyright_year"></span> <a href="{{route('home')}}">Luxurious Hotel</a> thuộc về ước mơ ra trường.</span>
         </div>
     </div>
 </footer>
