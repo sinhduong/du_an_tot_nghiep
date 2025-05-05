@@ -390,10 +390,10 @@
                         <i class="ri-pages-fill"></i><span class="condense">Quản lý page<i
                                 class="drop-arrow ri-arrow-down-s-line"></i></span></a>
                     <ul class="lh-sb-drop condense">
-                        @can('abouts_list')
-                        <li><a href="{{ route('admin.abouts.index') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Trang Về chúng tôi</a></li>
-                        @endcan
+{{--                        @can('abouts_list')--}}
+{{--                        <li><a href="{{ route('admin.abouts.index') }}" class="lh-page-link drop"><i--}}
+{{--                                    class="ri-git-commit-line"></i>Trang Về chúng tôi</a></li>--}}
+{{--                        @endcan--}}
                         @can('introductions_list')
                         <li><a href="{{ route('admin.introductions.index') }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Trang Giới thiệu</a></li>
@@ -411,7 +411,7 @@
                 @endcan
 
                 <!-- <li class="lh-sb-title condense">Settings</li> -->
-                
+
             </ul>
         </div>
     </div>

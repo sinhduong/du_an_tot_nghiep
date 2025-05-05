@@ -311,9 +311,8 @@ class HomeController extends Controller
     }
     public function faqs()
     {
-        $systems = System::orderBy('id', 'desc')->first();
         $faqs = Faq::where('is_active', 1)->get();
-        return view('clients.faq', compact('faqs', 'systems'));
+        return view('clients.faq', compact('faqs'));
     }
 
     public function services()

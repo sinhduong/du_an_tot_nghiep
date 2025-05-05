@@ -248,12 +248,12 @@
 
         let voucherDiscount = 0;
 
-        $('#base-price-display').text('VND ' + initialBasePrice.toLocaleString('vi-VN'));
-        $('#initial-tax-display').text('VND ' + initialTax.toLocaleString('vi-VN'));
-        $('#total_price_display').text('VND ' + initialTotal.toLocaleString('vi-VN'));
+        $('#base-price-display').text(initialBasePrice.toLocaleString('vi-VN') + ' VND');
+        $('#initial-tax-display').text(initialTax.toLocaleString('vi-VN') + ' VND');
+        $('#total_price_display').text(initialTotal.toLocaleString('vi-VN') + ' VND');
         if (defaultDiscount > 0) {
-            $('#after-base-price-display').text('VND ' + subTotalAfterDefault.toLocaleString('vi-VN'));
-            $('#tax-fee-display').text('VND ' + initialTax.toLocaleString('vi-VN'));
+            $('#after-base-price-display').text(subTotalAfterDefault.toLocaleString('vi-VN') + ' VND');
+            $('#tax-fee-display').text(initialTax.toLocaleString('vi-VN') + ' VND');
         }
 
         $('#confirm-button').prop('disabled', false);
@@ -284,14 +284,14 @@
                         const taxAfterVoucher = subTotalAfterVoucher * 0.08;
                         const totalAfterVoucher = subTotalAfterVoucher + taxAfterVoucher;
 
-                        $('#voucher-amount').text('- VND ' + voucherDiscount.toLocaleString('vi-VN'));
+                        $('#voucher-amount').text(voucherDiscount.toLocaleString('vi-VN') + '- VND');
                         $('#voucher-section').show();
 
-                        $('#after-base-price-display').text('VND ' + subTotalAfterVoucher.toLocaleString('vi-VN'));
-                        $('#tax-fee-display').text('VND ' + taxAfterVoucher.toLocaleString('vi-VN'));
+                        $('#after-base-price-display').text(subTotalAfterVoucher.toLocaleString('vi-VN') + ' VND');
+                        $('#tax-fee-display').text(taxAfterVoucher.toLocaleString('vi-VN') + ' VND');
                         $('#after-discount-section').show();
 
-                        $('#total_price_display').text('VND ' + totalAfterVoucher.toLocaleString('vi-VN'));
+                        $('#total_price_display').text(totalAfterVoucher.toLocaleString('vi-VN') + ' VND');
 
                         $('#total_price_input').val(totalAfterVoucher);
                         $('#tax_fee_input').val(taxAfterVoucher);
@@ -327,14 +327,14 @@
             const afterDefaultTotal = subTotalAfterDefault + afterDefaultTax;
 
             if (defaultDiscount > 0) {
-                $('#after-base-price-display').text('VND ' + subTotalAfterDefault.toLocaleString('vi-VN'));
-                $('#tax-fee-display').text('VND ' + afterDefaultTax.toLocaleString('vi-VN'));
+                $('#after-base-price-display').text(subTotalAfterDefault.toLocaleString('vi-VN') + ' VND');
+                $('#tax-fee-display').text(afterDefaultTax.toLocaleString('vi-VN') + ' VND');
                 $('#after-discount-section').show();
             } else {
                 $('#after-discount-section').hide();
             }
 
-            $('#total_price_display').text('VND ' + afterDefaultTotal.toLocaleString('vi-VN'));
+            $('#total_price_display').text(afterDefaultTotal.toLocaleString('vi-VN') + ' VND');
 
             $('#total_price_input').val(afterDefaultTotal);
             $('#tax_fee_input').val(afterDefaultTax);
