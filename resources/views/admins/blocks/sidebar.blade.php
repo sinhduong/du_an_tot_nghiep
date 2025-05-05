@@ -16,9 +16,8 @@
                         <span class="condense">Thống kê</span>
                         </a>
                     </li>
+                    <li class="lh-sb-item-separator"></li>
                 @endcan
-
-                <li class="lh-sb-item-separator"></li>
 
                 @canany(['customers_list', 'staffs_list', 'roles_list'])
                 <li class="lh-sb-item sb-drop-item">
@@ -40,9 +39,9 @@
                         @endcan
                     </ul>
                 </li>
+                <li class="lh-sb-item-separator"></li>
                 @endcan
 
-                <li class="lh-sb-item-separator"></li>
 
                 @canany(['room_types_list', 'room_types_create', 'room_types_trashed'])
                 <li class="lh-sb-item sb-drop-item">
@@ -64,9 +63,9 @@
                         @endcan
                     </ul>
                 </li>
+                <li class="lh-sb-item-separator"></li>
                 @endcan
 
-                <li class="lh-sb-item-separator"></li>
 
                 @canany(['rooms_list', 'rooms_create', 'rooms_trashed'])
                 <li class="lh-sb-item sb-drop-item">
@@ -88,9 +87,9 @@
                         @endcan
                     </ul>
                 </li>
+                <li class="lh-sb-item-separator"></li>
                 @endcan
 
-                <li class="lh-sb-item-separator"></li>
 
                 @canany(['rules_and_regulations_list', 'rules_and_regulations_create', 'rules_and_regulations_trashed'])
                 <li class="lh-sb-item sb-drop-item">
@@ -112,8 +111,8 @@
                         @endcan
                     </ul>
                 </li>
-                @endcan
                 <li class="lh-sb-item-separator"></li>
+                @endcan
                 <!-- Tách "Dịch vụ & Tiện nghi" thành hai mục riêng -->
                 <!-- Quản lý Dịch vụ -->
                 @canany(['services_list', 'services_create', 'services_trashed'])
@@ -136,8 +135,8 @@
                         @endcan
                     </ul>
                 </li>
-                @endcan
                 <li class="lh-sb-item-separator"></li>
+                @endcan
                 <!-- Quản lý Tiện nghi -->
                 @canany(['amenities_list', 'amenities_create', 'amenities_trashed'])
                 <li class="lh-sb-item sb-drop-item">
@@ -159,9 +158,8 @@
                         @endcan
                     </ul>
                 </li>
-                @endcan
-
                 <li class="lh-sb-item-separator"></li>
+                @endcan
 
                 @canany(['staffs_list', 'staffs_create', 'staffs_trashed', 'staff_roles_list', 'staff_roles_create', 'staff_shifts_list', 'staff_shifts_create'])
                 <li class="lh-sb-item sb-drop-item">
@@ -218,9 +216,8 @@
                         @endcan
                     </ul>
                 </li>
-                @endcan
-
                 <li class="lh-sb-item-separator"></li>
+                @endcan
 
                 @can('reviews_list')
                 <li class="lh-sb-item sb-drop-item">
@@ -232,9 +229,8 @@
                                     class="ri-git-commit-line"></i>Danh sách </a></li>
                     </ul>
                 </li>
-                @endcan
-
                 <li class="lh-sb-item-separator"></li>
+                @endcan
 
                 @canany(['promotions_list', 'promotions_create'])
                 <li class="lh-sb-item sb-drop-item">
@@ -252,9 +248,9 @@
                         @endcan
                     </ul>
                 </li>
+                <li class="lh-sb-item-separator"></li>
                 @endcan
 
-                <li class="lh-sb-item-separator"></li>
                 
                 @can('sale_room_types_list')
                 <li class="lh-sb-item sb-drop-item">
@@ -266,9 +262,9 @@
                                     class="ri-git-commit-line"></i>Danh sách </a></li>
                     </ul>
                 </li>
+                <li class="lh-sb-item-separator"></li>
                 @endcan
 
-                <li class="lh-sb-item-separator"></li>
                
                 @canany(['policies_list', 'policies_create'])
                 <li class="lh-sb-item sb-drop-item">
@@ -286,9 +282,9 @@
                         @endcan
                     </ul>
                 </li>
+                <li class="lh-sb-item-separator"></li>
                 @endcan
 
-                <li class="lh-sb-item-separator"></li>
                 
                 @canany(['service_plus_list', 'service_plus_create'])
                 <li class="lh-sb-item sb-drop-item">
@@ -306,9 +302,9 @@
                         @endcan
                     </ul>
                 </li>
+                <li class="lh-sb-item-separator"></li>
                 @endcan
 
-                <li class="lh-sb-item-separator"></li>
                 
                 @can('payment_settings_list')
                 <li class="lh-sb-item sb-drop-item">
@@ -320,9 +316,8 @@
                                     class="ri-git-commit-line"></i>Danh sách tỷ lệ</a></li>
                     </ul>
                 </li>
-                @endcan
-
                 <li class="lh-sb-item-separator"></li>
+                @endcan
                
                 @canany(['refund_policies_list', 'refund_policies_create'])
                 <li class="lh-sb-item sb-drop-item">
@@ -340,9 +335,8 @@
                         @endcan
                     </ul>
                 </li>
-                @endcan
-
                 <li class="lh-sb-item-separator"></li>
+                @endcan
 
                 @can('bookings_list')
                 <li class="lh-sb-item sb-drop-item">
@@ -354,9 +348,9 @@
                                     class="ri-git-commit-line"></i>Danh sách đặt phòng</a></li>
                     </ul>
                 </li>
+                <li class="lh-sb-item-separator"></li>
                 @endcan
 
-                <li class="lh-sb-item-separator"></li>
 
                 @can('payments_list')
                 <li class="lh-sb-item">
@@ -385,9 +379,9 @@
                         </span>
                     </a>
                 </li>
+                <li class="lh-sb-item-separator"></li>
                 @endcan
 
-                <li class="lh-sb-item-separator"></li>
 
                 @canany(['abouts_list', 'introductions_list', 'banners_list', 'systems_list'])
                 <li class="lh-sb-title condense">Pages</li>

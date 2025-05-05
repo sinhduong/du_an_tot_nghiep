@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Log;
 
 // Thêm use này vào đầu file
 
-class RoomController extends Controller
+class RoomController extends BaseAdminController
 {
     /**
      * Display a listing of the resource.

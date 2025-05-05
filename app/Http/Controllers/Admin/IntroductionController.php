@@ -7,7 +7,7 @@ use App\Models\Introduction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class IntroductionController extends Controller
+class IntroductionController extends BaseAdminController
 {
     public function __construct()
     {

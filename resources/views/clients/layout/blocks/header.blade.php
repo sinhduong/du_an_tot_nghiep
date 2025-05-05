@@ -32,12 +32,15 @@
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                     <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="mdi mdi-account"></i> Hồ sơ</a></li>
                                     <li><a class="dropdown-item" href="{{ route('bookings.index') }}"><i class="ri-contacts-book-line"></i> Đơn đặt phòng</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('refunds.lists') }}"><i class="ri-reply-all-line"></i></i> Lịch sử hoàn tiền</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('refunds.lists') }}"><i class="ri-reply-all-line"></i> Lịch sử hoàn tiền</a></li>
                                     <li><a class="dropdown-item" href="{{ route('payments.lists') }}"><i class="ri-bank-card-2-line"></i> Lịch sử giao dịch</a></li>
+                                    @hasanyrole('superadmin|admin|staff')
+                                        <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="ri-dashboard-3-line"></i> Truy cập quản trị</a></li>
+                                    @endhasanyrole
                                     <li>
                                         <form method="POST" action="{{ route('logout') }}">
                                             @csrf
-                                            <button type="submit" class="dropdown-item">Đăng xuất</button>
+                                            <button type="submit" class="dropdown-item"><i class="ri-logout-box-line me-2 ms-2"></i>Đăng xuất</button>
                                         </form>
                                     </li>
                                 </ul>

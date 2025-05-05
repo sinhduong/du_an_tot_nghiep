@@ -7,7 +7,7 @@ use App\Http\Requests\StorePolicyRequest;
 use App\Http\Requests\UpdatePolicyRequest;
 use App\Models\Policy;
 
-class PolicyController extends Controller
+class PolicyController extends BaseAdminController
 {
     public function __construct()
     {

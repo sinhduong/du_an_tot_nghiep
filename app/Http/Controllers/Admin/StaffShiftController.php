@@ -6,7 +6,7 @@ use App\Models\Staff;
 use App\Models\StaffShift;
 use Illuminate\Http\Request;
 
-class StaffShiftController extends Controller
+class StaffShiftController extends BaseAdminController
 {
     public function __construct()
     {

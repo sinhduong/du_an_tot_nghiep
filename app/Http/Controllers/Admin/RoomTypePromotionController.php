@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RoomTypePromotionRelationshipRequest;
 
-class RoomTypePromotionController extends Controller
+class RoomTypePromotionController extends BaseAdminController
 {
     public function index()
     {

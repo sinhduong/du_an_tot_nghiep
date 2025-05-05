@@ -7,7 +7,7 @@ use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
 use App\Models\Payment;
 
-class PaymentController extends Controller
+class PaymentController extends BaseAdminController
 {
     public function __construct()
     {

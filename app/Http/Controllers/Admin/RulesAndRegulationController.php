@@ -12,7 +12,7 @@ use App\Models\RoomType;
 use App\Models\RulesAndRegulation;
 use Illuminate\Support\Facades\DB;
 
-class RulesAndRegulationController extends Controller
+class RulesAndRegulationController extends BaseAdminController
 {
     public function __construct()
     {

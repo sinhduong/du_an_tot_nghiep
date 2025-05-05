@@ -29,7 +29,9 @@
                             <li><a class="dropdown-item" href="{{ route('introductions') }}">Giới thiệu</a></li>
                             {{-- <li><a class="dropdown-item" href="{{ route('abouts') }}">Về chúng tôi</a></li> --}}
                             <li><a class="dropdown-item" href="{{ route('faqs') }}">Câu hỏi thường gặp</a></li>
-                            <li><a class="dropdown-item" href="{{ route('services') }}">Dịch vụ</a></li>
+                            <!-- <li><a class="dropdown-item" href="{{ route('services') }}">Dịch vụ</a></li> -->
+                            <li><a class="dropdown-item" href="{{ route('policies') }}">Chính sách</a></li>
+
                         </ul>
                     </li>
                     <li class="nav-item ">

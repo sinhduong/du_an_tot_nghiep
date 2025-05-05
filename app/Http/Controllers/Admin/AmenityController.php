@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AmenityRequest;
 
-class AmenityController extends Controller
+class AmenityController extends BaseAdminController
 {
     public function __construct()
     {

@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class StaffAttendanceController extends Controller
+class StaffAttendanceController extends BaseAdminController
 {
     /**
      * Display a listing of the resource.

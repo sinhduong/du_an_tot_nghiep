@@ -17,7 +17,7 @@ use App\Http\Requests\UpdatebookingRequest;
 use App\Mail\PaymentSuccess;
 use Illuminate\Support\Facades\Mail;
 
-class BookingController extends Controller
+class BookingController extends BaseAdminController
 {
     public function __construct()
     {

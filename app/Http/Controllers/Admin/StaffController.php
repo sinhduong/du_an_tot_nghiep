@@ -12,7 +12,7 @@ use App\Models\StaffShift;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class StaffController extends Controller
+class StaffController extends BaseAdminController
 {
     public function __construct()
     {

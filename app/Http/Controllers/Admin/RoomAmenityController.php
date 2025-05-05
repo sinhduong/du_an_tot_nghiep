@@ -9,7 +9,7 @@ use App\Models\Amenity;
 use App\Models\Room;
 use App\Models\Room_amenity;
 
-class RoomAmenityController extends Controller
+class RoomAmenityController extends BaseAdminController
 {
     /**
      * Display a listing of the resource.

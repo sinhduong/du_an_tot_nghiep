@@ -9,7 +9,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class DashboardController extends Controller
+class DashboardController extends BaseAdminController
 {
     public function __construct(){
         $this->middleware('permission:dashboard')->only(['index']);

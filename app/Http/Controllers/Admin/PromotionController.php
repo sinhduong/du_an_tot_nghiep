@@ -7,7 +7,7 @@ use App\Http\Requests\PromotionRequest;
 use App\Models\Promotion;
 use Illuminate\Http\Request;
 
-class PromotionController extends Controller
+class PromotionController extends BaseAdminController
 {
     public function __construct()
     {

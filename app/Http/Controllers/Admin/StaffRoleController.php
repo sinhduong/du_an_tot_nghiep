@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\StaffRole;
 use Illuminate\Http\Request;
 
-class StaffRoleController extends Controller
+class StaffRoleController extends BaseAdminController
 {
     public function __construct()
     {

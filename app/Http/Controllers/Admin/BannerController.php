@@ -8,7 +8,7 @@ use App\Http\Requests\UpdateBannerRequest;
 use App\Models\Banner;
 use Illuminate\Support\Facades\Storage;
 
-class BannerController extends Controller
+class BannerController extends BaseAdminController
 {
     public function __construct()
     {

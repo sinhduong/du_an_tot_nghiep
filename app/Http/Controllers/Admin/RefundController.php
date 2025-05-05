@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class RefundController extends Controller
+class RefundController extends BaseAdminController
 {
     public function showApproveForm(Refund $refund)
     {

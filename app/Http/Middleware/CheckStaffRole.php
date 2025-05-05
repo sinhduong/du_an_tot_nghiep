@@ -16,7 +16,15 @@ class CheckStaffRole
      */
     public function handle(Request $request, Closure $next, $role)
     {
-        if (!Auth::check() || Auth::user()->role->name !== $role) {
+        // if (!Auth::check() || Auth::user()->role->name !== $role) {
+        //     return redirect('/')->with('error', 'Bạn không có quyền truy cập!');
+        // }
+
+        if (!Auth::check()) {
+            return redirect('/')->with('error', 'Vui lòng đăng nhập!');
+        }
+
+        if (!Auth::user()->hasRole($role)) {
             return redirect('/')->with('error', 'Bạn không có quyền truy cập!');
         }
         return $next($request);

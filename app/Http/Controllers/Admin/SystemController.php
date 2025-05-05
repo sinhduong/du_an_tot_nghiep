@@ -8,7 +8,7 @@ use App\Http\Requests\UpdatesystemRequest;
 use App\Models\system;
 use Illuminate\Support\Facades\Storage;
 
-class SystemController extends Controller
+class SystemController extends BaseAdminController
 {
     public function __construct()
     {

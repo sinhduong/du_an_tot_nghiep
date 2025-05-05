@@ -7,7 +7,7 @@ use App\Http\Requests\StoreAuthor_blogsRequest;
 use App\Http\Requests\UpdateAuthor_blogsRequest;
 use App\Models\Author_blogs;
 
-class AuthorBlogsController extends Controller
+class AuthorBlogsController extends BaseAdminController
 {
     /**
      * Display a listing of the resource.

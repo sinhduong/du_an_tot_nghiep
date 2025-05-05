@@ -83,7 +83,7 @@ require __DIR__ . '/auth.php';
 Route::prefix('admin')
 
     ->as('admin.')
-    ->middleware('auth', 'verified')
+    ->middleware('auth', 'verified', 'role:superadmin|admin|staff')
     ->group(function () {
 
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -353,6 +353,7 @@ Route::get('/room', [HomeController::class, 'room_view'])->name('room.view');
 
 Route::get('/cau-hoi-thuong-gap', [HomeController::class, 'faqs'])->name('faqs');
 Route::get('/dich-vu', [HomeController::class, 'services'])->name('services');
+Route::get('/chinh-sach', [HomeController::class, 'policies'])->name('policies');
 Route::get('/gioi-thieu', [HomeController::class, 'introductions'])->name('introductions');
 // Route::post('/sendmail', [HomeController::class, 'sendmail']);
 Route::get('/lien-he-voi-chung-toi', [HomeController::class, 'contacts'])->name('contacts');

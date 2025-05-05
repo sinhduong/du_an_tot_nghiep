@@ -7,7 +7,7 @@ use App\Models\RefundPolicy;
 use App\Models\RefundTransaction;
 use Illuminate\Http\Request;
 
-class RefundPolicyController extends Controller
+class RefundPolicyController extends BaseAdminController
 {
     public function __construct()
     {

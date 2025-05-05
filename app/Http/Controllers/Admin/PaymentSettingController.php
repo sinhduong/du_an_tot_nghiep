@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PaymentSetting;
 use Illuminate\Http\Request;
 
-class PaymentSettingController extends Controller
+class PaymentSettingController extends BaseAdminController
 {
     public function __construct()
     {

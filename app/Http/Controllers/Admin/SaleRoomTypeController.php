@@ -7,7 +7,7 @@ use App\Models\SaleRoomType;
 use App\Http\Requests\SaleRoomTypeRequest;
 use App\Http\Controllers\Controller;
 
-class SaleRoomTypeController extends Controller
+class SaleRoomTypeController extends BaseAdminController
 {
     public function __construct()
     {

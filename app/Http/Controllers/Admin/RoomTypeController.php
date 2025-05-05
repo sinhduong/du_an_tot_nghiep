@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-class RoomTypeController extends Controller
+class RoomTypeController extends BaseAdminController
 {
     public function __construct()
     {

@@ -10,7 +10,7 @@ use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class CustomerController extends Controller
+class CustomerController extends BaseAdminController
 {
     public function __construct(){
         $this->middleware('permission:customers_list')->only(['index']);

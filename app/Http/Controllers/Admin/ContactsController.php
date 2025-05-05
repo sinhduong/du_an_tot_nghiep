@@ -7,7 +7,7 @@ use App\Models\Contacts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
-class ContactsController extends Controller
+class ContactsController extends BaseAdminController
 {
     public function __construct()
     {

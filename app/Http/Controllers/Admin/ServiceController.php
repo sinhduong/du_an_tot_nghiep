@@ -11,7 +11,7 @@ use App\Http\Requests\ServiceRequest;
 use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
 
-class ServiceController extends Controller
+class ServiceController extends BaseAdminController
 {
     public function __construct()
     {
