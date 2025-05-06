@@ -225,7 +225,9 @@ class RoomTypeController extends BaseAdminController
 
             // Xóa mềm các dữ liệu liên quan
             // 1. Xóa mềm các hình ảnh liên quan (RoomTypeImage)
-            $roomType->roomTypeImages()->delete();
+            $roomType->roomTypeImages->each(function ($roomTypeImage) {
+                $roomTypeImage->delete();
+            });
 
             // 2. Nếu có các khuyến mãi liên quan (SaleRoomType), xóa mềm chúng
             SaleRoomType::where('room_type_id', $roomType->id)->delete();
@@ -254,19 +256,13 @@ class RoomTypeController extends BaseAdminController
         return view('admins.room-type.trashed', compact('title', 'room_types'));
     }
 
-    public function restore(Request $request, $id)
+    public function restore($id): \Illuminate\Http\JsonResponse
     {
         try {
             $roomType = RoomType::onlyTrashed()->findOrFail($id);
-
-            // Khôi phục các dữ liệu liên quan
-            // 1. Khôi phục hình ảnh liên quan
-            $roomType->roomTypeImages()->restore();
-
-            // 2. Khôi phục các khuyến mãi liên quan
-            SaleRoomType::where('room_type_id', $roomType->id)->restore();
-
-            // Khôi phục RoomType
+            $roomType->roomTypeImages->each(function($roomTypeImage) {
+                $roomTypeImage->restore();
+            });
             $roomType->restore();
 
             return response()->json([

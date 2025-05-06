@@ -25,11 +25,11 @@ class RefundController extends Controller
                 Log::info('Booking is unpaid, cancelling without refund');
                 Log::info('Current booking status before update: ' . $booking->status);
                 Log::info('Booking ID: ' . $booking->id);
-                
+
                 // Update trạng thái booking
                 $booking->status = 'cancelled_without_refund';
                 $booking->save();
-                
+
                 Log::info('Booking status updated to cancelled_without_refund');
                 DB::commit();
                 return redirect()->back()->with('success', 'Đặt phòng chưa thanh toán đã được hủy.');
@@ -49,7 +49,7 @@ class RefundController extends Controller
                 ->where('is_active', true)
                 ->orderBy('days_before_checkin', 'desc')
                 ->first();
-            
+
                 // dd($policy);
 
             if (!$policy) {
@@ -65,7 +65,7 @@ class RefundController extends Controller
             // Xử lý trường hợp hủy trong 24 giờ (không hoàn tiền)
             if ($policy->days_before_checkin == 0 && $policy->refund_percentage == 0) {
                 Log::info('Booking cancelled within 24 hours, no refund');
-                
+
                 // Tạo yêu cầu hoàn tiền với số tiền hoàn = 0
                 $refund = new Refund([
                     'booking_id' => $booking->id,
@@ -75,7 +75,7 @@ class RefundController extends Controller
                     'cancellation_fee' => $booking->status === 'partial' ? $booking->paid_amount : $booking->total_amount,
                     'status' => 'approved'
                 ]);
-                
+
                 $refund->save();
 
                 // Tạo giao dịch hoàn tiền
@@ -87,7 +87,7 @@ class RefundController extends Controller
                     'payment_method' => 'none',
                     'notes' => 'Hủy trong 24 giờ - Không hoàn tiền cho đặt phòng #' . $booking->booking_code
                 ]);
-                
+
                 $refundTransaction->save();
 
                 // Cập nhật trạng thái booking
@@ -99,10 +99,11 @@ class RefundController extends Controller
             }
 
             // Tính toán số tiền hoàn và phí hủy
-            $paidAmount = $booking->status === 'partial' ? $booking->paid_amount : $booking->total_amount;
+            $paidAmount = $booking->status === 'partial' ? $booking->paid_amount : $booking->total_price;
             $amount = $paidAmount * ($policy->refund_percentage / 100);
             $cancellationFee = $paidAmount * ($policy->cancellation_fee_percentage / 100);
-            
+//            dd($amount, $paidAmount, ($policy->refund_percentage / 100), $cancellationFee);
+
             Log::info('Calculated refund amount: ' . $amount);
             Log::info('Calculated cancellation fee: ' . $cancellationFee);
 
@@ -115,7 +116,7 @@ class RefundController extends Controller
                 'cancellation_fee' => $cancellationFee,
                 'status' => 'pending'
             ]);
-            
+
             Log::info('Saving refund request');
             $refund->save();
 
@@ -137,7 +138,7 @@ class RefundController extends Controller
                 'payment_method' => $payment->method,
                 'notes' => 'Yêu cầu hoàn tiền cho đặt phòng #' . $booking->booking_code
             ]);
-            
+
             Log::info('Saving refund transaction');
             $refundTransaction->save();
 
@@ -169,4 +170,4 @@ class RefundController extends Controller
 
         return view('clients.refunds.lists', compact('refunds'));
     }
-} 
+}

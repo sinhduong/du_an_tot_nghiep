@@ -61,7 +61,7 @@
             <div class="row">
                 @foreach ($rooms as $room)
                     <div class="col-xl-3 col-md-6">
-                        <div class="lh-card booked room-card" id="bookingtbl">
+                        <div class="lh-card room-card" id="bookingtbl">
                             <div class="lh-card-header">
                                 <h4 class="lh-card-title">{{ $room->room_number }}</h4>
                                 <div class="header-tools">
@@ -81,17 +81,17 @@
                                                         phục</button>
                                                 </form>
                                             </li>
-                                            <li>
-                                                <form
-                                                    action="{{ route('admin.rooms.forceDelete', $room->id) }}"
-                                                    method="POST" style="display:inline;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger"
-                                                        onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn?');">Xóa
-                                                        vĩnh viễn</button>
-                                                </form>
-                                            </li>
+{{--                                            <li>--}}
+{{--                                                <form--}}
+{{--                                                    action="{{ route('admin.rooms.forceDelete', $room->id) }}"--}}
+{{--                                                    method="POST" style="display:inline;">--}}
+{{--                                                    @csrf--}}
+{{--                                                    @method('DELETE')--}}
+{{--                                                    <button type="submit" class="btn btn-danger"--}}
+{{--                                                        onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn?');">Xóa--}}
+{{--                                                        vĩnh viễn</button>--}}
+{{--                                                </form>--}}
+{{--                                            </li>--}}
                                         </ul>
                                     </div>
                                 </div>
@@ -104,7 +104,21 @@
                                                 <li>Nhân viên quản lý phòng : {{ $item->name }}</li>
                                             @endif
                                         @endforeach
-                                        <li>Trạng thái : {{ $room->status }}</li>
+                                            <li>Trạng thái :
+                                                @switch($room->status)
+                                                    @case('available')
+                                                        Có sẵn
+                                                        @break
+                                                    @case('maintanance')
+                                                        Bảo trì
+                                                        @break
+                                                    @case('booked')
+                                                        Đã đặt
+                                                        @break
+                                                    @default
+                                                        Không rõ
+                                                @endswitch
+                                            </li>
                                         @foreach ($room_types_id as $item)
                                             @if ($room->room_type_id == $item->id)
                                                 <li>Loại phòng : {{ $item->name }}</li>

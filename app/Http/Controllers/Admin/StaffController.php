@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StaffFormRequest;
 use App\Http\Requests\StoreStaffRequest;
 use App\Http\Requests\UpdateStaffRequest;
 use App\Models\Room;
@@ -11,6 +12,8 @@ use App\Models\StaffRole;
 use App\Models\StaffShift;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 
 class StaffController extends BaseAdminController
 {
@@ -43,7 +46,7 @@ class StaffController extends BaseAdminController
         $title = 'Thêm nhân viên';
         $users = User::whereNotIn('id', Staff::pluck('user_id'))->get();
         $rooms = Room::all(); // Lấy tất cả phòng
-        $roles = StaffRole::all();
+        $roles = Role::all();
         $shifts = StaffShift::all();
         return view('admins.staffs.create', compact(['rooms', 'roles', 'shifts', 'users']));
     }
@@ -51,42 +54,21 @@ class StaffController extends BaseAdminController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreStaffRequest $request)
+    public function store(StaffFormRequest $request)
     {
-        $data = $request->validate([
-            'user_id'               => 'required|exists:users,id',
-            'role_id'               => 'required|exists:staff_roles,id',
-            'shift_id'              => 'nullable|exists:staff_shifts,id',
-            'notes'                 => ['nullable', 'string', 'max:65535'],
-            'room_ids'              => ['nullable', 'array'],
-            'room_ids.*'            => 'exists:Rooms,id|nullable'
-        ]);
-
         try {
-
-            // if ($request->hasFile('avatar')) {
-            //     $data['avatar'] = Storage::put('staffs', $request->file('avatar'));
-            // }
-
+            $data = $request->all();
+            DB::beginTransaction();
+            $user = User::create($data);
+            $data['user_id'] = $user->id;
             $staff = Staff::create($data);
-
-            // Kiểm tra nếu room_ids tồn tại thì mới cập nhật manager_id
-            if (isset($data['room_ids']) && count($data['room_ids']) > 0) {
-                Room::whereIn('id', $data['room_ids'])->update(['manager_id' => $staff->id]);
-            }
-
-            return redirect()
-                ->route('admin.staffs.index')
-                ->with('success', 'Nhân viên đã được thêm thành công!');
-        } catch (\Throwable $th) {
-
-            // if (!empty($data['avatar']) && Storage::exists($data['avatar'])) {
-            //     Storage::delete($data['avatar']);
-            // }
-
-            return back()
-                ->with('success', true)
-                ->with('error', $th->getMessage());
+            $roleName = Role::findOrFail($data['role_id'])->name;
+            $user->assignRole($roleName);
+            DB::commit();
+            return redirect()->route('admin.staffs.index')->with('success', 'Nhân viên đã được thêm thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', $e->getMessage());
         }
     }
     /**
@@ -108,71 +90,64 @@ class StaffController extends BaseAdminController
      */
     public function edit(Staff $staff)
     {
-        $users  = User::whereNotIn('id', Staff::where('id', '!=', $staff->id)->pluck('user_id'))
-            ->orWhere('id', $staff->user_id)
-            ->get();
-        $rooms  = Room::all();
-        $roles  = StaffRole::all();
-        $shifts = StaffShift::all();
+        $staff = Staff::find($staff->id);
+        $roles  = Role::all();
 
-        return view('admins.staffs.edit', compact('staff', 'rooms', 'roles', 'shifts', 'users'));
+        return view('admins.staffs.edit', compact('staff', 'roles'));
     }
 
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateStaffRequest $request, Staff $staff)
+    public function update(StaffFormRequest $request, $id)
     {
-        $data = $request->validate([
-            'user_id'               => 'required|exists:users,id',
-            'role_id'               => 'required|exists:staff_roles,id',
-            'shift_id'              => 'nullable|exists:staff_shifts,id',
-            'notes'                 => ['nullable', 'string', 'max:65535'],
-            'room_ids'              => ['nullable', 'array'],
-            'room_ids.*'            => 'exists:Rooms,id|nullable'
-        ]);
         try {
-            // if ($request->hasFile('avatar')) {
-
-            //     $data['avatar'] = Storage::disk('public')->put('staffs', $request->file('avatar'));
-
-            //     if (
-            //         isset($staff->avatar) && Storage::exists($staff->avatar)
-            //     ) {
-            //         Storage::delete($staff->avatar);
-            //     }
-            // }
-            $staff->update($data);
-
-
-            // Kiểm tra nếu room_ids tồn tại thì mới cập nhật manager_id
-            if (isset($data['room_ids']) && count($data['room_ids']) > 0) {
-                Room::whereIn('id', $data['room_ids'])->update(['manager_id' => $staff->id]);
+            $data = $request->all();
+            DB::beginTransaction();
+            $staff = Staff::find($id);
+            $user = $staff->user;
+            if ($data['password']) {
+                $user->update([
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                    'password' => $data['password'],
+                ]);
+            } else {
+                $user->update([
+                    'name' => $data['name'],
+                    'email' => $data['email']
+                ]);
             }
+            $staff->update([
+                'role_id' => $data['role_id'],
+                'status' => $data['status'],
+                'notes' => $data['notes'],
+            ]);
+            $roleName = Role::findOrFail($data['role_id'])->name;
+            $user->syncRoles([$roleName]);
 
-            return back()->with('success', 'Nhân viên đã được cập nhật thành công!');
-        } catch (\Throwable $th) {
-            // if (!empty($data['avatar']) && Storage::exists($data['avatar'])) {
-            //     Storage::delete($data['avatar']);
-            // }
-            return back()
-                ->with('success', false)
-                ->with('error', $th->getMessage());
+            DB::commit();
+            return redirect()->route('admin.staffs.index')->with('success', 'Nhân viên đã được cập nhật thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            dd($e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Staff $staff)
+    public function destroy($id)
     {
         try {
+            $staff = Staff::find($id);
             $staff->delete();
-
+            $staff->user->delete();
             return redirect()
                 ->route('admin.staffs.index')
-                ->with('success', 'Bạn đã chuyển nhân viên vào thùng rác!');
+                ->with('success', 'Nhân viên đã được xóa thành công !');
         } catch (\Exception $e) {
             return back()->with('error', 'Lỗi khi xóa: ' . $e->getMessage());
         }

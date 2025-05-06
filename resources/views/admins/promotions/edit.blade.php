@@ -4,32 +4,14 @@
     <div class="lh-main-content">
         <div class="lh-page-title">
             <div class="lh-breadcrumb">
-                <h5>Loại Tiện Ích</h5>
+                <h5>Khuyến mãi</h5>
                 <ul>
                     <li><a href="index.html">Trang chủ</a></li>
-                    <li>Dashboard</li>
+                    <li>Sửa khuyến mãi</li>
                 </ul>
             </div>
             <div class="lh-tools">
                 <a href="javascript:void(0)" title="Refresh" class="refresh"><i class="ri-refresh-line"></i></a>
-                <div id="pagedate">
-                    <div class="lh-date-range" title="Date">
-                        <span></span>
-                    </div>
-                </div>
-                <div class="filter">
-                    <div class="dropdown" title="Filter">
-                        <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="ri-sound-module-line"></i>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item" href="#">Booking</a></li>
-                            <li><a class="dropdown-item" href="#">Revenue</a></li>
-                            <li><a class="dropdown-item" href="#">Expence</a></li>
-                        </ul>
-                    </div>
-                </div>
             </div>
         </div>
         <div class="container-fluid">
@@ -50,7 +32,7 @@
 
                                         <div class="mb-4 row align-items-center">
                                             <label class="form-label-title col-sm-3 mb-0">Tên chương trình giảm
-                                                giá</label>
+                                                giá <span class="text-danger">*</span></label>
                                             <div class="col-sm-9">
                                                 <input class="form-control" type="text" name="name"
                                                        {{ $isEdit ? "" : "disabled" }} value="{{ $promotion->name }}"
@@ -62,7 +44,7 @@
                                         </div>
 
                                         <div class="mb-4 row align-items-center">
-                                            <label class="form-label-title col-sm-3 mb-0">Mã giảm giá</label>
+                                            <label class="form-label-title col-sm-3 mb-0">Mã giảm giá <span class="text-danger">*</span></label>
                                             <div class="col-sm-9">
                                                 <input class="form-control" type="text" name="code"
                                                        {{ $isEdit ? "" : "disabled" }} value="{{$promotion->code}}"
@@ -74,7 +56,7 @@
                                         </div>
 
                                         <div class="mb-4 row align-items-center">
-                                            <label class="form-label-title col-sm-3 mb-0">Giá trị giảm giá</label>
+                                            <label class="form-label-title col-sm-3 mb-0">Giá trị giảm giá <span class="text-danger">*</span></label>
                                             <div class="col-sm-9">
                                                 <input class="form-control" type="number" step="0.01"
                                                        {{ $isEdit ? "" : "disabled" }} value="{{ $promotion->value }}"
@@ -86,7 +68,7 @@
                                         </div>
 
                                         <div class="mb-4 row align-items-center">
-                                            <label class="form-label-title col-sm-3 mb-0">Ngày bắt đầu</label>
+                                            <label class="form-label-title col-sm-3 mb-0">Ngày bắt đầu <span class="text-danger">*</span></label>
                                             <div class="col-sm-9">
                                                 <input class="form-control" type="datetime-local"
                                                        {{ $isEdit ? "" : "disabled" }} value="{{$promotion->start_date}}"
@@ -98,7 +80,7 @@
                                         </div>
 
                                         <div class="mb-4 row align-items-center">
-                                            <label class="form-label-title col-sm-3 mb-0">Ngày kết thúc</label>
+                                            <label class="form-label-title col-sm-3 mb-0">Ngày kết thúc <span class="text-danger">*</span></label>
                                             <div class="col-sm-9">
                                                 <input class="form-control" type="datetime-local"
                                                        {{ $isEdit ? "" : "disabled" }} value="{{$promotion->end_date}}"
@@ -111,7 +93,7 @@
 
                                         <div class="mb-4 row align-items-center">
                                             <label class="form-label-title col-sm-3 mb-0">Giá trị đơn hàng tối
-                                                thiểu</label>
+                                                thiểu <span class="text-danger">*</span></label>
                                             <div class="col-sm-9">
                                                 <input class="form-control" type="number" name="min_booking_amount"
                                                        {{ $isEdit ? "" : "disabled" }} value="{{$promotion->min_booking_amount}}"
@@ -124,7 +106,7 @@
 
                                         <div class="mb-4 row align-items-center">
                                             <label class="form-label-title col-sm-3 mb-0">Giá trị giảm trừ tối
-                                                đa</label>
+                                                đa <span class="text-danger">*</span></label>
                                             <div class="col-sm-9">
                                                 <input class="form-control" type="number" name="max_discount_value"
                                                        {{ $isEdit ? "" : "disabled" }} value="{{ $promotion->max_discount_value}}"
@@ -136,7 +118,7 @@
                                         </div>
 
                                         <div class="mb-4 row align-items-center">
-                                            <label class="form-label-title col-sm-3 mb-0">Số lượng mã giảm giá</label>
+                                            <label class="form-label-title col-sm-3 mb-0">Số lượng mã giảm giá <span class="text-danger">*</span></label>
                                             <div class="col-sm-9">
                                                 <input class="form-control" type="number" name="quantity"
                                                        {{ $isEdit ? "" : "disabled" }} value="{{$promotion->quantity}}"
@@ -148,7 +130,7 @@
                                         </div>
 
                                         <div class="mb-4 row align-items-center">
-                                            <label class="form-label-title col-sm-3 mb-0">Loại giảm giá</label>
+                                            <label class="form-label-title col-sm-3 mb-0">Loại giảm giá <span class="text-danger">*</span></label>
                                             <div class="col-sm-9">
                                                 <select class="form-control" name="type">
                                                     <option
@@ -167,7 +149,7 @@
                                         </div>
 
                                         <div class="mb-4 row align-items-center">
-                                            <label class="form-label-title col-sm-3 mb-0">Trạng thái</label>
+                                            <label class="form-label-title col-sm-3 mb-0">Trạng thái <span class="text-danger">*</span></label>
                                             <div class="col-sm-9">
                                                 <select class="form-control" name="status">
                                                     <option

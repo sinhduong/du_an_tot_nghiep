@@ -23,6 +23,10 @@ class AppServiceProvider extends ServiceProvider
     {
         // Thiết lập locale cho ứng dụng Laravel
         app()->setLocale('vi');
+        
+        // Cấu hình phân trang sử dụng Bootstrap
+        \Illuminate\Pagination\Paginator::useBootstrap();
+        
         // Tự động truyền $systems vào tất cả các view trong thư mục 'clients'
         View::composer('clients.*', function ($view) {
             $systems = System::orderBy('id', 'desc')->first() ?? (object) ['logo' => null];

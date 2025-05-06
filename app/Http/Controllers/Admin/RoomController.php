@@ -73,9 +73,16 @@ class RoomController extends BaseAdminController
                     ->orderBy('created_at', 'desc');
             }])
 
-                ->withCount(['bookings as booking_count' => function ($query) {
-                    $query->whereIn('status', ['pending_confirmation', 'confirmed', 'paid', 'check_in']);
+                ->withCount(['bookings as booking_count' => function ($query) use ($checkIn, $checkOut) {
+                    $query->whereIn('status', ['pending_confirmation', 'confirmed', 'paid', 'check_in'])
+                        ->when($checkIn && $checkOut, function ($query) use ($checkIn, $checkOut) {
+                            return $query->where(function ($q) use ($checkIn, $checkOut) {
+                                $q->whereDate('check_in', '<', $checkOut)
+                                    ->whereDate('check_out', '>', $checkIn);
+                            });
+                        });
                 }])
+
                 ->whereNull('deleted_at')
                 ->when($roomNumber, function ($query, $roomNumber) {
                     return $query->where('room_number', 'like', "%{$roomNumber}%");
@@ -120,8 +127,9 @@ class RoomController extends BaseAdminController
                 $hasActiveBooking = $room->bookings->contains(function ($booking) {
                     $now = Carbon::now();
                     $bookingCheckOut = Carbon::parse($booking->check_out);
-                    return in_array($booking->status, ['confirmed', 'paid', 'check_in']) &&
-                        $bookingCheckOut->gt($now);
+                    return in_array($booking->status, ['confirmed', 'paid', 'check_in'])
+                        && $bookingCheckOut->gt($now)
+                    ;
                 });
 
                 if ($hasActiveBooking) {
@@ -138,7 +146,7 @@ class RoomController extends BaseAdminController
                         $bookingCheckIn = Carbon::parse($booking->check_in);
                         $bookingCheckOut = Carbon::parse($booking->check_out);
                         return in_array($booking->status, ['pending_confirmation', 'confirmed', 'paid', 'check_in']) &&
-                            $bookingCheckOut->gt($now) &&
+//                            $bookingCheckOut->gt($now) &&
                             $bookingCheckIn->lte($checkOutDate) &&
                             $bookingCheckOut->gte($checkInDate);
                     });
@@ -182,6 +190,92 @@ class RoomController extends BaseAdminController
         $allAmenities = Amenity::all(); // Giả sử bạn có model Amenity
 
         return view('admins.rooms.index', compact('roomTypes', 'title', 'allRoomTypes', 'allAmenities', 'checkIn', 'checkOut', 'dateRange', 'totalGuests', 'childrenCount', 'roomCount', 'minPrice', 'maxPrice', 'amenities'));
+    }
+
+    public function bookedRooms(Request $request)
+    {
+        $title = 'Danh sách phòng đã đặt';
+
+        // Lấy các tham số lọc
+        $roomId = $request->input('room_id'); // Lấy room_id từ URL (nếu có)
+        $dateRange = $request->input('date_range');
+
+        // Phân tích date_range nếu có
+        $checkIn = null;
+        $checkOut = null;
+        if ($dateRange && strpos($dateRange, '-') !== false) {
+            [$start, $end] = explode(' - ', $dateRange);
+            $checkIn = Carbon::createFromFormat('d/m/Y', trim($start))->toDateString();
+            $checkOut = Carbon::createFromFormat('d/m/Y', trim($end))->toDateString();
+        }
+
+        // Xây dựng truy vấn cho room_types và rooms
+        $query = RoomType::with(['rooms' => function ($query) use ($checkIn, $checkOut, $roomId) {
+            $query->with(['bookings' => function ($query) use ($checkIn, $checkOut) {
+                $query->whereIn('status', ['pending_confirmation', 'confirmed', 'paid', 'check_in', 'check_out'])
+                    ->when($checkIn, function ($query, $checkIn) {
+                        return $query->whereDate('check_in', '>=', $checkIn);
+                    })
+                    ->when($checkOut, function ($query, $checkOut) {
+                        return $query->whereDate('check_out', '<=', $checkOut);
+                    })
+                    ->orderBy('created_at', 'desc');
+            }])
+                ->withCount(['bookings as booking_count' => function ($query) {
+                    $query->whereIn('status', ['pending_confirmation', 'confirmed', 'paid', 'check_in', 'check_out']);
+                }])
+                ->whereNull('deleted_at')
+                ->when($roomId, function ($query, $roomId) {
+                    return $query->where('id', $roomId); // Lọc theo room_id nếu có
+                })
+                ->whereHas('bookings', function ($query) use ($checkIn, $checkOut) {
+                    $query->whereIn('status', ['pending_confirmation', 'confirmed', 'paid', 'check_in', 'check_out'])
+                        ->when($checkIn, function ($query, $checkIn) {
+                            return $query->whereDate('check_in', '>=', $checkIn);
+                        })
+                        ->when($checkOut, function ($query, $checkOut) {
+                            return $query->whereDate('check_out', '<=', $checkOut);
+                        });
+                })
+                ->orderBy('id', 'desc');
+        }])
+            ->whereNull('deleted_at')
+            ->has('rooms');
+
+        // Lấy dữ liệu
+        $roomTypes = $query->get();
+
+        // Lọc các phòng có booking trong khoảng thời gian (nếu có)
+        $roomTypes->each(function ($roomType) use ($checkIn, $checkOut) {
+            $roomType->rooms = $roomType->rooms->filter(function ($room) use ($checkIn, $checkOut) {
+                if ($checkIn && $checkOut) {
+                    $checkInDate = Carbon::parse($checkIn);
+                    $checkOutDate = Carbon::parse($checkOut);
+                    $hasBookingInRange = $room->bookings->contains(function ($booking) use ($checkInDate, $checkOutDate) {
+                        $bookingCheckIn = Carbon::parse($booking->check_in);
+                        $bookingCheckOut = Carbon::parse($booking->check_out);
+                        return !in_array($booking->status, ['cancelled', 'refunded']) &&
+                            $bookingCheckIn->lte($checkOutDate) &&
+                            $bookingCheckOut->gte($checkInDate);
+                    });
+                    $room->filtered_status = $hasBookingInRange ? 'booked' : 'available';
+                    $room->latest_booking = $hasBookingInRange ? $room->bookings->first() : null;
+                    return $hasBookingInRange;
+                } else {
+                    $hasActiveBooking = $room->bookings->contains(function ($booking) {
+                        return !in_array($booking->status, ['cancelled', 'refunded']);
+                    });
+                    $room->filtered_status = $hasActiveBooking ? 'booked' : 'available';
+                    $room->latest_booking = $hasActiveBooking ? $room->bookings->first() : null;
+                    return $hasActiveBooking;
+                }
+            });
+        });
+
+        // Lấy tất cả room_types để hiển thị trong dropdown lọc
+        $allRoomTypes = RoomType::whereNull('deleted_at')->get();
+
+        return view('admins.rooms.booked', compact('roomTypes', 'title', 'allRoomTypes', 'checkIn', 'checkOut'));
     }
 
     /**

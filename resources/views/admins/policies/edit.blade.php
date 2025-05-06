@@ -89,7 +89,7 @@
                                     <div class="lh-user-detail">
                                         <ul>
                                             <li>
-                                                <button type="submit" class="lh-btn-primary">Submit</button>
+                                                <button type="submit" class="lh-btn-primary">Lưu</button>
                                             </li>
                                         </ul>
                                     </div>

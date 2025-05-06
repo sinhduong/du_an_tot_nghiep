@@ -19,20 +19,20 @@
                     <li class="lh-sb-item-separator"></li>
                 @endcan
 
-                @canany(['customers_list', 'admin_accounts_list', 'roles_list'])
-                <li class="lh-sb-item sb-drop-item">
-                    <a href="javascript:void(0)" class="lh-drop-toggle">
-                        <i class="ri-shield-user-line"></i><span class="condense">Quản lý tài khoản<i
-                                class="drop-arrow ri-arrow-down-s-line"></i></span></a>
-                    <ul class="lh-sb-drop condense">
-                        @can('customers_list')
-                        <li><a href="{{ route('admin.customers.index') }}" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Danh
-                                sách khách hàng</a></li>
-                        @endcan
-                        @can('admin_accounts_list')
-                        <li><a href="{{ route('admin.admin_accounts.index') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Danh sách quản trị viên</a></li>
-                        @endcan
+                @canany(['customers_list', 'staffs_list', 'roles_list'])
+                    <li class="lh-sb-item sb-drop-item">
+                        <a href="javascript:void(0)" class="lh-drop-toggle">
+                            <i class="ri-shield-user-line"></i><span class="condense">Quản lý tài khoản<i
+                                    class="drop-arrow ri-arrow-down-s-line"></i></span></a>
+                        <ul class="lh-sb-drop condense">
+                            @can('customers_list')
+                                <li><a href="{{ route('admin.customers.index') }}" class="lh-page-link drop"><i class="ri-git-commit-line"></i>Danh
+                                        sách khách hàng</a></li>
+                            @endcan
+                            @can('staffs_list')
+                                <li><a href="{{ route('admin.staffs.index') }}" class="lh-page-link drop"><i
+                                            class="ri-git-commit-line"></i>Danh sách quản trị viên</a></li>
+                            @endcan
                         @can('roles_list')
                         <li><a href="{{ route('admin.roles.index') }}" class="lh-page-link drop"><i
                                     class="ri-git-commit-line"></i>Phân quyền người dùng</a></li>
@@ -162,61 +162,61 @@
                 @endcan
 
                 @canany(['staffs_list', 'staffs_create', 'staffs_trashed', 'staff_roles_list', 'staff_roles_create', 'staff_shifts_list', 'staff_shifts_create'])
-                <li class="lh-sb-item sb-drop-item">
-                    <a href="javascript:void(0)" class="lh-drop-toggle">
-                        <i class="ri-user-line"></i><span class="condense">Quản lý Nhân viên<i
-                                class="drop-arrow ri-arrow-down-s-line"></i></span>
-                    </a>
-                    <ul class="lh-sb-drop condense">
-                        @can('staffs_list')
-                        <li><a href="{{ route('admin.staffs.index') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Danh sách Nhân viên</a></li>
-                        @endcan
-                        @can('staffs_create')
-                        <li><a href="{{ route('admin.staffs.create') }}" class="lh-page-link drop"><i
-                                    class="ri-git-commit-line"></i>Thêm mới Nhân viên</a></li>
-                        @endcan
+{{--                <li class="lh-sb-item sb-drop-item">--}}
+{{--                    <a href="javascript:void(0)" class="lh-drop-toggle">--}}
+{{--                        <i class="ri-user-line"></i><span class="condense">Quản lý Nhân viên<i--}}
+{{--                                class="drop-arrow ri-arrow-down-s-line"></i></span>--}}
+{{--                    </a>--}}
+{{--                    <ul class="lh-sb-drop condense">--}}
+{{--                        @can('staffs_list')--}}
+{{--                        <li><a href="{{ route('admin.staffs.index') }}" class="lh-page-link drop"><i--}}
+{{--                                    class="ri-git-commit-line"></i>Danh sách Nhân viên</a></li>--}}
+{{--                        @endcan--}}
+{{--                        @can('staffs_create')--}}
+{{--                        <li><a href="{{ route('admin.staffs.create') }}" class="lh-page-link drop"><i--}}
+{{--                                    class="ri-git-commit-line"></i>Thêm mới Nhân viên</a></li>--}}
+{{--                        @endcan--}}
 
-                        @canany(['staff_roles_list', 'staff_roles_create'])
-                        <li class="sb-drop-item">
-                            <a href="javascript:void(0)" class="lh-drop-toggle">
-                                <i class="ri-shield-user-line"></i> Vai trò Nhân viên <i
-                                    class="drop-arrow ri-arrow-down-s-line"></i>
-                            </a>
-                            <ul class="lh-sb-drop condense">
-                                @can('staff_roles_list')
-                                <li><a href="{{ route('admin.staff_roles.index') }}" class="lh-page-link drop"><i
-                                            class="ri-git-commit-line"></i>Danh sách Vai trò</a></li>
-                                @endcan
-                                @can('staff_roles_create')
-                                <li><a href="{{ route('admin.staff_roles.create') }}" class="lh-page-link drop"><i
-                                            class="ri-git-commit-line"></i>Thêm mới Vai trò</a></li>
-                                @endcan
-                            </ul>
-                        </li>
-                        @endcan
+{{--                        @canany(['staff_roles_list', 'staff_roles_create'])--}}
+{{--                        <li class="sb-drop-item">--}}
+{{--                            <a href="javascript:void(0)" class="lh-drop-toggle">--}}
+{{--                                <i class="ri-shield-user-line"></i> Vai trò Nhân viên <i--}}
+{{--                                    class="drop-arrow ri-arrow-down-s-line"></i>--}}
+{{--                            </a>--}}
+{{--                            <ul class="lh-sb-drop condense">--}}
+{{--                                @can('staff_roles_list')--}}
+{{--                                <li><a href="{{ route('admin.staff_roles.index') }}" class="lh-page-link drop"><i--}}
+{{--                                            class="ri-git-commit-line"></i>Danh sách Vai trò</a></li>--}}
+{{--                                @endcan--}}
+{{--                                @can('staff_roles_create')--}}
+{{--                                <li><a href="{{ route('admin.staff_roles.create') }}" class="lh-page-link drop"><i--}}
+{{--                                            class="ri-git-commit-line"></i>Thêm mới Vai trò</a></li>--}}
+{{--                                @endcan--}}
+{{--                            </ul>--}}
+{{--                        </li>--}}
+{{--                        @endcan--}}
 
-                        @canany(['staff_shifts_list', 'staff_shifts_create'])
-                        <li class="sb-drop-item">
-                            <a href="javascript:void(0)" class="lh-drop-toggle">
-                                <i class="ri-time-line"></i> Ca làm việc <i
-                                    class="drop-arrow ri-arrow-down-s-line"></i>
-                            </a>
-                            <ul class="lh-sb-drop condense">
-                                @can('staff_shifts_list')
-                                <li><a href="{{ route('admin.staff_shifts.index') }}" class="lh-page-link drop"><i
-                                            class="ri-git-commit-line"></i>Danh sách Ca làm</a></li>
-                                @endcan
-                                @can('staff_shifts_create')
-                                <li><a href="{{ route('admin.staff_shifts.create') }}" class="lh-page-link drop"><i
-                                            class="ri-git-commit-line"></i>Thêm mới Ca làm</a></li>
-                                @endcan
-                            </ul>
-                        </li>
-                        @endcan
-                    </ul>
-                </li>
-                <li class="lh-sb-item-separator"></li>
+{{--                        @canany(['staff_shifts_list', 'staff_shifts_create'])--}}
+{{--                        <li class="sb-drop-item">--}}
+{{--                            <a href="javascript:void(0)" class="lh-drop-toggle">--}}
+{{--                                <i class="ri-time-line"></i> Ca làm việc <i--}}
+{{--                                    class="drop-arrow ri-arrow-down-s-line"></i>--}}
+{{--                            </a>--}}
+{{--                            <ul class="lh-sb-drop condense">--}}
+{{--                                @can('staff_shifts_list')--}}
+{{--                                <li><a href="{{ route('admin.staff_shifts.index') }}" class="lh-page-link drop"><i--}}
+{{--                                            class="ri-git-commit-line"></i>Danh sách Ca làm</a></li>--}}
+{{--                                @endcan--}}
+{{--                                @can('staff_shifts_create')--}}
+{{--                                <li><a href="{{ route('admin.staff_shifts.create') }}" class="lh-page-link drop"><i--}}
+{{--                                            class="ri-git-commit-line"></i>Thêm mới Ca làm</a></li>--}}
+{{--                                @endcan--}}
+{{--                            </ul>--}}
+{{--                        </li>--}}
+{{--                        @endcan--}}
+{{--                    </ul>--}}
+{{--                </li>--}}
+{{--                <li class="lh-sb-item-separator"></li>--}}
                 @endcan
 
                 @can('reviews_list')
@@ -251,7 +251,7 @@
                 <li class="lh-sb-item-separator"></li>
                 @endcan
 
-                
+
                 @can('sale_room_types_list')
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
@@ -265,7 +265,7 @@
                 <li class="lh-sb-item-separator"></li>
                 @endcan
 
-               
+
                 @canany(['policies_list', 'policies_create'])
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
@@ -285,7 +285,7 @@
                 <li class="lh-sb-item-separator"></li>
                 @endcan
 
-                
+
                 @canany(['service_plus_list', 'service_plus_create'])
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
@@ -305,7 +305,7 @@
                 <li class="lh-sb-item-separator"></li>
                 @endcan
 
-                
+
                 @can('payment_settings_list')
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">
@@ -318,7 +318,7 @@
                 </li>
                 <li class="lh-sb-item-separator"></li>
                 @endcan
-               
+
                 @canany(['refund_policies_list', 'refund_policies_create'])
                 <li class="lh-sb-item sb-drop-item">
                     <a href="javascript:void(0)" class="lh-drop-toggle">

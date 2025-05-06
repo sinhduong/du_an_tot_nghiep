@@ -28,14 +28,6 @@
                         <div class="header-tools">
                             <a href="javascript:void(0)" class="m-r-10 lh-full-card"><i class="ri-fullscreen-line"
                                     title="Full Screen"></i></a>
-                            <div class="lh-date-range dots">
-                                <span></span>
-                            </div>
-                            <button class="btn btn-primary ms-2"
-                                onclick="window.location.href='{{ route('admin.admin_accounts.create') }}'">
-                                Tạo mới
-                            </button>
-
                         </div>
                     </div>
                     @if (session('success'))
