@@ -57,8 +57,7 @@ class BannerController extends BaseAdminController
         }
 
         $banner = Banner::create($data);
-        return redirect()->route('admin.banners.index')->with('success', 'Thêm banner  thành công');
-
+        return redirect()->route('admin.banners.index')->with('success', 'Thêm banner thành công');
     }
 
     /**

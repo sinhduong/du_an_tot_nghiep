@@ -4,10 +4,10 @@
         <div class="container-fluid">
             <div class="lh-page-title">
                 <div class="lh-breadcrumb">
-                    <h5>Loại Banner </h5>
+                    <h5>Banner </h5>
                     <ul>
-                        <li><a href="index.html">Trang chủ</a></li>
-                        <li>Dashboard</li>
+                    <li><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                    <li><a href="{{ route('admin.banners.index') }}">Banner</a></li>
                     </ul>
                 </div>
             </div>

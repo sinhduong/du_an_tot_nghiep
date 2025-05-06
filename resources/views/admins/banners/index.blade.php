@@ -5,10 +5,10 @@
             <!-- Page title & breadcrumb -->
             <div class="lh-page-title">
                 <div class="lh-breadcrumb">
-                    <h5>Loại Banner </h5>
+                    <h5>Banner </h5>
                     <ul>
-                        <li><a href="index.html">Trang chủ</a></li>
-                        <li>Dashboard</li>
+                        <li><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                        <li><a href="{{ route('admin.banners.index') }}">Banner</a></li>
                     </ul>
                 </div>
                 {{-- <div class="lh-tools">
@@ -64,8 +64,8 @@
                                         <thead class="table-dark">
                                             <tr>
                                                 <th>STT</th>
-                                                <th>Tên Benner </th>
-                                                <th>Hình Anh</th>
+                                                <th>Tên Banner </th>
+                                                <th>Hình Ảnh</th>
                                                 <th>Link </th>
                                                 <th>Trạng Thái </th>
                                                 <th>Hành động</th>

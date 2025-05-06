@@ -5,10 +5,10 @@
         <!-- Page title & breadcrumb -->
         <div class="lh-page-title">
             <div class="lh-breadcrumb">
-                <h5>Loại Banner </h5>
+                <h5>Banner </h5>
                 <ul>
-                    <li><a href="index.html">Trang chủ</a></li>
-                    <li>Dashboard</li>
+                    <li><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                    <li><a href="{{ route('admin.banners.index') }}">Banner</a></li>
                 </ul>
             </div>
             {{-- <div class="lh-tools">
@@ -51,7 +51,7 @@
                                 <div class="col-md-12 col-sm-12">
                                     <div class="lh-user-detail">
                                         <ul>
-                                            <li><strong>Tên Banner: </strong>
+                                            <li><strong>Tên Banner <span class="text-danger">*</span>: </strong>
                                                 <div class="form-group">
                                                     <input type="text" name="name" placeholder="Tên Banner"
                                                         class="form-control" value="{{ old('name') }}">
@@ -60,7 +60,7 @@
                                                     @enderror
                                                 </div>
                                             </li> 
-                                            <li><strong>Trạng thái *: </strong>
+                                            <li><strong>Trạng thái <span class="text-danger">*</span>: </strong>
                                                 <div class="form-group">
                                                     <select name="is_use" class="form-control">
                                                         <option value="1" {{ old('is_use') == 1 ? 'selected' : '' }}>Hoạt động</option>
@@ -71,7 +71,7 @@
                                                     @enderror
                                                 </div>
                                             </li>
-                                            <li><strong>Link *: </strong>
+                                            <li><strong>Link <span class="text-danger">*</span>: </strong>
                                                 <div class="form-group">
                                                    
                                                     <input type="text" name="link" placeholder="Link Banner"
@@ -88,16 +88,13 @@
                                                     <label class="form-label fw-bold">Hình ảnh <span class="text-danger">*</span></label>
                                                     <div id="imageInputs">
                                                         <div class="input-group input-group-sm mb-2" style="max-width: 400px;">
-                                                            <input type="file" name="image" class="form-control @error('images.*') is-invalid @enderror" multiple>
+                                                            <input type="file" name="image" class="form-control">
                                                             <button type="button" class="btn btn-outline-danger remove-image-input">
                                                                 <i class="ri-delete-bin-line"></i>
                                                             </button>
                                                         </div>
                                                     </div>
-                                                    <button type="button" class="btn btn-outline-success btn-sm mt-1" id="addImageInput">
-                                                        <i class="ri-add-line"></i> Thêm ảnh
-                                                    </button>
-                                                    @error('images.*')
+                                                    @error('image')
                                                         <small class="text-danger">{{ $message }}</small>
                                                     @enderror
                                                 </div>
@@ -116,9 +113,6 @@
                                 </div>
                             </div>
                         </form>
-
-
-
                     </div>
                 </div>
             </div>
