@@ -87,11 +87,11 @@
                                             <label>Trạng thái *</label>
                                             <select name="status" class="form-control">
                                                 <option value="available"
-                                                    {{ $room->status == 'available' ? 'selected' : '' }}>Available</option>
+                                                    {{ $room->status == 'available' ? 'selected' : '' }}>Có sẵn</option>
                                                 <option value="booked" {{ $room->status == 'booked' ? 'selected' : '' }}>
-                                                    Booked</option>
+                                                    Đã có người đặt</option>
                                                 <option value="maintenance"
-                                                    {{ $room->status == 'maintenance' ? 'selected' : '' }}>Maintenance
+                                                    {{ $room->status == 'maintenance' ? 'selected' : '' }}>Bảo trì
                                                 </option>
                                             </select>
                                             @error('status')

@@ -131,7 +131,7 @@
 
                 @foreach ($roomTypes as $roomType)
                     <div class="section-title">
-                        <h4>{{ $roomType->name }} ({{ $roomType->total_rooms_count }} phòng - {{ $roomType->available_rooms_count }} trống{{ $roomType->booked_rooms_count ? ', ' . $roomType->booked_rooms_count . ' đã đặt' : '' }})</h4>
+                        <h4>{{ $roomType->name }} ({{ $roomType->rooms->count() }} phòng - {{ $roomType->available_rooms_count }} trống{{ $roomType->booked_rooms_count ? ', ' . $roomType->booked_rooms_count . ' đã đặt' : '' }})</h4>
                     </div>
                     <div class="row room-list" data-room-type-id="{{ $roomType->id }}">
                         @forelse ($roomType->rooms as $index => $room)
@@ -175,12 +175,12 @@
                                                     <li>Check in: {{ $room->latest_booking->check_in ?? '' }}</li>
                                                     <li>Check out: {{ $room->latest_booking->check_out ?? '' }}</li>
                                                     <li>Khách hàng: {{ $room->latest_booking->user->name ?? '' }}</li>
-                                                    <li>Member: {{ $room->latest_booking->total_guests ?? '' }}</li>
+                                                    <li>Người ở: {{ $room->latest_booking->total_guests ?? '' }}</li>
                                                 @else
                                                     <li>Check in: </li>
                                                     <li>Check out: </li>
                                                     <li>Khách hàng: </li>
-                                                    <li>Member: </li>
+                                                    <li>Người ở: </li>
                                                 @endif
                                             </ul>
                                         </div>
