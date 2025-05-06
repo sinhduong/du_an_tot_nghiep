@@ -8,7 +8,7 @@
                     <h5>Banner </h5>
                     <ul>
                         <li><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
-                        <li><a href="{{ route('admin.banners.index') }}">Banner</a></li>
+                        <li>Banner</li>
                     </ul>
                 </div>
                 {{-- <div class="lh-tools">

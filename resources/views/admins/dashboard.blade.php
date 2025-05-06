@@ -18,7 +18,7 @@
                         <div class="d-flex align-items-center gap-2">
                             <input type="text" name="date_range" class="form-control form-control-sm date-range-picker"
                                 value="{{ $dateRange }}" placeholder="Chọn khoảng thời gian">
-                            <button type="submit" class="btn btn-primary btn-sm">Lọc</button>
+                            <button type="submit" class="btn btn-primary btn-sm me-2">Lọc</button>
                         </div>
                     </form>
                     <a href="javascript:void(0)" title="Làm mới" class="refresh"><i class="ri-refresh-line"></i></a>
