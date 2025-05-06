@@ -36,6 +36,7 @@ use App\Http\Controllers\Client\BookingController as ClientBookingController;
 use App\Http\Controllers\Client\RefundController as ClientRefundController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Admin\AdminAccountController;
 
 // client
 
@@ -328,6 +329,14 @@ Route::prefix('admin')
                 Route::get('{id}/edit', [ServicePlusController::class, 'edit'])->name('edit'); // Form chỉnh sửa
                 Route::put('{id}/update', [ServicePlusController::class, 'update'])->name('update'); // Cập nhật
                 Route::delete('{id}/destroy', [ServicePlusController::class, 'destroy'])->name('destroy'); // Xóa loại phòng
+            });
+
+         Route::prefix('admin_accounts') 
+            ->as('admin_accounts.') 
+            ->group(function () {
+                Route::get('/', [AdminAccountController::class, 'index'])->name('index'); 
+                Route::get('{id}/edit', [AdminAccountController::class, 'edit'])->name('edit'); 
+                Route::put('{id}/update', [AdminAccountController::class, 'update'])->name('update'); 
             });
 
         Route::resource('promotions', PromotionController::class);

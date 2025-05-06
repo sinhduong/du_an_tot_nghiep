@@ -31,5 +31,6 @@ return [
         'refund_policy' => 'Chính sách hoàn trả',
         'service_plus' => 'Dịch vụ phát sinh',
         'policy' => 'Chính sách',
+        'admin_account' => 'Tài khoản quản trị viên',
     ]
 ];

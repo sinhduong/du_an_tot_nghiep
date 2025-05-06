@@ -71,7 +71,6 @@
     "rules_and_regulations_restore": "Khôi phục quy định và điều khoản",
     "rules_and_regulations_force_delete": "Xóa vĩnh viễn quy định và điều khoản",
 
-
     "services_list": "Xem danh sách dịch vụ",
     "services_create": "Tạo dịch vụ",
     "services_update": "Cập nhật dịch vụ",
@@ -156,5 +155,8 @@
     "banners_list": "Xem danh sách banner",
     "banners_create": "Tạo banner",
     "banners_update": "Cập nhật banner",
-    "banners_delete": "Xóa banner"
+    "banners_delete": "Xóa banner",
+
+    "admin_accounts_list": "Xem danh sách tài khoản quản trị",
+    "admin_accounts_edit": "Cập nhật tài khoản quản trị"
 }

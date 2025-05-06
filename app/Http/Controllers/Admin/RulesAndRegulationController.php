@@ -23,9 +23,7 @@ class RulesAndRegulationController extends BaseAdminController
         $this->middleware('permission:rules_and_regulations_trashed')->only(['trashed']);
         $this->middleware('permission:rules_and_regulations_restore')->only(['restore']);
         $this->middleware('permission:rules_and_regulations_force_delete')->only(['forceDelete']);
-        $this->middleware('permission:rules_and_regulations_room_index')->only(['room_index']);
-        $this->middleware('permission:rules_and_regulations_create_room')->only(['create_room']);
-        $this->middleware('permission:rules_and_regulations_store_room')->only(['room_store']);
+        
     }
     /**
      * Display a listing of the resource.
