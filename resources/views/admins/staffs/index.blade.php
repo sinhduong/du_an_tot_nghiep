@@ -66,12 +66,9 @@
 
                                             <tr>
                                                 <th>ID</th>
-                                                <th>Name</th>
-                                                <th>Phone</th>
+                                                <th>Tên</th>
                                                 <th>Email</th>
-                                                <th>Chức vụ</th>
-                                                <th>Ca làm</th>
-                                                <th>Status</th>
+                                                <th>Trạng thái</th>
                                                 <th>Chức năng</th>
                                             </tr>
                                         </thead>
@@ -79,18 +76,10 @@
                                             @foreach ($staffs as $index => $item)
                                                 <tr>
                                                     <td class="token">{{ $item->id }}</td>
-                                                    </td>
                                                     <td><span class="name">{{ $item->user->name }}</span>
                                                     </td>
-                                                    <td class="phone">{{ $item->user->phone }}</td>
                                                     <td class="email">{{ $item->user->email }}</td>
-                                                    <td class="role_id">{{ $item->role->name }}</td>
-                                                    <td class="shift_id">{{ optional($item->shift)->name ?? 'Chưa có ca làm' }}</td>
-                                                    <td class="status">{{ $item->status }}</td>
-                                                    {{-- <td>{{ \Carbon\Carbon::parse($item->birthday)->format('d/m/Y') }}</td> --}}
-                                                    {{-- <td class="active">{{ \App\Helpers\FormatHelper::formatPrice($item->salary) }}</td> --}}
-
-
+                                                    <td class="status">{{ $item->status == 'active' ? "Hoạt động" : "Không hoạt động" }}</td>
                                                     <td>
                                                         <div class="btn-group">
 
@@ -103,25 +92,25 @@
                                                                 <li>
                                                                     <a class="dropdown-item"
                                                                         href="{{ route('admin.staffs.show', $item->id) }}">
-                                                                        <i class="mdi-account-card-details"></i> Detail
+                                                                        <i class="mdi-account-card-details"></i> Chi tiết
                                                                     </a>
                                                                 </li>
                                                                 <li>
                                                                     <a class="dropdown-item"
                                                                         href="{{ route('admin.staffs.edit', $item->id) }}">
-                                                                        <i class="ri-edit-line"></i> Edit
+                                                                        <i class="ri-edit-line"></i> Chỉnh sửa
                                                                     </a>
                                                                 </li>
                                                                 <li>
                                                                     <form
                                                                         action="{{ route('admin.staffs.destroy', $item->id) }}"
                                                                         method="POST"
-                                                                        onsubmit="return confirm('Bạn có muốn xóa mềm không?');">
+                                                                        onsubmit="return confirm('Bạn có muốn xóa không?');">
                                                                         @csrf
                                                                         @method('DELETE')
                                                                         <button type="submit"
                                                                             class="dropdown-item text-danger">
-                                                                            <i class="ri-delete-bin-line"></i> Delete
+                                                                            <i class="ri-delete-bin-line"></i> Xóa
                                                                         </button>
                                                                     </form>
                                                                 </li>
