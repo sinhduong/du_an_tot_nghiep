@@ -338,6 +338,14 @@ Route::prefix('admin')
                 Route::get('{id}/edit', [AdminAccountController::class, 'edit'])->name('edit'); 
                 Route::put('{id}/update', [AdminAccountController::class, 'update'])->name('update'); 
             });
+        
+        Route::prefix('customers') 
+            ->as('customers.') 
+            ->group(function () {
+                Route::get('/', [CustomerController::class, 'index'])->name('index'); 
+                Route::get('{id}/show', [CustomerController::class, 'show'])->name('show'); 
+                Route::put('{id}/update-status', [CustomerController::class, 'updateStatus'])->name('update-status'); 
+            });
 
         Route::resource('promotions', PromotionController::class);
         Route::resource('roles', RoleController::class);
@@ -347,7 +355,6 @@ Route::prefix('admin')
         Route::resource('banners', BannerController::class);
         Route::resource('faqs', FaqController::class);
         Route::resource('payments', PaymentController::class);
-        Route::resource('customers', CustomerController::class);
         Route::resource('sale-room-types', SaleRoomTypeController::class);
     });
 

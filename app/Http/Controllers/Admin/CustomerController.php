@@ -12,7 +12,8 @@ use Illuminate\Http\Request;
 
 class CustomerController extends BaseAdminController
 {
-    public function __construct(){
+    public function __construct()
+    {
         $this->middleware('permission:customers_list')->only(['index']);
         $this->middleware('permission:customers_detail')->only(['show']);
         $this->middleware('permission:customers_create')->only(['create', 'store']);
@@ -71,9 +72,21 @@ class CustomerController extends BaseAdminController
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePaymentRequest $request, Payment $payment)
+    public function update(Request $request, $id) {}
+
+    /**
+     * Update customer status
+     */
+    public function updateStatus(Request $request, $id)
     {
-        //
+        $customer = User::findOrFail($id);
+        $customer->is_active = $request->is_active;
+        $customer->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cập nhật trạng thái thành công'
+        ]);
     }
 
     /**
