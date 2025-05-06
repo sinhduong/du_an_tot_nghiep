@@ -73,9 +73,16 @@ class RoomController extends BaseAdminController
                     ->orderBy('created_at', 'desc');
             }])
 
-                ->withCount(['bookings as booking_count' => function ($query) {
-                    $query->whereIn('status', ['pending_confirmation', 'confirmed', 'paid', 'check_in']);
+                ->withCount(['bookings as booking_count' => function ($query) use ($checkIn, $checkOut) {
+                    $query->whereIn('status', ['pending_confirmation', 'confirmed', 'paid', 'check_in'])
+                        ->when($checkIn && $checkOut, function ($query) use ($checkIn, $checkOut) {
+                            return $query->where(function ($q) use ($checkIn, $checkOut) {
+                                $q->whereDate('check_in', '<', $checkOut)
+                                    ->whereDate('check_out', '>', $checkIn);
+                            });
+                        });
                 }])
+
                 ->whereNull('deleted_at')
                 ->when($roomNumber, function ($query, $roomNumber) {
                     return $query->where('room_number', 'like', "%{$roomNumber}%");
