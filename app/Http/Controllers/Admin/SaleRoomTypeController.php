@@ -7,8 +7,16 @@ use App\Models\SaleRoomType;
 use App\Http\Requests\SaleRoomTypeRequest;
 use App\Http\Controllers\Controller;
 
-class SaleRoomTypeController extends Controller
+class SaleRoomTypeController extends BaseAdminController
 {
+    public function __construct()
+    {
+        $this->middleware('permission:sale_room_types_list')->only(['index']);
+        $this->middleware('permission:sale_room_types_create')->only(['create', 'store']);
+        $this->middleware('permission:sale_room_types_detail')->only(['show']);
+        $this->middleware('permission:sale_room_types_update')->only(['edit', 'update']);
+        $this->middleware('permission:sale_room_types_delete')->only(['destroy']);
+    }
     public function index()
     {
         // Lấy tất cả các bản ghi SaleRoomType và nhóm theo name để hiển thị nhiều loại phòng

@@ -7,8 +7,15 @@ use App\Http\Requests\StorePolicyRequest;
 use App\Http\Requests\UpdatePolicyRequest;
 use App\Models\Policy;
 
-class PolicyController extends Controller
+class PolicyController extends BaseAdminController
 {
+    public function __construct()
+    {
+        $this->middleware('permission:policies_list')->only(['index']);
+        $this->middleware('permission:policies_create')->only(['create', 'store']);
+        $this->middleware('permission:policies_update')->only(['edit', 'update']);
+        $this->middleware('permission:policies_delete')->only(['destroy']);
+    }
     /**
      * Display a listing of the resource.
      */

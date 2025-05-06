@@ -5056,6 +5056,7 @@ h5.lh-blog-details-heding {
   margin: 12px 0;
   position: relative;
   overflow: hidden;
+  min-height: 220px;
 }
 .section-rooms .rooms-card:hover img {
   -webkit-transform: rotate(-3deg) scale(1.1);

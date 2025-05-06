@@ -7,8 +7,13 @@ use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
 use App\Models\Payment;
 
-class PaymentController extends Controller
+class PaymentController extends BaseAdminController
 {
+    public function __construct()
+    {
+        $this->middleware('permission:payments_list')->only(['index']);
+        $this->middleware('permission:payments_detail')->only(['show']);
+    }
     /**
      * Display a listing of the resource.
      */

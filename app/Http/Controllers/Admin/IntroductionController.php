@@ -7,8 +7,16 @@ use App\Models\Introduction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class IntroductionController extends Controller
+class IntroductionController extends BaseAdminController
 {
+    public function __construct()
+    {
+        $this->middleware('permission:introductions_list')->only(['index']);
+        $this->middleware('permission:introductions_create')->only(['create', 'store']);
+        $this->middleware('permission:introductions_update')->only(['edit', 'update']);
+        $this->middleware('permission:introductions_delete')->only(['destroy']);
+    }
+    
     public function index()
     {
         $introductions = Introduction::latest()->paginate(10);

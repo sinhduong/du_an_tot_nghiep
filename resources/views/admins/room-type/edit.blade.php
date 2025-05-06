@@ -128,7 +128,7 @@
                                 @forelse ($roomType->roomTypeImages as $image)
                                     <div class="image-container" data-image-id="{{ $image->id }}" style="width: 120px;">
                                         <img src="{{ asset('storage/' . $image->image) }}" class="img-thumbnail"
-                                             style="height: 100px; object-fit: cover;" alt="Room Image">
+                                             style="height: 100px; object-fit: cover;" alt="Ảnh phòng">
                                         <div class="mt-1 text-center">
                                             <button type="button" class="btn btn-sm btn-danger delete-image px-1"
                                                     data-image-id="{{ $image->id }}">

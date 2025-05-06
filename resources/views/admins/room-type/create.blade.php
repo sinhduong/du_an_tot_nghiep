@@ -12,7 +12,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="lh-tools d-flex gap-2">
+            <!-- <div class="lh-tools d-flex gap-2">
                 <button class="btn btn-link p-0" title="Refresh"><i class="ri-refresh-line"></i></button>
                 <div class="lh-date-range" title="Date"><span></span></div>
                 <div class="dropdown" title="Filter">
@@ -25,7 +25,7 @@
                         <li><a class="dropdown-item" href="#">Expence</a></li>
                     </ul>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <div class="lh-card">

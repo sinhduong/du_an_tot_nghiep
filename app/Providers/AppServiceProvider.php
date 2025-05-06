@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Banner;
 use App\Models\System;
 
 use Illuminate\Support\Carbon;
@@ -25,7 +26,8 @@ class AppServiceProvider extends ServiceProvider
         // Tự động truyền $systems vào tất cả các view trong thư mục 'clients'
         View::composer('clients.*', function ($view) {
             $systems = System::orderBy('id', 'desc')->first() ?? (object) ['logo' => null];
-            $view->with('systems', $systems);
+            $banner = Banner::where('is_use', 1)->first();
+            $view->with(compact('banner', 'systems'));
         });
     }
 }

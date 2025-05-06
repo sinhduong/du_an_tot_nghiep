@@ -1,0 +1,36 @@
+<?php
+
+return [
+    'section' => [
+        'about' => 'Về chúng tôi',
+        'introduction' => 'Giới thiệu',
+        'banner' => 'Banner',
+        'system' => 'Hệ thống',
+        'contact' => 'Liên hệ',
+        'booking' => 'Đặt phòng',
+        'room' => 'Phòng',
+        'service' => 'Dịch vụ',
+        'user' => 'Người dùng',
+        'report' => 'Báo cáo',
+        'setting' => 'Cài đặt',
+        'room_type' => 'Loại phòng',
+        'amenity' => 'Tiện ích',
+        'promotion' => 'Khuyến mãi',
+        'role' => 'Vai trò',
+        'faq' => 'Hỏi đáp',
+        'review' => 'Đánh giá',
+        'rules_and_regulation' => 'Quy định và điều khoản',
+        'staff' => 'Nhân viên',
+        'staff_role' => 'Vai trò nhân viên',
+        'staff_shift' => 'Ca làm việc',
+        'sale_room_type' => 'Loại giảm giá phòng',
+        'payment' => 'Thanh toán',
+        'dashboard' => 'Bảng điều khiển',
+        'customer' => 'Khách hàng',
+        'payment_setting' => 'Cài đặt đặt cọc',
+        'refund_policy' => 'Chính sách hoàn trả',
+        'service_plus' => 'Dịch vụ phát sinh',
+        'policy' => 'Chính sách',
+        'admin_account' => 'Tài khoản quản trị viên',
+    ]
+];

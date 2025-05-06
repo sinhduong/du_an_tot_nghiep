@@ -9,8 +9,15 @@ use App\Models\Faq;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-class FaqController extends Controller
+class FaqController extends BaseAdminController
 {
+    public function __construct()
+    {
+        $this->middleware('permission:faqs_list')->only(['index']);
+        $this->middleware('permission:faqs_create')->only(['create', 'store']);
+        $this->middleware('permission:faqs_update')->only(['edit', 'update']);
+        $this->middleware('permission:faqs_delete')->only(['destroy']);
+    }
     /**
      * Display a listing of the resource.
      */

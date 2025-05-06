@@ -27,25 +27,25 @@
                                 <div class="counter-item">
                                     <label>Người lớn</label>
                                     <div class="counter-controls">
-                                        <button type="button" class="counter-btn minus" data-target="total_guests">-</button>
+                                        <button type="button" class="counter-btn minus" data-target="total_guests" data-max="{{ $maxCapacity ?? 4 }}">-</button>
                                         <input type="text" name="total_guests" class="counter-input" value="{{ $totalGuests ?? 2 }}" readonly>
-                                        <button type="button" class="counter-btn plus" data-target="total_guests">+</button>
+                                        <button type="button" class="counter-btn plus" data-target="total_guests" data-max="{{ $maxCapacity ?? 4 }}">+</button>
                                     </div>
                                 </div>
                                 <div class="counter-item">
                                     <label>Trẻ em</label>
                                     <div class="counter-controls">
-                                        <button type="button" class="counter-btn minus" data-target="children_count">-</button>
+                                        <button type="button" class="counter-btn minus" data-target="children_count" data-max="{{ $maxChildrenLimit ?? 2 }}">-</button>
                                         <input type="text" name="children_count" class="counter-input" value="{{ $childrenCount ?? 0 }}" readonly>
-                                        <button type="button" class="counter-btn plus" data-target="children_count">+</button>
+                                        <button type="button" class="counter-btn plus" data-target="children_count" data-max="{{ $maxChildrenLimit ?? 2 }}">+</button>
                                     </div>
                                 </div>
                                 <div class="counter-item">
                                     <label>Phòng</label>
                                     <div class="counter-controls">
-                                        <button type="button" class="counter-btn minus" data-target="room_count">-</button>
+                                        <button type="button" class="counter-btn minus" data-target="room_count" data-max="{{ $totalAvailableRooms ?? 10 }}">-</button>
                                         <input type="text" name="room_count" class="counter-input" value="{{ $roomCount ?? 1 }}" readonly>
-                                        <button type="button" class="counter-btn plus" data-target="room_count">+</button>
+                                        <button type="button" class="counter-btn plus" data-target="room_count" data-max="{{ $totalAvailableRooms ?? 10 }}">+</button>
                                     </div>
                                 </div>
                                 <small class="note">
@@ -88,8 +88,29 @@
     .counter-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
     .counter-item label { font-size: 14px; font-weight: 500; color: #333; }
     .counter-controls { display: flex; align-items: center; }
-    .counter-btn { width: 30px; height: 30px; border: 1px solid #ddd; background: #f5f5f5; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 16px; color: #666; border-radius: 5px; transition: background 0.3s; }
-    .counter-btn:hover { background: #e0e0e0; }
+    .counter-btn {
+        width: 30px;
+        height: 30px;
+        border: 1px solid #ddd;
+        background: #f8f9fa;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    .counter-btn:disabled {
+        background: #e9ecef;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+    .counter-btn:disabled::after {
+        content: "🚫";
+        position: absolute;
+        font-size: 12px;
+        top: -5px;
+        right: -5px;
+    }
     .counter-input { width: 40px; text-align: center; border: 1px solid #ddd; margin: 0 5px; padding: 5px; font-size: 14px; border-radius: 5px; background: #fff; }
     .note { display: block; font-size: 12px; color: #666; margin-top: 5px; }
     .note a { color: #007bff; text-decoration: none; }
@@ -206,17 +227,39 @@ document.addEventListener('DOMContentLoaded', function () {
             const target = this.getAttribute('data-target');
             const input = document.querySelector(`input[name="${target}"]`);
             let value = parseInt(input.value);
-
+            const max = parseInt(this.getAttribute('data-max'));
+            
             if (this.classList.contains('plus')) {
-                value++;
-            } else if (this.classList.contains('minus') && value > (target === 'children_count' ? 0 : 1)) {
+                if (value < max) {
+                    value++;
+                }
+            } else if (value > 0) {
                 value--;
             }
-
+            
             input.value = value;
             counterSummary.value = `${document.querySelector('input[name="total_guests"]').value} người lớn - ${document.querySelector('input[name="children_count"]').value} trẻ em - ${document.querySelector('input[name="room_count"]').value} phòng`;
+            updateButtonStates();
         });
     });
+
+    function updateButtonStates() {
+        document.querySelectorAll('.counter-btn').forEach(button => {
+            const target = button.getAttribute('data-target');
+            const input = document.querySelector(`input[name="${target}"]`);
+            const value = parseInt(input.value);
+            const max = parseInt(button.getAttribute('data-max'));
+            
+            if (button.classList.contains('plus')) {
+                button.disabled = value >= max;
+            } else {
+                button.disabled = value <= 0;
+            }
+        });
+    }
+
+    // Call updateButtonStates initially
+    updateButtonStates();
 
     document.addEventListener('click', function(event) {
         if (!counterSummary.contains(event.target) && !counterDropdown.contains(event.target)) {

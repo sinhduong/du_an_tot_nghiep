@@ -8,8 +8,16 @@ use App\Http\Requests\UpdateBannerRequest;
 use App\Models\Banner;
 use Illuminate\Support\Facades\Storage;
 
-class BannerController extends Controller
+class BannerController extends BaseAdminController
 {
+    public function __construct()
+    {
+        $this->middleware('permission:banners_list')->only(['index']);
+        $this->middleware('permission:banners_create')->only(['create', 'store']);
+        $this->middleware('permission:banners_update')->only(['edit', 'update']);
+        $this->middleware('permission:banners_delete')->only(['destroy']);
+    }
+    
     /**
      * Display a listing of the resource.
      */

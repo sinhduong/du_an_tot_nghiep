@@ -1,4 +1,4 @@
-<footer>
+    <footer>
     <div class="container">
         <div class="footer-top-section">
             <div class="row">
@@ -32,7 +32,7 @@
                         <div class="footer-logos">
                             <img src="{{ $systems->logo ? asset('storage/' . $systems->logo) : asset('assets/client/assets/img/logo/logo-2.png') }}" alt="Logo" class="lh-logo">
                         </div>
-                        <div class="lh-footer-social">
+                        {{-- <div class="lh-footer-social">
                             <p>Đặt phòng khách sạn dễ dàng, nhanh chóng cùng dịch vụ chuyên nghiệp và nhiều ưu đãi hấp dẫn!</p>
                             <form class="lh-control-footer" role="search">
                                 <div class="lh-control-inner-icons">
@@ -40,7 +40,7 @@
                                 </div>
                                 <input class="form-control shadow-none me-4" type="email" placeholder="Đăng ký nhận ưu đãi..." aria-label="Subscribe">
                             </form>
-                        </div>
+                        </div> --}}
                         <div class="lh-follow-social">
                             <h4 class="heading">Theo dõi chúng tôi</h4>
                             <div class="footer-logo-image">
@@ -67,11 +67,11 @@
                                 </li>
                                 <li class="lh-information">
                                     <h5 class="heading">Email</h5>
-                                    <span>hotro@luxurioushotel.vn</span>
+                                    <span>sinhduong1508@gmail.com</span>
                                 </li>
                                 <li class="lh-information">
-                                    <h5 class="heading">Hotline</h5>
-                                    <span>+84 33 1234 567</span>
+                                    <h5 class="heading">Số điện thoại</h5>
+                                    <span>+84 865642497</span>
                                 </li>
                             </ul>
                         </div>
@@ -80,7 +80,7 @@
             </div>
         </div>
         <div class="footer-bottom-copy">
-            <span>Bản quyền © <span id="copyright_year"></span> <a href="{{route('home')}}">Luxurious Hotel</a>. Mọi quyền được bảo lưu.</span>
+            <span>Bản quyền © <span id="copyright_year"></span> <a href="{{route('home')}}">Luxurious Hotel</a> thuộc về ước mơ ra trường.</span>
         </div>
     </div>
 </footer>

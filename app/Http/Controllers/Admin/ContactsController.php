@@ -7,8 +7,14 @@ use App\Models\Contacts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
-class ContactsController extends Controller
+class ContactsController extends BaseAdminController
 {
+    public function __construct()
+    {
+        $this->middleware('permission:contacts_list')->only(['index']);
+        $this->middleware('permission:contacts_detail')->only(['show']);
+        $this->middleware('permission:contacts_reply')->only(['reply']);
+    }
     public function index()
     {
         $contacts = Contacts::latest()->paginate(10);

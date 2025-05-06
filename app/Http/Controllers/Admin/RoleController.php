@@ -8,15 +8,15 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-class RoleController extends Controller
+class RoleController extends BaseAdminController
 {
     public function __construct()
     {
-//        $this->middleware('permission:list_role')->only(['index']);
-//        $this->middleware('permission:create_role')->only(['create', 'store']);
-//        $this->middleware('permission:show_role')->only(['show']);
-//        $this->middleware('permission:update_role')->only(['edit', 'update']);
-//        $this->middleware('permission:destroy_role')->only(['destroy']);
+       $this->middleware('permission:roles_list')->only(['index']);
+       $this->middleware('permission:roles_create')->only(['create', 'store']);
+       $this->middleware('permission:roles_detail')->only(['show']);
+       $this->middleware('permission:roles_update')->only(['edit', 'update']);
+       $this->middleware('permission:roles_delete')->only(['destroy']);
     }
     /**
      * Display a listing of the resource.
@@ -72,7 +72,7 @@ class RoleController extends Controller
     public function edit(string $id)
     {
         $role = Role::findOrFail($id);
-        $permission_groups = Permission::get()->groupBy('guard_name');
+        $permission_groups = Permission::get()->groupBy('section');
         return view('admins.roles.form', compact('role', 'permission_groups'));
     }
 

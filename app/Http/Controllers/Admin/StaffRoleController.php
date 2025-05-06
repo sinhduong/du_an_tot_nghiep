@@ -5,8 +5,15 @@ use App\Http\Controllers\Controller;
 use App\Models\StaffRole;
 use Illuminate\Http\Request;
 
-class StaffRoleController extends Controller
+class StaffRoleController extends BaseAdminController
 {
+    public function __construct()
+    {
+        $this->middleware('permission:staff_roles_list')->only(['index']);
+        $this->middleware('permission:staff_roles_create')->only(['create', 'store']);
+        $this->middleware('permission:staff_roles_update')->only(['edit', 'update']);
+        $this->middleware('permission:staff_roles_delete')->only(['destroy']);
+    }
     public function index()
     {
         $roles = StaffRole::all();

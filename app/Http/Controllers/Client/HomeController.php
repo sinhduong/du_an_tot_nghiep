@@ -23,6 +23,7 @@ use App\Helpers\FormatHelper;
 use App\Models\RulesAndRegulation;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Policy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
@@ -57,7 +58,8 @@ class HomeController extends Controller
                     })
                     ->whereNotIn('status', ['cancelled', 'cancelled_without_refund', 'refunded', 'check_out']);
             })
-            ->count();
+            ->sum('room_quantity');
+        // dd($bookedRooms);
 
         Log::info("Booked rooms for {$roomType->name}: {$bookedRooms}, Check-in: {$checkInDate}, Check-out: {$checkOutDate}");
 
@@ -75,7 +77,7 @@ class HomeController extends Controller
         $totalGuests = (int) $request->input('total_guests', 2);
         $childrenCount = (int) $request->input('children_count', 0);
         $roomCount = (int) $request->input('room_count', 1);
-// dd( $checkOut );
+        // dd( $checkOut );
         try {
             $checkInDate = Carbon::parse($checkIn);
             $checkOutDate = Carbon::parse($checkOut);
@@ -170,7 +172,30 @@ class HomeController extends Controller
             ->where('end_date', '>=', now())
             ->get();
 
-        return view('clients.home', compact('roomTypes', 'checkIn', 'checkOut', 'totalGuests', 'childrenCount', 'roomCount', 'formattedDateRange', 'nights', 'promotions','systems'));
+        // Thêm code mới để tính toán giới hạn
+        $maxCapacity = $roomTypes->max('max_capacity') ?? 4;
+        $maxChildrenLimit = $roomTypes->max('children_free_limit') ?? 2;
+        $totalAvailableRooms = 0;
+        foreach ($roomTypes as $roomType) {
+            $availableRooms = $this->calculateAvailableRooms($roomType, $checkInDate, $checkOutDate);
+            $totalAvailableRooms += $availableRooms;
+        }
+
+        return view('clients.home', compact(
+            'roomTypes',
+            'checkIn',
+            'checkOut',
+            'totalGuests',
+            'childrenCount',
+            'roomCount',
+            'formattedDateRange',
+            'nights',
+            'promotions',
+            'systems',
+            'maxCapacity',
+            'maxChildrenLimit',
+            'totalAvailableRooms'
+        ));
     }
 
     private function calculateDiscountedPrice($originalPrice, $saleRoomType, $nights, $roomCount)
@@ -286,9 +311,8 @@ class HomeController extends Controller
     }
     public function faqs()
     {
-        $systems = System::orderBy('id', 'desc')->first();
         $faqs = Faq::where('is_active', 1)->get();
-        return view('clients.faq', compact('faqs', 'systems'));
+        return view('clients.faq', compact('faqs'));
     }
 
     public function services()
@@ -296,6 +320,12 @@ class HomeController extends Controller
         $systems = System::orderBy('id', 'desc')->first();
         $services = Service::where('is_active', 1)->get();
         return view('clients.service', compact('services', 'systems'));
+    }
+
+    public function policies()
+    {
+        $policies = Policy::where('is_use', 1)->get();
+        return view('clients.policies', compact('policies'));        
     }
 
     public function contacts()

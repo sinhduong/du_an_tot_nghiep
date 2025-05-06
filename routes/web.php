@@ -27,12 +27,16 @@ use App\Http\Controllers\Admin\ServicePlusController;
 use App\Http\Controllers\Admin\IntroductionController;
 use App\Http\Controllers\Admin\PaymentSettingController;
 use App\Http\Controllers\Admin\RefundController;
+use App\Http\Controllers\Admin\RefundPolicyController;
 use App\Http\Controllers\Admin\SaleRoomTypeController;
 use App\Http\Controllers\Admin\StaffAttendanceController;
 use App\Http\Controllers\Admin\RoomTypePromotionController;
 use App\Http\Controllers\Admin\RulesAndRegulationController;
 use App\Http\Controllers\Client\BookingController as ClientBookingController;
 use App\Http\Controllers\Client\RefundController as ClientRefundController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Admin\AdminAccountController;
 
 // client
 
@@ -59,6 +63,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/home')->with('verified', true);
+})->middleware(['signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('status', 'verification-link-sent');
+})->middleware(['throttle:6,1'])->name('verification.send');
+
 require __DIR__ . '/auth.php';
 
 
@@ -66,7 +84,7 @@ require __DIR__ . '/auth.php';
 Route::prefix('admin')
 
     ->as('admin.')
-    ->middleware('auth')
+    ->middleware('auth', 'verified', 'role:superadmin|admin|staff')
     ->group(function () {
 
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -145,6 +163,17 @@ Route::prefix('admin')
                 Route::get('/{refund}/approve', [RefundController::class, 'showApproveForm'])->name('approve-form');
                 Route::post('/{refund}/approve', [RefundController::class, 'approveRefund'])->name('approve');
                 Route::get('/{refund}/details', [RefundController::class, 'getRefundDetails'])->name('details');
+            });
+
+        Route::prefix('refund-policies')
+            ->as('refund-policies.')
+            ->group(function () {
+                Route::get('/', [RefundPolicyController::class, 'index'])->name('index');
+                Route::get('/create', [RefundPolicyController::class, 'create'])->name('create');
+                Route::post('/store', [RefundPolicyController::class, 'store'])->name('store');
+                Route::get('{id}/edit', [RefundPolicyController::class, 'edit'])->name('edit');
+                Route::put('{id}/update', [RefundPolicyController::class, 'update'])->name('update');
+                Route::delete('{id}/destroy', [RefundPolicyController::class, 'destroy'])->name('destroy');
             });
 
 
@@ -302,6 +331,14 @@ Route::prefix('admin')
                 Route::delete('{id}/destroy', [ServicePlusController::class, 'destroy'])->name('destroy'); // Xóa loại phòng
             });
 
+         Route::prefix('admin_accounts') 
+            ->as('admin_accounts.') 
+            ->group(function () {
+                Route::get('/', [AdminAccountController::class, 'index'])->name('index'); 
+                Route::get('{id}/edit', [AdminAccountController::class, 'edit'])->name('edit'); 
+                Route::put('{id}/update', [AdminAccountController::class, 'update'])->name('update'); 
+            });
+
         Route::resource('promotions', PromotionController::class);
         Route::resource('roles', RoleController::class);
         Route::resource('abouts', AboutController::class);
@@ -325,6 +362,7 @@ Route::get('/room', [HomeController::class, 'room_view'])->name('room.view');
 
 Route::get('/cau-hoi-thuong-gap', [HomeController::class, 'faqs'])->name('faqs');
 Route::get('/dich-vu', [HomeController::class, 'services'])->name('services');
+Route::get('/chinh-sach', [HomeController::class, 'policies'])->name('policies');
 Route::get('/gioi-thieu', [HomeController::class, 'introductions'])->name('introductions');
 // Route::post('/sendmail', [HomeController::class, 'sendmail']);
 Route::get('/lien-he-voi-chung-toi', [HomeController::class, 'contacts'])->name('contacts');

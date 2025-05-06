@@ -12,8 +12,19 @@ use App\Models\StaffShift;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class StaffController extends Controller
+class StaffController extends BaseAdminController
 {
+    public function __construct()
+    {
+        $this->middleware('permission:staffs_list')->only(['index']);
+        $this->middleware('permission:staffs_create')->only(['create', 'store']);
+        $this->middleware('permission:staffs_detail')->only(['show']);
+        $this->middleware('permission:staffs_update')->only(['edit', 'update']);
+        $this->middleware('permission:staffs_delete')->only(['destroy']);
+        $this->middleware('permission:staffs_trashed')->only(['trashed']);
+        $this->middleware('permission:staffs_restore')->only(['restore']);
+        $this->middleware('permission:staffs_force_delete')->only(['forceDelete']);
+    }
     /**
      * Display a listing of the resource.
      */

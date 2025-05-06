@@ -51,22 +51,22 @@
                                     <div class="col-12">
                                         <div class="row">
                                             <div class="col-12">
-                                                <div class="form-check">
+                                                <div class="form-check p-0">
                                                     <input class="form-check-input checkall" type="checkbox" id="selectAll">
                                                     <label class="form-check-label" for="selectAll">Chọn tất cả</label>
                                                 </div>
                                             </div>
                                             @foreach ($permission_groups as $groupIndex => $permission_group)
-                                                <div class="col-12 mt-3">
-                                                    <div class="form-check">
+                                                <div class="col-12 mt-3 permission-group">
+                                                    <div class="form-check group-header ">
                                                         <input class="form-check-input checkall-group" type="checkbox" data-group="{{ $groupIndex }}" id="group{{ $groupIndex }}">
-                                                        <label class="form-check-label" for="group{{ $groupIndex }}">{{ $permission_group[0]['guard_name'] }} - Tất cả</label>
+                                                        <label class="form-check-label" for="group{{ $groupIndex }}">{{ __('permissions.section.' . $permission_group[0]['section']) }} - Tất cả</label>
                                                     </div>
-                                                    <div class="mt-2 ms-4">
+                                                    <div class="permission-items mt-2 ms-4">
                                                         @foreach ($permission_group as $permission)
-                                                            <div class="form-check">
+                                                            <div class="form-check permission-item">
                                                                 <input class="form-check-input check-it" type="checkbox" name="permissions[]" value="{{ $permission->id }}" data-group="{{ $groupIndex }}" id="perm{{ $permission->id }}" {{ isset($role) && $role->permissions->contains('id', $permission->id) ? 'checked' : '' }}>
-                                                                <label class="form-check-label" for="perm{{ $permission->id }}">{{ $permission->name }}</label>
+                                                                <label class="form-check-label" for="perm{{ $permission->id }}">{{__($permission->name)}}</label>
                                                             </div>
                                                         @endforeach
                                                     </div>
@@ -86,6 +86,66 @@
             </div>
         </div>
     </div>
+    <style>
+        .permission-group {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .group-header {
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 10px;
+        }
+        
+        .group-header .form-check-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .permission-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 10px;
+        }
+        
+        .permission-item {
+            padding: 5px;
+            background: white;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        
+        .permission-item:hover {
+            background: #f1f3f5;
+        }
+        
+        .permission-item .form-check-label {
+            color: #6c757d;
+        }
+        
+        .form-check-input:checked + .form-check-label {
+            color: #0d6efd;
+        }
+        
+        .form-check-input {
+            cursor: pointer;
+            padding: 8px !important;
+        }
+        
+        .form-check-input:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        .form-check .form-check-input{
+            margin-left: 0 !important;
+            float: unset !important;
+        }
+    </style>
     <script>
         document.getElementById('selectAll').addEventListener('change', function () {
             document.querySelectorAll('.check-it, .checkall-group').forEach(checkbox => {

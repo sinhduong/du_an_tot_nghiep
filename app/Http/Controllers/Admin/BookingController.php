@@ -17,19 +17,21 @@ use App\Http\Requests\UpdatebookingRequest;
 use App\Mail\PaymentSuccess;
 use Illuminate\Support\Facades\Mail;
 
-class BookingController extends Controller
+class BookingController extends BaseAdminController
 {
-    // public function __construct()
-    // {
-    //     // Gán middleware để kiểm soát quyền truy cập cho các phương thức
-    //     $this->middleware('middleware:permission:booking_list')->only(['index']);
-    //     $this->middleware('middleware:permission:bookings_create')->only(['create', 'store']);
-    //     $this->middleware('middleware:permission:bookings_detail')->only(['show']);
-    //     $this->middleware('middleware:permission:bookings_update')->only(['edit', 'update']);
-    //     $this->middleware('middleware:permission:bookings_delete')->only(['destroy']);
-    //     $this->middleware('middleware:permission:bookings_checkin')->only(['storeCheckIn']);
-    //     $this->middleware('middleware:permission:bookings_service_plus')->only(['updateServicePlus']);
-    // }
+    public function __construct()
+    {
+        // Gán middleware để kiểm soát quyền truy cập cho các phương thức
+        $this->middleware('permission:bookings_list')->only(['index']);
+        $this->middleware('permission:bookings_create')->only(['create', 'store']);
+        $this->middleware('permission:bookings_detail')->only(['show']);
+        $this->middleware('permission:bookings_update')->only(['edit', 'update']);
+        $this->middleware('permission:bookings_delete')->only(['destroy']);
+        $this->middleware('permission:bookings_checkin')->only(['storeCheckIn']);
+        $this->middleware('permission:bookings_service_plus')->only(['updateServicePlus']);
+
+
+    }
     public function index(Request $request)
     {
         $title = 'Đơn đặt phòng mới nhất';
@@ -101,6 +103,23 @@ class BookingController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Không thể check-in: Đặt phòng chưa ở trạng thái "Đã thanh toán". Vui lòng kiểm tra lại trạng thái thanh toán.'
+                ], 400);
+            }
+
+            // Kiểm tra thời gian check-in phải sau 14h ngày check-in
+            $checkInDate = Carbon::parse($booking->check_in);
+            $currentTime = Carbon::now();
+            $checkInTime = $checkInDate->copy()->setTime(14, 0, 0);
+
+            if ($currentTime->lt($checkInTime)) {
+                Log::info('Check-in time not allowed', [
+                    'booking_id' => $request->booking_id,
+                    'current_time' => $currentTime,
+                    'required_check_in_time' => $checkInTime
+                ]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không thể check-in: Chỉ được phép check-in sau 14:00 ngày ' . $checkInDate->format('d/m/Y')
                 ], 400);
             }
 
@@ -204,6 +223,17 @@ class BookingController extends Controller
                             throw new \Exception("Không tìm thấy dịch vụ bổ sung!");
                         }
 
+                        // Tính toán tổng phí dịch vụ phát sinh
+                        $servicePrice = $servicePlus->price * $quantity;
+                        $currentServiceTotal = $booking->service_plus_total ?? 0;
+                        $newServiceTotal = $currentServiceTotal + $servicePrice;
+
+                        // Cập nhật service_plus_total và total_price
+                        $booking->update([
+                            'service_plus_total' => $newServiceTotal,
+                            'total_price' => $booking->total_price + $servicePrice
+                        ]);
+
                         DB::commit();
 
                         Log::info("ServicePlus {$servicePlusId} added to booking {$id} successfully");
@@ -233,12 +263,37 @@ class BookingController extends Controller
                     ]);
 
                     try {
+                        // Kiểm tra trạng thái thanh toán
+                        if ($booking->service_plus_status === 'paid') {
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'Không thể cập nhật số lượng vì dịch vụ phát sinh đã thanh toán!'
+                            ], 400);
+                        }
+
                         DB::beginTransaction();
                         $servicePlusId = $request->input('service_plus_id');
-                        $quantity = $request->input('quantity');
+                        $newQuantity = $request->input('quantity');
 
-                        $booking->servicePlus()->updateExistingPivot($servicePlusId, ['quantity' => $quantity]);
+                        // Lấy thông tin dịch vụ và số lượng hiện tại
                         $servicePlus = ServicePlus::find($servicePlusId);
+                        $currentPivot = $booking->servicePlus()->where('service_plus_id', $servicePlusId)->first();
+                        $oldQuantity = $currentPivot->pivot->quantity;
+
+                        // Tính toán chênh lệch giá
+                        $oldPrice = $servicePlus->price * $oldQuantity;
+                        $newPrice = $servicePlus->price * $newQuantity;
+                        $priceDifference = $newPrice - $oldPrice;
+
+                        // Cập nhật số lượng mới
+                        $booking->servicePlus()->updateExistingPivot($servicePlusId, ['quantity' => $newQuantity]);
+
+                        // Cập nhật tổng phí dịch vụ và tổng giá
+                        $booking->update([
+                            'service_plus_total' => $booking->service_plus_total + $priceDifference,
+                            'total_price' => $booking->total_price + $priceDifference
+                        ]);
+
                         DB::commit();
 
                         return response()->json([
@@ -246,7 +301,8 @@ class BookingController extends Controller
                             'message' => 'Cập nhật số lượng thành công!',
                             'data' => [
                                 'id' => $servicePlus->id,
-                                'quantity' => $quantity,
+                                'quantity' => $newQuantity,
+                                'price_difference' => $priceDifference
                             ]
                         ]);
                     } catch (\Exception $e) {
@@ -262,12 +318,43 @@ class BookingController extends Controller
                     ]);
 
                     try {
+                        // Kiểm tra trạng thái thanh toán
+                        if ($booking->service_plus_status === 'paid') {
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'Không thể xóa dịch vụ vì dịch vụ phát sinh đã thanh toán!'
+                            ], 400);
+                        }
+
                         DB::beginTransaction();
                         $servicePlusId = $request->input('service_plus_id');
+
+                        // Lấy thông tin dịch vụ và số lượng hiện tại
+                        $servicePlus = ServicePlus::find($servicePlusId);
+                        $currentPivot = $booking->servicePlus()->where('service_plus_id', $servicePlusId)->first();
+                        $oldQuantity = $currentPivot->pivot->quantity;
+
+                        // Tính giá trị dịch vụ cần xóa
+                        $removedPrice = $servicePlus->price * $oldQuantity;
+
+                        // Xóa dịch vụ
                         $booking->servicePlus()->detach($servicePlusId);
+
+                        // Cập nhật tổng phí dịch vụ và tổng giá
+                        $booking->update([
+                            'service_plus_total' => $booking->service_plus_total - $removedPrice,
+                            'total_price' => $booking->total_price - $removedPrice
+                        ]);
+
                         DB::commit();
 
-                        return response()->json(['success' => true, 'message' => 'Xóa dịch vụ thành công!']);
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Xóa dịch vụ thành công!',
+                            'data' => [
+                                'removed_price' => $removedPrice
+                            ]
+                        ]);
                     } catch (\Exception $e) {
                         DB::rollBack();
                         return response()->json(['success' => false, 'message' => 'Lỗi: ' . $e->getMessage()], 500);
@@ -288,7 +375,11 @@ class BookingController extends Controller
                             return response()->json(['success' => false, 'message' => 'Không thể thay đổi trạng thái đã thanh toán!'], 400);
                         }
 
-                        $booking->update(['service_plus_status' => $newStatus]);
+                        $booking->update(
+                            ['service_plus_status' => $newStatus],
+                            ['paid_amount' => $booking->total_price]
+                        );
+
                         DB::commit();
                         return response()->json(['success' => true, 'message' => 'Cập nhật trạng thái thành công!']);
                     } catch (\Exception $e) {
@@ -399,9 +490,6 @@ class BookingController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
-
-
-
 
     /**
      * Remove the specified resource from storage.

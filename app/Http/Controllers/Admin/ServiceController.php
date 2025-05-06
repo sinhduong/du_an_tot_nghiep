@@ -11,8 +11,20 @@ use App\Http\Requests\ServiceRequest;
 use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
 
-class ServiceController extends Controller
+class ServiceController extends BaseAdminController
 {
+    public function __construct()
+    {
+        $this->middleware('permission:services_list')->only(['index']);//
+        $this->middleware('permission:services_create')->only(['create', 'store']);//
+        $this->middleware('permission:services_detail')->only(['show']);
+        $this->middleware('permission:services_update')->only(['edit', 'update']);
+        $this->middleware('permission:services_delete')->only(['destroy']);//
+        $this->middleware('permission:services_trashed')->only(['trashed']);
+        $this->middleware('permission:services_restore')->only(['restore']);
+        $this->middleware('permission:services_force_delete')->only(['forceDelete']);
+    }
+
     public function index()
     {
         $title = 'Danh sách dịch vụ';
