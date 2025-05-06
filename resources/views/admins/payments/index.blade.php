@@ -58,7 +58,6 @@
                                         <th>Số tiền</th>
                                         <th>Trạng thái</th>
                                         <th>Mã giao dịch</th>
-                                        <th>Thông tin đặt lịch</th>
                                         <th>Ngày tạo</th>
                                         <th>Hành động</th>
                                     </tr>
@@ -76,7 +75,6 @@
                                                     </span>
                                             </td>
                                             <td>{{ $payment->transaction_id ?? 'N/A' }}</td>
-                                            <td><a class="text-decoration-underline" href="{{ route('admin.bookings.show', $payment->booking_id) }}">Xem chi tiết</a></td>
                                             <td>{{ $payment->created_at ? $payment->created_at->diffForHumans() : 'Không có ngày' }}</td>
                                             <td>
                                                 <div class="btn-group">
@@ -85,7 +83,7 @@
                                                     </button>
                                                     <ul class="dropdown-menu">
                                                         <li>
-                                                            <a class="dropdown-item" href="{{ route('admin.payments.show', $payment->id) }}">
+                                                            <a class="dropdown-item" href="{{ route('admin.bookings.show', $payment->booking_id) }}">
                                                                 <i class="ri-eye-line"></i> Xem chi tiết
                                                             </a>
                                                         </li>

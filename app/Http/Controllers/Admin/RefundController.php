@@ -16,10 +16,11 @@ class RefundController extends BaseAdminController
         return view('admins.refunds.approve-form', compact('refund'));
     }
 
-    public function approveRefund(Request $request, Refund $refund)
+    public function approveRefund(Request $request, $id)
     {
         try {
             DB::beginTransaction();
+            $refund = Refund::find($id);
 
             if ($refund->status !== 'pending') {
                 return redirect()->back()->with('error', 'Yêu cầu hoàn tiền không ở trạng thái chờ phê duyệt.');
@@ -33,6 +34,9 @@ class RefundController extends BaseAdminController
             if ($action === 'approve') {
                 try {
                     // Cập nhật trạng thái hoàn tiền
+                    if (!$refundMethod) {
+                        return redirect()->back()->with('success', 'Không được bỏ trống phương thức hoàn tiền.');
+                    }
                     $refund->update([
                         'status' => 'approved',
                         'admin_notes' => $adminNote,
@@ -64,7 +68,7 @@ class RefundController extends BaseAdminController
 
                     DB::commit();
                     Log::info('Successfully approved refund for refund ID: ' . $refund->id);
-                    
+
                     return redirect()->back()->with('success', 'Đã phê duyệt yêu cầu hoàn tiền thành công.');
                 } catch (\Exception $e) {
                     DB::rollBack();
@@ -101,7 +105,7 @@ class RefundController extends BaseAdminController
 
                     DB::commit();
                     Log::info('Successfully rejected refund for refund ID: ' . $refund->id);
-                    
+
                     return redirect()->back()->with('success', 'Đã từ chối yêu cầu hoàn tiền.');
                 } catch (\Exception $e) {
                     DB::rollBack();
@@ -122,22 +126,22 @@ class RefundController extends BaseAdminController
     {
         try {
             Log::info('Getting refund details for refund ID: ' . $refund->id);
-            
+
             // Load relationships
             $refund->load(['booking.user', 'refundPolicy']);
             Log::info('Loaded relationships for refund: ' . $refund->id);
-            
+
             // Check if relationships are loaded
             if (!$refund->booking) {
                 Log::error('Booking not found for refund: ' . $refund->id);
                 throw new \Exception('Booking not found');
             }
-            
+
             if (!$refund->refundPolicy) {
                 Log::error('Refund policy not found for refund: ' . $refund->id);
                 throw new \Exception('Refund policy not found');
             }
-            
+
             $response = [
                 'id' => $refund->id,
                 'booking' => [
@@ -157,10 +161,10 @@ class RefundController extends BaseAdminController
                 'cancellation_fee' => $refund->cancellation_fee,
                 'reason' => $refund->reason
             ];
-            
+
             Log::info('Successfully prepared response for refund: ' . $refund->id);
             return response()->json($response);
-            
+
         } catch (\Exception $e) {
             Log::error('Error getting refund details: ' . $e->getMessage());
             Log::error('Stack trace: ' . $e->getTraceAsString());
@@ -169,4 +173,4 @@ class RefundController extends BaseAdminController
             ], 500);
         }
     }
-} 
+}

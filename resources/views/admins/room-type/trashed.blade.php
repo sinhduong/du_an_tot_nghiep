@@ -68,11 +68,11 @@
                                                 @method('PATCH')
                                                 <button type="submit" class="btn btn-success btn-sm me-1">Khôi phục</button>
                                             </form>
-                                            <form class="force-delete-form" data-id="{{ $item->id }}" action="{{ route('admin.room_types.forceDelete', $item->id) }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm">Xóa vĩnh viễn</button>
-                                            </form>
+{{--                                            <form class="force-delete-form" data-id="{{ $item->id }}" action="{{ route('admin.room_types.forceDelete', $item->id) }}" method="POST" style="display:inline;">--}}
+{{--                                                @csrf--}}
+{{--                                                @method('DELETE')--}}
+{{--                                                <button type="submit" class="btn btn-danger btn-sm">Xóa vĩnh viễn</button>--}}
+{{--                                            </form>--}}
                                         </td>
                                     </tr>
                                     @empty

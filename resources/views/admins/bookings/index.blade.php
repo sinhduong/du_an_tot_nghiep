@@ -44,16 +44,6 @@
                                     <input type="date" name="end_date" class="form-control" value="{{ $filterData['end_date'] ?? '' }}">
                                 </div>
                                 <div class="col-md-3">
-                                    <label>Lọc nhanh</label>
-                                    <select name="filter" class="form-control" onchange="clearDateInputs()">
-                                        <option value="">Chọn khoảng thời gian</option>
-                                        <option value="today" {{ $filterData['filter'] == 'today' ? 'selected' : '' }}>Hôm nay</option>
-                                        <option value="this_week" {{ $filterData['filter'] == 'this_week' ? 'selected' : '' }}>Tuần này</option>
-                                        <option value="this_month" {{ $filterData['filter'] == 'this_month' ? 'selected' : '' }}>Tháng này</option>
-                                        <option value="last_month" {{ $filterData['filter'] == 'last_month' ? 'selected' : '' }}>Tháng trước</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
                                     <label>Trạng thái</label>
                                     <select name="status" class="form-control">
                                         <option value="">Tất cả</option>
@@ -362,7 +352,7 @@
 
                     <div class="mb-3">
                         <label for="refund_method" class="form-label">Phương thức hoàn tiền</label>
-                        <select class="form-select" id="refund_method" name="refund_method" required>
+                        <select class="form-select" id="refund_method" name="refund_method">
                             <option value="">Chọn phương thức</option>
                             <option value="vnpay">VNPay</option>
                         </select>

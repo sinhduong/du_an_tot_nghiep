@@ -18,7 +18,7 @@ class AdminAccountController extends BaseAdminController
     public function index()
     {
         $title = 'Tài khoản quản trị viên';
-        $admins = User::role('admin', 'management')->get();
+        $admins = User::role('admin')->get();
         return view('admins.admin_accounts.index', compact('admins', 'title'));
     }
 
@@ -51,4 +51,4 @@ class AdminAccountController extends BaseAdminController
     public function destroy(User $admin)
     {
     }
-} 
+}

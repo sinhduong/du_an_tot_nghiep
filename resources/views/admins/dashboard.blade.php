@@ -115,25 +115,11 @@
                                 <div class="block">
                                     <h6>Đặt Phòng</h6>
                                     <h5>{{ array_sum($overviewData['bookings']) }}
-                                        <span class="up"><i class="ri-arrow-up-line"></i>24%</span>
                                     </h5>
                                 </div>
                                 <div class="block">
                                     <h6>Doanh Thu</h6>
                                     <h5>{{ number_format(array_sum($overviewData['revenue'])) }} VND
-                                        <span class="up"><i class="ri-arrow-up-line"></i>24%</span>
-                                    </h5>
-                                </div>
-                                <div class="block">
-                                    <h6>Chi Phí</h6>
-                                    <h5>{{ number_format(array_sum($overviewData['expense'])) }} VND
-                                        <span class="down"><i class="ri-arrow-down-line"></i>24%</span>
-                                    </h5>
-                                </div>
-                                <div class="block">
-                                    <h6>Lợi Nhuận</h6>
-                                    <h5>{{ number_format(array_sum($overviewData['profit'])) }} VND
-                                        <span class="up"><i class="ri-arrow-up-line"></i>24%</span>
                                     </h5>
                                 </div>
                             </div>

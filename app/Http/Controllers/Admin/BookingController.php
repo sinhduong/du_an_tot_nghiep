@@ -40,42 +40,29 @@ class BookingController extends BaseAdminController
         $query = Booking::with('user', 'rooms', 'refund', 'refund.refundPolicy')->latest();
 
         // Lọc theo khoảng thời gian
-        if ($request->has('start_date') && $request->has('end_date')) {
-            $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
-            $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
-            $query->whereBetween('created_at', [$startDate, $endDate]);
-        } elseif ($request->has('filter')) {
-            switch ($request->input('filter')) {
-                case 'today':
-                    $query->whereDate('created_at', Carbon::today());
-                    break;
-                case 'this_week':
-                    $query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
-                    break;
-                case 'this_month':
-                    $query->whereMonth('created_at', Carbon::now()->month)
-                        ->whereYear('created_at', Carbon::now()->year);
-                    break;
-                case 'last_month':
-                    $query->whereMonth('created_at', Carbon::now()->subMonth()->month)
-                        ->whereYear('created_at', Carbon::now()->subMonth()->year);
-                    break;
+        if ($request->has('start_date') && $request->has('end_date') && $request->input('start_date') && $request->input('end_date')) {
+            $startDate = $request->input('start_date') . ' 00:00:00';
+            $endDate = $request->input('end_date') . ' 23:59:59';
+            if ($startDate) {
+                $query->where('check_in', '>=', $startDate);
+            }
+            if ($endDate) {
+                $query->where('check_out', '<=', $endDate);
             }
         }
 
-        // Lọc theo trạng thái (nếu có)
-        if ($request->has('status') && $request->input('status') !== '') {
+        // Lọc theo trạng thái
+        if ($request->has('status') && $request->input('status') !== null) {
             $query->where('status', $request->input('status'));
         }
 
         // Phân trang
         $bookings = $query->paginate(10);
 
-        // Truyền thêm dữ liệu lọc để hiển thị lại trên giao diện
+        // Truyền dữ liệu lọc để hiển thị lại trên giao diện
         $filterData = [
             'start_date' => $request->input('start_date'),
             'end_date' => $request->input('end_date'),
-            'filter' => $request->input('filter'),
             'status' => $request->input('status'),
         ];
 
