@@ -10,6 +10,7 @@ use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\PolicyController;
 use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\ReviewController as ClientReviewController;
 use App\Http\Controllers\Admin\SystemController;
 use App\Http\Controllers\Admin\AmenityController;
 use App\Http\Controllers\Admin\BookingController;
@@ -331,20 +332,20 @@ Route::prefix('admin')
                 Route::delete('{id}/destroy', [ServicePlusController::class, 'destroy'])->name('destroy'); // Xóa loại phòng
             });
 
-         Route::prefix('admin_accounts') 
-            ->as('admin_accounts.') 
+         Route::prefix('admin_accounts')
+            ->as('admin_accounts.')
             ->group(function () {
-                Route::get('/', [AdminAccountController::class, 'index'])->name('index'); 
-                Route::get('{id}/edit', [AdminAccountController::class, 'edit'])->name('edit'); 
-                Route::put('{id}/update', [AdminAccountController::class, 'update'])->name('update'); 
+                Route::get('/', [AdminAccountController::class, 'index'])->name('index');
+                Route::get('{id}/edit', [AdminAccountController::class, 'edit'])->name('edit');
+                Route::put('{id}/update', [AdminAccountController::class, 'update'])->name('update');
             });
-        
-        Route::prefix('customers') 
-            ->as('customers.') 
+
+        Route::prefix('customers')
+            ->as('customers.')
             ->group(function () {
-                Route::get('/', [CustomerController::class, 'index'])->name('index'); 
-                Route::get('{id}/show', [CustomerController::class, 'show'])->name('show'); 
-                Route::put('{id}/update-status', [CustomerController::class, 'updateStatus'])->name('update-status'); 
+                Route::get('/', [CustomerController::class, 'index'])->name('index');
+                Route::get('{id}/show', [CustomerController::class, 'show'])->name('show');
+                Route::put('{id}/update-status', [CustomerController::class, 'updateStatus'])->name('update-status');
             });
 
         Route::resource('promotions', PromotionController::class);
@@ -356,6 +357,7 @@ Route::prefix('admin')
         Route::resource('faqs', FaqController::class);
         Route::resource('payments', PaymentController::class);
         Route::resource('sale-room-types', SaleRoomTypeController::class);
+        Route::get('/admin/statistics', [App\Http\Controllers\Admin\StatisticsController::class, 'index'])->name('admin.statistics');
     });
 
 
@@ -401,4 +403,9 @@ Route::get('payments', [HomeController::class, 'paymentsList'])->name('payments.
 Route::prefix('refunds')->group(function () {
     Route::post('/{booking}/request', [ClientRefundController::class, 'requestRefund'])->name('refunds.request');
     Route::get('/lists', [ClientRefundController::class, 'lists'])->name('refunds.lists');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/reviews', [ClientReviewController::class, 'index'])->name('reviews.index');
+    Route::post('/reviews', [ClientReviewController::class, 'store'])->name('reviews.store');
 });

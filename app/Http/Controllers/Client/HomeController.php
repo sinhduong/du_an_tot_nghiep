@@ -26,6 +26,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Policy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use App\Models\Review;
 
 class HomeController extends Controller
 {
@@ -181,6 +182,11 @@ class HomeController extends Controller
             $totalAvailableRooms += $availableRooms;
         }
 
+        $reviews = Review::with(['user', 'booking'])
+            ->orderBy('created_at', 'desc')
+            ->take(6)
+            ->get();
+
         return view('clients.home', compact(
             'roomTypes',
             'checkIn',
@@ -194,7 +200,8 @@ class HomeController extends Controller
             'systems',
             'maxCapacity',
             'maxChildrenLimit',
-            'totalAvailableRooms'
+            'totalAvailableRooms',
+            'reviews'
         ));
     }
 

@@ -353,20 +353,20 @@
                                     @if ($booking->refund)
                                     <div class="lh-check-block-content mb-4">
                                         <h5 class="lh-room-inner-heading mb-2">Trạng thái hoàn tiền</h5>
-                                        <div class="alert 
+                                        <div class="alert
                                             @if($booking->refund->status == 'pending') alert-warning
                                             @elseif($booking->refund->status == 'approved') alert-success
                                             @elseif($booking->refund->status == 'rejected') alert-danger
                                             @else alert-info @endif">
                                             <div class="d-flex align-items-center">
-                                                <i class="fas 
+                                                <i class="fas
                                                     @if($booking->refund->status == 'pending') fa-clock
                                                     @elseif($booking->refund->status == 'approved') fa-check-circle
                                                     @elseif($booking->refund->status == 'rejected') fa-times-circle
-                                                    @else fa-info-circle @endif 
+                                                    @else fa-info-circle @endif
                                                     me-2"></i>
                                                 <div>
-                                                    <strong>Trạng thái:</strong> 
+                                                    <strong>Trạng thái:</strong>
                                                     @switch($booking->refund->status)
                                                         @case('pending')
                                                             Đang chờ xử lý
@@ -569,12 +569,6 @@
                                 <h3 class="lh-checkout-title mb-3">Hành động</h3>
                                 <div class="lh-check-block-content">
                                     @if (in_array($booking->status, ['unpaid', 'partial', 'paid']))
-                                    <!-- <form action="{{ route('bookings.update', $booking->id) }}" method="POST" class="d-inline-block">
-                                        @csrf
-                                        @method('PUT')
-                                        <input type="hidden" name="status" value="cancelled">
-                                        <button type="submit" class="btn btn-danger me-2">Hủy đặt phòng</button>
-                                    </form> -->
                                     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
                                         Hủy đặt phòng
                                     </button>
@@ -584,6 +578,22 @@
                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#paymentModal">
                                         Thanh toán
                                     </button>
+                                    @endif
+
+                                    @if ($booking->status === 'check_out' && $booking->actual_check_out && !$booking->review)
+                                        @php
+                                            $roomTypeIds = $booking->rooms->pluck('roomType.id');
+                                            $hasReviewedRoomType = \App\Models\Review::where('user_id', auth()->id())
+                                                ->whereHas('booking.rooms', function ($query) use ($roomTypeIds) {
+                                                    $query->whereIn('room_type_id', $roomTypeIds);
+                                                })
+                                                ->exists();
+                                        @endphp
+                                        @if (!$hasReviewedRoomType)
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">
+                                                <i class="fas fa-star"></i> Đánh giá
+                                            </button>
+                                        @endif
                                     @endif
 
                                     @if (in_array($booking->status, ['cancelled', 'cancelled_without_refund']))
@@ -679,6 +689,69 @@
         </div>
     </div>
 </div>
+
+<!-- Review Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reviewModalLabel">Đánh giá trải nghiệm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('reviews.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="booking_id" value="{{ $booking->id }}">
+
+                    <div class="mb-3">
+                        <label class="form-label">Đánh giá của bạn</label>
+                        <div class="rating">
+                            @for ($i = 5; $i >= 1; $i--)
+                            <input type="radio" name="rating" value="{{ $i }}" id="star{{ $i }}" required>
+                            <label for="star{{ $i }}"><i class="fas fa-star"></i></label>
+                            @endfor
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Nhận xét của bạn</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="4" required></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.rating input {
+    display: none;
+}
+
+.rating label {
+    cursor: pointer;
+    font-size: 30px;
+    color: #ddd;
+    padding: 5px;
+}
+
+.rating input:checked ~ label,
+.rating label:hover,
+.rating label:hover ~ label {
+    color: #ffd700;
+}
+</style>
 
 <!-- Thêm Font Awesome và Bootstrap CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">

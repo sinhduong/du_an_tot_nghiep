@@ -49,8 +49,7 @@
                                                 <th>Người dùng</th>
                                                 <th>Đơn đặt phòng</th>
                                                 <th>Số sao</th>
-                                                <th>Bình luận</th>
-                                                <th>Phản hồi</th>
+                                                <th>Nội dung</th>
                                                 <th>Thao tác</th>
                                             </tr>
                                         </thead>
@@ -76,20 +75,7 @@
                                                             @endif
                                                         @endfor
                                                     </td>
-                                                    <td>{{ $review->comment ?? 'Không có bình luận' }}</td>
-                                                    <td>
-                                                        @if ($review->response)
-                                                            {{ $review->response }}
-                                                        @else
-                                                            <form action="{{ route('admin.reviews.response', $review->id) }}"
-                                                                method="POST">
-                                                                @csrf
-                                                                <input type="text" name="response" class="form-control" required>
-                                                                <button type="submit"
-                                                                    class="btn btn-sm btn-primary mt-1">Gửi</button>
-                                                            </form>
-                                                        @endif
-                                                    </td>
+                                                    <td>{{ $review->comment }}</td>
                                                     <td>
                                                         <div class="btn-group">
                                                             <button type="button" class="btn btn-outline-secondary dropdown-toggle"
