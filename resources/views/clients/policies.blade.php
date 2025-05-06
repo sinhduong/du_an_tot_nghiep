@@ -26,21 +26,21 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-10">
+                    <div class="card shadow-lg border-0 mb-4" style="background-color: #f8f9fa;">
                     @if($policies->count() > 0)
                         @foreach($policies as $policy)
-                            <div class="card shadow-lg border-0 mb-4" style="background-color: #f8f9fa;">
-                                <div class="card-body">
-                                <i class="fas fa-exclamation-circle text-warning me-2"></i>
-                                    {!! $policy->policy !!}
-                                </div>
-                            </div>
+                        <div class="card-body">
+                        <i class="fas fa-exclamation-circle text-warning me-2"></i>
+                            {!! $policy->policy !!}
+                        </div>
                         @endforeach
-                    @else
+                        @else
                         <div class="card shadow-lg border-0" style="background-color: #f8f9fa;">
                             <div class="card-body">
                                 <p>Chưa có chính sách nào được thiết lập.</p>
                             </div>
                         </div>
+                    </div>
                     @endif
                 </div>
             </div>

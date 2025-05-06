@@ -32,7 +32,7 @@
                         <div class="footer-logos">
                             <img src="{{ $systems->logo ? asset('storage/' . $systems->logo) : asset('assets/client/assets/img/logo/logo-2.png') }}" alt="Logo" class="lh-logo">
                         </div>
-                        <div class="lh-footer-social">
+                        {{-- <div class="lh-footer-social">
                             <p>Đặt phòng khách sạn dễ dàng, nhanh chóng cùng dịch vụ chuyên nghiệp và nhiều ưu đãi hấp dẫn!</p>
                             <form class="lh-control-footer" role="search">
                                 <div class="lh-control-inner-icons">
@@ -40,7 +40,7 @@
                                 </div>
                                 <input class="form-control shadow-none me-4" type="email" placeholder="Đăng ký nhận ưu đãi..." aria-label="Subscribe">
                             </form>
-                        </div>
+                        </div> --}}
                         <div class="lh-follow-social">
                             <h4 class="heading">Theo dõi chúng tôi</h4>
                             <div class="footer-logo-image">

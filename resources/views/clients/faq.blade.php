@@ -1,7 +1,29 @@
 @extends('layouts.client')
 
 @section('content')
+<section class="section-banner">
+    <div class="row banner-image">
+        <div class="banner-overlay"></div>
+        <div class="banner-section">
+            <div class="lh-banner-contain">
+                <h2>Câu hỏi thường gặp</h2>
+                <div class="lh-breadcrumb">
+                    <h5>
+                        <span class="lh-inner-breadcrumb">
+                            <a href="{{ route('home') }}">Trang chủ</a>
+                        </span>
+                        <span> / </span>
+                        <span>
+                            <a href="javascript:void(0)">Câu hỏi thường gặp</a>
+                        </span>
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
     <section class="section-room padding-tb-100" data-aos="fade-up" data-aos-duration="2000" id="rooms">
+        <div class="container">
         <div class="ld-faq aos-init aos-animate" data-aos="fade-up" data-aos-duration="2000">
             <div class="row">
                 <div class="col-lg-6 rs-pb-24">
@@ -30,6 +52,7 @@
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </section>
 @endsection

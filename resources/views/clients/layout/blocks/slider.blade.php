@@ -1,6 +1,7 @@
 <section class="section-hero">
     <div class="container-fulid">
-        <div class="row hero-image" style="background-image: url('storage/{{ $banner->image }}')">
+        {{-- <div class="row hero-image" style="background-image: url('storage/{{ $banner->image }}')"> --}}
+            <div class="row hero-image" style="background-image: url('storage/{{ $banner->image ?? asset('assets/client/assets/img/hero/hero-section.jpg') }}')">
         <div class="hero-section">
                 <div class="particles-bg" id="particles-js"></div>
                 <div class="lh-hero-contain container">

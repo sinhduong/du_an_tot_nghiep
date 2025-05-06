@@ -21,18 +21,20 @@
                             <li><a class="dropdown-item" href="{{ route('room.view') }}">Danh sách phòng</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            Giới Thiệu <i class="ri-arrow-down-s-line"></i>
+                    <li class="nav-item ">
+                        <a class="nav-link " href="{{ route('introductions') }}" >
+                            Giới thiệu
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('introductions') }}">Giới thiệu</a></li>
-                            {{-- <li><a class="dropdown-item" href="{{ route('abouts') }}">Về chúng tôi</a></li> --}}
-                            <li><a class="dropdown-item" href="{{ route('faqs') }}">Câu hỏi thường gặp</a></li>
-                            <!-- <li><a class="dropdown-item" href="{{ route('services') }}">Dịch vụ</a></li> -->
-                            <li><a class="dropdown-item" href="{{ route('policies') }}">Chính sách</a></li>
-
-                        </ul>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link " href="{{ route('faqs') }}" >
+                            Câu hỏi thường gặp
+                        </a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link " href="{{ route('policies') }}" >
+                            Chính sách
+                        </a>
                     </li>
                     <li class="nav-item ">
                         <a class="nav-link " href="{{ route('contacts') }}" >
