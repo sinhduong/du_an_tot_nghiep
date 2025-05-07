@@ -31,14 +31,13 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255', 'unique:users,name'],
+            'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ], [
             'name.required' => 'Vui lòng nhập họ và tên.',
             'name.string' => 'Họ và tên phải là một chuỗi ký tự.',
             'name.max' => 'Họ và tên không được vượt quá 255 ký tự.',
-            'name.unique' => 'Họ và tên này đã được sử dụng.',
 
             'email.required' => 'Vui lòng nhập email.',
             'email.string' => 'Email phải là một chuỗi ký tự.',
