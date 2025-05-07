@@ -55,7 +55,7 @@
                                 $imagePath = $mainImage ? asset('storage/' . $mainImage->image) : asset('assets/client/assets/img/room/' . ($index + 1) . '.jpg');
                             @endphp
                             <div style="position: relative;">
-                                <img src="{{ $imagePath }}" alt="{{ $roomType->name }}">
+                                <img src="{{ $imagePath }}" alt="{{ $roomType->name }}" width="50px" height="100px">
                                 @if ($roomType->promotion_info)
                                     <span class="discount-badge">
                                         Giảm {{ $roomType->promotion_info['value'] }}{{ $roomType->promotion_info['type'] === 'percent' ? '%' : ' VND' }}

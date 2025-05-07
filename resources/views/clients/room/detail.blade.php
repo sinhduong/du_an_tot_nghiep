@@ -22,7 +22,7 @@
                             <div class="slider slider-nav">
                                 @foreach ($roomType->roomTypeImages as $image)
                                     <div class="lh-room-details-inner">
-                                        <img src="{{ asset('storage/' . $image->image) }}" alt="room-{{ $loop->index + 1 }}">
+                                        <img src="{{ asset('storage/' . $image->image) }}" alt="room-{{ $loop->index + 1 }}" width="50px" height="100px">
                                     </div>
                                 @endforeach
                                 @if ($roomType->roomTypeImages->isEmpty())
