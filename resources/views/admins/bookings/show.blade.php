@@ -526,12 +526,12 @@
                         <span class="toggle-icon">▼</span>
                     </div>
                     <div class="booking-section-content">
-                        @if(!$booking->service_plus_status)
-                            <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addServicePlusModal">Thêm dịch vụ phát sinh</button>
+                        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addServicePlusModal">Thêm dịch vụ phát sinh</button>
+                        {{-- @if(!$booking->service_plus_status)
                         @endif
                         @if ($booking->servicePlus->isEmpty())
                         <p>Chưa có dịch vụ phát sinh nào được chọn.</p>
-                        @else
+                        @else --}}
                         <table class="table table-striped" id="servicePlusTable">
                             <thead>
                                 <tr>
@@ -559,7 +559,7 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        @endif
+                        {{-- @endif --}}
                     </div>
                 </div>
             </div>

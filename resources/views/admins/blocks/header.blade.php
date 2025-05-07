@@ -77,14 +77,7 @@
                             <img class="user" src="{{ asset('assets/admin/assets/img/user/1.jpg') }}" alt="user">
                         </div>
                         <div class="lh-hover-drop-panel right">
-                            <div class="details">
-                                <h6>admin</h6>
-                                <p>moris@example.com</p>
-                            </div>
-                            <ul class="border-top">
-                                <li><a href="team-profile.html">Profile</a></li>
-
-                            </ul>
+                           
                             <ul class="border-top">
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf

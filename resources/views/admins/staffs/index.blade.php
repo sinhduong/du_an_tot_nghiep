@@ -11,7 +11,7 @@
                         <li>Dashboard</li>
                     </ul>
                 </div>
-                <div class="lh-tools">
+                {{-- <div class="lh-tools">
                     <a href="javascript:void(0)" title="Refresh" class="refresh"><i class="ri-refresh-line"></i></a>
                     <div id="pagedate">
                         <div class="lh-date-range" title="Date">
@@ -31,7 +31,7 @@
                             </ul>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
             <div class="row">
                 <div class="col-xl-12 col-md-12">
@@ -62,7 +62,7 @@
                             <div class="booking-table">
                                 <div class="table-responsive">
                                     <table id="booking_table" class="table">
-                                        <thead>
+                                        <thead class="table-dark">
 
                                             <tr>
                                                 <th>ID</th>
@@ -89,12 +89,12 @@
                                                                 <i class="ri-settings-3-line"></i>
                                                             </button>
                                                             <ul class="dropdown-menu">
-                                                                <li>
+                                                                {{-- <li>
                                                                     <a class="dropdown-item"
                                                                         href="{{ route('admin.staffs.show', $item->id) }}">
                                                                         <i class="mdi-account-card-details"></i> Chi tiết
                                                                     </a>
-                                                                </li>
+                                                                </li> --}}
                                                                 <li>
                                                                     <a class="dropdown-item"
                                                                         href="{{ route('admin.staffs.edit', $item->id) }}">
