@@ -25,9 +25,7 @@ class CustomerController extends BaseAdminController
      */
     public function index()
     {
-        $customers = User::whereHas('roles', function ($query) {
-            $query->where('name', 'customer');
-        })->paginate(10);
+        $customers = User::whereDoesntHave('staff')->paginate(10);
 
         return view('admins.customers.index', compact('customers'));
     }

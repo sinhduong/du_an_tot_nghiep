@@ -22,12 +22,11 @@ class StaffFormRequest extends FormRequest
      */
     public function rules(): array
     {
-        $user_id = Staff::find($this->staff)->user_id;
         return [
             'email' => ['required', 'email', 'max:255',
                 $this->isMethod('post')
                     ? 'unique:users,email'
-                    : 'unique:users,email,' . $user_id
+                    : 'unique:users,email,' . Staff::find($this->staff)->user_id
             ],
             'password' =>  $this->isMethod('post') ? 'required|min:8' : 'nullable|min:8',
             'name' => 'required',

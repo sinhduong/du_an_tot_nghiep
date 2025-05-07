@@ -69,4 +69,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $this->notify(new CustomVerifyEmail);
     }
+
+    public function staff()
+    {
+        return $this->hasOne(Staff::class, 'user_id');
+    }
 }
